@@ -30,8 +30,8 @@ del plan: US1 → US2 → US4 → US3, más una fase final de verificación en u
 **Purpose**: normalizar finales de línea antes de crear archivos nuevos, en un commit propio
 para no mezclar un diff grande con el resto (plan, Riesgos).
 
-- [ ] T001 Crear `.gitattributes` con exactamente `* text=auto eol=lf` y `*.ps1 text eol=crlf` (ver [contracts/gitignore.md](contracts/gitignore.md))
-- [ ] T002 Ejecutar `git add --renormalize .`, comprobar con `git ls-files --eol` que los archivos de texto quedan `i/lf` (salvo `.ps1`) y hacer commit `chore(#1): normalizar finales de línea` que solo contenga `.gitattributes` y la renormalización
+- [X] T001 Crear `.gitattributes` con exactamente `* text=auto eol=lf` y `*.ps1 text eol=crlf` (ver [contracts/gitignore.md](contracts/gitignore.md))
+- [X] T002 Ejecutar `git add --renormalize .`, comprobar con `git ls-files --eol` que los archivos de texto quedan `i/lf` (salvo `.ps1`) y hacer commit `chore(#1): normalizar finales de línea` que solo contenga `.gitattributes` y la renormalización
 
 ---
 
@@ -51,10 +51,10 @@ repositorio público ya existen (supuestos de la spec). Las historias empiezan d
 Los pasos de git se validan aquí (T006); los intentos del asistente se validan en una
 sesión nueva (T020).
 
-- [ ] T003 [P] [US1] Ampliar `.gitignore` con las entradas obligatorias de [contracts/gitignore.md](contracts/gitignore.md): `.env`, `.env.*`, `!.env.example`, `CLAUDE.local.md`, `.claude/settings.local.json`, conservando las de Python ya presentes
-- [ ] T004 [P] [US1] Crear `.claude/settings.json` con la lista `permissions.deny` exacta de [contracts/claude-settings.md](contracts/claude-settings.md). Restricciones: "Ninguna regla `Write(...)`" y "la negación `!.env.example` aparece después de las reglas sin ancla que excepciona"
-- [ ] T005 [P] [US1] Crear `.env.example` con `GITHUB_PAT=` y `ANTHROPIC_API_KEY=` "sin valores, con un comentario de propósito para cada una"
-- [ ] T006 [US1] Validar con `git check-ignore -v --no-index` (sobre rutas, sin crear archivos: el asistente no puede crear `.env` una vez activas las reglas de T004) que coinciden `.env`, `.env.local`, `config/.env`, `CLAUDE.local.md` y `.claude/settings.local.json`, y que `.env.example` no coincide; hacer commit `chore(#1): proteger secretos (gitignore, permisos, .env.example)`
+- [X] T003 [P] [US1] Ampliar `.gitignore` con las entradas obligatorias de [contracts/gitignore.md](contracts/gitignore.md): `.env`, `.env.*`, `!.env.example`, `CLAUDE.local.md`, `.claude/settings.local.json`, conservando las de Python ya presentes
+- [X] T004 [P] [US1] Crear `.claude/settings.json` con la lista `permissions.deny` exacta de [contracts/claude-settings.md](contracts/claude-settings.md). Restricciones: "Ninguna regla `Write(...)`" y "la negación `!.env.example` aparece después de las reglas sin ancla que excepciona"
+- [X] T005 [P] [US1] Crear `.env.example` con `GITHUB_PAT=` y `ANTHROPIC_API_KEY=` "sin valores, con un comentario de propósito para cada una"
+- [X] T006 [US1] Validar con `git check-ignore -v --no-index` (sobre rutas, sin crear archivos: el asistente no puede crear `.env` una vez activas las reglas de T004) que coinciden `.env`, `.env.local`, `config/.env`, `CLAUDE.local.md` y `.claude/settings.local.json`, y que `.env.example` no coincide; hacer commit `chore(#1): proteger secretos (gitignore, permisos, .env.example)`
 
 **Checkpoint**: los secretos ya no pueden versionarse, y las reglas de permisos quedan
 listas para la sesión siguiente.

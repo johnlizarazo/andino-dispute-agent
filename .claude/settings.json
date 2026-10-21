@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(!.env.example)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(!.env.example)",
+      "Bash(grep * .env*)",
+      "Bash(cp .env* *)",
+      "PowerShell(Get-Content *.env*)",
+      "PowerShell(Copy-Item *.env* *)",
+      "PowerShell(Select-String * *.env*)"
+    ]
+  }
+}
