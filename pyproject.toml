@@ -1,7 +1,7 @@
 [project]
 name = "andino-dispute-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI agent for first-contact transaction disputes at Banco Andino (fictional), built with Claude Agent SDK and a mock core-banking MCP server."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -10,12 +10,12 @@ dependencies = [
     "mcp[cli]>=1.30.0",
 ]
 
-[project.scripts]
-andino-dispute-agent = "andino_dispute_agent:main"
-
 [build-system]
 requires = ["uv_build>=0.13.2,<0.14.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["agente_disputas", "core_bancario_mcp"]
 
 [dependency-groups]
 dev = [
@@ -23,3 +23,10 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "ruff>=0.17.1",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["src", "tests"]
+markers = [
+    "e2e: escenarios de punta a punta que llaman al modelo (requieren ANTHROPIC_API_KEY)",
+]
+addopts = "-m 'not e2e'"

@@ -85,13 +85,13 @@ al final (plan, Orden de implementación).
 
 **Independent Test**: [quickstart.md §3](quickstart.md#3-estructura-base-us4--fr-014-a-fr-016--sc-005).
 
-- [ ] T010 [US4] Eliminar `src/andino_dispute_agent/` (paquete de ejemplo de `uv init`)
-- [ ] T011 [P] [US4] Crear `src/agente_disputas/__init__.py` con solo un docstring que describa el paquete (agente de disputas con Claude Agent SDK)
-- [ ] T012 [P] [US4] Crear `src/core_bancario_mcp/__init__.py` con solo un docstring que describa el paquete (servidor MCP que simula el core bancario con datos ficticios)
-- [ ] T013 [P] [US4] Crear `src/agente_disputas/test_paquete.py` con un test de humo que importe `agente_disputas` y verifique que tiene docstring
-- [ ] T014 [P] [US4] Crear `src/core_bancario_mcp/test_paquete.py` con un test de humo que importe `core_bancario_mcp` y verifique que tiene docstring
-- [ ] T015 [US4] Actualizar `pyproject.toml`: descripción real (la del repositorio), eliminar `[project.scripts]` del paquete de ejemplo, agregar `[tool.uv.build-backend] module-name = ["agente_disputas", "core_bancario_mcp"]` y `[tool.pytest.ini_options]` con `testpaths = ["src", "tests"]`, el marcador `e2e` registrado y `addopts = "-m 'not e2e'"` (research R6 y R9)
-- [ ] T016 [US4] Borrar `.venv`, ejecutar `uv sync` y medir que termina en menos de 2 minutos; ejecutar `uv run pytest` y comprobar que pasan los 2 tests con código 0; hacer commit `chore(#1): paquetes agente_disputas y core_bancario_mcp` incluyendo `uv.lock`
+- [X] T010 [US4] Eliminar `src/andino_dispute_agent/` (paquete de ejemplo de `uv init`)
+- [X] T011 [P] [US4] Crear `src/agente_disputas/__init__.py` con solo un docstring que describa el paquete (agente de disputas con Claude Agent SDK)
+- [X] T012 [P] [US4] Crear `src/core_bancario_mcp/__init__.py` con solo un docstring que describa el paquete (servidor MCP que simula el core bancario con datos ficticios)
+- [X] T013 [P] [US4] Crear `src/agente_disputas/test_paquete.py` con un test de humo que importe `agente_disputas` y verifique que tiene docstring
+- [X] T014 [P] [US4] Crear `src/core_bancario_mcp/test_paquete.py` con un test de humo que importe `core_bancario_mcp` y verifique que tiene docstring
+- [X] T015 [US4] Actualizar `pyproject.toml`: descripción real (la del repositorio), eliminar `[project.scripts]` del paquete de ejemplo, agregar `[tool.uv.build-backend] module-name = ["agente_disputas", "core_bancario_mcp"]` y `[tool.pytest.ini_options]` con `testpaths = ["src", "tests"]`, el marcador `e2e` registrado y `addopts = "-m 'not e2e'"` (research R6 y R9)
+- [X] T016 [US4] Borrar `.venv`, ejecutar `uv sync` y medir que termina en menos de 2 minutos; ejecutar `uv run pytest` y comprobar que pasan los 2 tests con código 0; hacer commit `chore(#1): paquetes agente_disputas y core_bancario_mcp` incluyendo `uv.lock`
 
 **Checkpoint**: estructura lista para los issues del servidor y del agente.
 
