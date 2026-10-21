@@ -13,5 +13,8 @@
       "PowerShell(Copy-Item *.env* *)",
       "PowerShell(Select-String * *.env*)"
     ]
+  },
+  "env": {
+    "PYTHONUTF8": "1"
   }
 }

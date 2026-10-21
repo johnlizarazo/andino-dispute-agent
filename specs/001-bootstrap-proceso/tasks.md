@@ -68,9 +68,9 @@ cualquier sistema operativo; lo personal queda aislado (FR-005 a FR-009).
 
 **Independent Test**: [quickstart.md §2](quickstart.md#2-convenciones-al-clonar-us2--fr-005-a-fr-009--sc-003-sc-004).
 
-- [ ] T007 [US2] Agregar a `.claude/settings.json` la clave `"env": { "PYTHONUTF8": "1" }` sin alterar `permissions.deny` (depende de T004)
-- [ ] T008 [P] [US2] Crear `CLAUDE.md` en la raíz, de "menos de 40 líneas", que importe la constitución con `@.specify/memory/constitution.md` sin copiar su texto, liste los comandos clave (`uv sync`, `uv run pytest`, `uv run pytest -m e2e`) y resuma el flujo con los tres puntos de control humanos
-- [ ] T009 [US2] Validar que el script `.venv/Scripts/python.exe .specify/scripts/python/resolve_template.py spec-template --json` termina sin errores con `PYTHONUTF8=1` y falla sin ella (documentar el resultado); hacer commit `chore(#1): CLAUDE.md y entorno compartido con PYTHONUTF8`
+- [X] T007 [US2] Agregar a `.claude/settings.json` la clave `"env": { "PYTHONUTF8": "1" }` sin alterar `permissions.deny` (depende de T004)
+- [X] T008 [P] [US2] Crear `CLAUDE.md` en la raíz, de "menos de 40 líneas", que importe la constitución con `@.specify/memory/constitution.md` sin copiar su texto, liste los comandos clave (`uv sync`, `uv run pytest`, `uv run pytest -m e2e`) y resuma el flujo con los tres puntos de control humanos
+- [X] T009 [US2] Validar que el script `.venv/Scripts/python.exe .specify/scripts/python/resolve_template.py constitution-template --json` termina sin errores con `PYTHONUTF8=1` y falla sin ella con `UnicodeEncodeError` (la plantilla de spec no lo demuestra porque cabe en cp1252); hacer commit `chore(#1): CLAUDE.md y entorno compartido con PYTHONUTF8`
 
 **Checkpoint**: una sesión nueva carga la constitución y puede correr Spec Kit sin
 configuración manual.
