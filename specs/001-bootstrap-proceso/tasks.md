@@ -104,9 +104,9 @@ FR-012). La verificación de escritura (FR-013) va en la fase 7.
 
 **Independent Test**: [quickstart.md §4](quickstart.md#4-conexión-con-el-project-us3--fr-010-a-fr-013--sc-006).
 
-- [ ] T017 [P] [US3] Crear `.mcp.json` con el servidor `github` exacto de [contracts/mcp-json.md](contracts/mcp-json.md): `type` `http`, URL `https://api.githubcopilot.com/mcp/`, `Authorization: Bearer ${GITHUB_PAT}` sin valor por defecto, y `X-MCP-Toolsets: context,repos,issues,pull_requests,projects`
-- [ ] T018 [P] [US3] Reescribir `README.md`: propósito del proyecto (banco ficticio, datos ficticios), requisitos (Python 3.14, `uv`, Claude Code), instalación (`uv sync`, `uv run pytest`) y una sección "Token de GitHub" con el tipo de token (PAT clásico, scopes `repo` y `project`), dónde guardarlo (variable de entorno de usuario `GITHUB_PAT`, nunca en archivos), el comando PowerShell que no deja el token en el historial y el aviso de reiniciar la aplicación por completo
-- [ ] T019 [US3] Hacer commit `chore(#1): conexión MCP de GitHub y README`
+- [X] T017 [P] [US3] Crear `.mcp.json` con el servidor `github` exacto de [contracts/mcp-json.md](contracts/mcp-json.md): `type` `http`, URL `https://api.githubcopilot.com/mcp/`, `Authorization: Bearer ${GITHUB_PAT}` sin valor por defecto, y `X-MCP-Toolsets: context,repos,issues,pull_requests,projects`
+- [X] T018 [P] [US3] Reescribir `README.md`: propósito del proyecto (banco ficticio, datos ficticios), requisitos (Python 3.14, `uv`, Claude Code), instalación (`uv sync`, `uv run pytest`) y una sección "Token de GitHub" con el tipo de token (PAT clásico, scopes `repo` y `project`), dónde guardarlo (variable de entorno de usuario `GITHUB_PAT`, nunca en archivos), el comando PowerShell que no deja el token en el historial y el aviso de reiniciar la aplicación por completo
+- [X] T019 [US3] Hacer commit `chore(#1): conexión MCP de GitHub y README`
 
 **Checkpoint**: todo listo para verificar en una sesión nueva.
 
