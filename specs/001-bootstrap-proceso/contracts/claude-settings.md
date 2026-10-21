@@ -17,7 +17,6 @@ Configuración compartida de Claude Code para todo el equipo. Fundamento en
       "Edit(!.env.example)",
       "Bash(grep * .env*)",
       "Bash(cp .env* *)",
-      "Bash(type .env*)",
       "PowerShell(Get-Content *.env*)",
       "PowerShell(Copy-Item *.env* *)",
       "PowerShell(Select-String * *.env*)"
@@ -37,8 +36,11 @@ Configuración compartida de Claude Code para todo el equipo. Fundamento en
 | Herramientas Edit y Write | `Edit(...)` (y el deny de `Read`) |
 | Grep y Glob | `Read(...)`: los archivos negados se excluyen de los resultados |
 | `cat`, `head`, `tail`, `sed`, `tee` y redirecciones en Bash | `Read(...)`, según la documentación |
-| `grep`, `cp`, `type` en Bash | `Bash(...)` |
-| `Get-Content` (y alias `gc`, `cat`), `Copy-Item`, `Select-String` en PowerShell | `PowerShell(...)` |
+| `grep`, `cp` en Bash | `Bash(...)` |
+| `Get-Content` (y alias `gc`, `cat`, `type`), `Copy-Item`, `Select-String` en PowerShell | `PowerShell(...)` |
+
+`Bash(type ...)` no se incluye: en Bash, `type` describe comandos, no muestra archivos, y en
+PowerShell es alias de `Get-Content`, ya cubierto.
 
 ## Fuera de garantía (documentado)
 

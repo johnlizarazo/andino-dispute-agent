@@ -11,8 +11,10 @@ Escenarios ejecutables que prueban la spec de punta a punta. Para los detalles, 
 
 ## 1. Secretos fuera de alcance (US1 · FR-001 a FR-004 · SC-001, SC-002)
 
-1. Crear `.env` y `config/.env` con un valor ficticio, por ejemplo `CLAVE_FICTICIA=valor-de-prueba`.
-2. `git status --short`: no aparecen. `git check-ignore -v .env.example` no devuelve nada.
+1. **El desarrollador** (no el asistente, que tiene negado editar `.env*`) crea a mano `.env`
+   con un valor ficticio, por ejemplo `CLAVE_FICTICIA=valor-de-prueba`.
+2. `git status --short`: `.env` no aparece. `git check-ignore -v --no-index config/.env`
+   coincide y `git check-ignore -v --no-index .env.example` no devuelve nada.
 3. Pedir al asistente, en una sesión nueva:
    - Que lea `.env` → **negado**.
    - Que busque `CLAVE_FICTICIA` en el repositorio → `.env` **no aparece** en los resultados.
@@ -22,7 +24,7 @@ Escenarios ejecutables que prueban la spec de punta a punta. Para los detalles, 
    - Que lea `.env.example` → **permitido**.
 4. Barrer el historial en busca de tokens: `git log -p --all` no contiene `ghp_`, `gho_` ni
    `github_pat_`.
-5. Borrar los archivos de prueba.
+5. El desarrollador borra el archivo de prueba.
 
 **Esperado**: el 100% de las vías probadas se niega; cero credenciales en el historial.
 

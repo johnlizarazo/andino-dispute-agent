@@ -30,7 +30,8 @@ de Claude Code (`code.claude.com/docs/en/permissions`, `settings`, `settings-ref
 ## R2. Comandos de consola sobre `.env*`
 
 - **Decision**: además de R1, reglas de comando para lo que el deny de `Read` no cubre:
-  - `Bash(grep * .env*)`, `Bash(cp .env* *)`, `Bash(type .env*)`.
+  - `Bash(grep * .env*)`, `Bash(cp .env* *)`. No se incluye `type`: en Bash no muestra
+    archivos, y en PowerShell es alias de `Get-Content`, ya cubierto.
   - `PowerShell(Get-Content *.env*)`, `PowerShell(Copy-Item *.env* *)`,
     `PowerShell(Select-String * *.env*)`.
 - **Rationale**:
