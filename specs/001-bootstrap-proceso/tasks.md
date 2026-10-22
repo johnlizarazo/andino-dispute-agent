@@ -127,8 +127,8 @@ FR-012). La verificación de escritura (FR-013) va en la fase 7.
 ## Phase 8: Polish & Cross-Cutting Concerns
 
 - [X] T024 Marcar las tareas completadas en `specs/001-bootstrap-proceso/tasks.md` y hacer commit
-- [ ] T025 Publicar la rama `001-bootstrap-proceso` y crear manualmente el pull request contra `main` con `Closes #1` (el comando `/abrir-pr` nace en el issue #2)
-- [ ] T026 Revisar en qué estado dejó el Project al issue #1 tras crear el PR (el workflow "Pull request linked to issue" puede moverlo solo); dejarlo en *In Review*, anotar el comportamiento observado como insumo del issue #2, y comentar qué se especificó, qué se decidió (enlazar `research.md`) y qué quedó pendiente
+- [X] T025 Publicar la rama `001-bootstrap-proceso` y crear manualmente el pull request contra `main` con `Closes #1` (el comando `/abrir-pr` nace en el issue #2)
+- [X] T026 Revisar en qué estado dejó el Project al issue #1 tras crear el PR (el workflow "Pull request linked to issue" puede moverlo solo); dejarlo en *In Review*, anotar el comportamiento observado como insumo del issue #2, y comentar qué se especificó, qué se decidió (enlazar `research.md`) y qué quedó pendiente
 
 ---
 
