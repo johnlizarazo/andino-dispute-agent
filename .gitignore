@@ -9,3 +9,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Configuración personal de Claude Code
+CLAUDE.local.md
+.claude/settings.local.json
