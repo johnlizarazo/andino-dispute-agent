@@ -129,15 +129,15 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 reiniciar la app.**
 
 - [X] T019 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T020 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) (9 pasos) con las herramientas de `core-bancario` y comprobar cada resultado esperado
+- [X] T020 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) (9 pasos) con las herramientas de `core-bancario` y comprobar cada resultado esperado
 - [X] T021 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §3](quickstart.md))
 
 ---
 
 ## Phase 9: Cierre con `/abrir-pr`
 
-- [ ] T022 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T023 Marcar T001 a T023 en `specs/006-transacciones-disputas/tasks.md` y hacer commit. T024 y T025 ocurren después del último commit y se marcan en la rama del issue siguiente
+- [X] T022 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T023 Marcar T001 a T023 en `specs/006-transacciones-disputas/tasks.md` y hacer commit. T024 y T025 ocurren después del último commit y se marcan en la rama del issue siguiente
 - [ ] T024 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #6`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T025 Después del merge, hecho por el desarrollador: verificar que el #6 queda cerrado y en *Done*
 
