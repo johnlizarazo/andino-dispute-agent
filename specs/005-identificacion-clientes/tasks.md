@@ -120,10 +120,10 @@ US2 → US3, luego verificación en sesión nueva y cierre. Los hooks del plugin
 **Purpose**: Claude Code carga las herramientas de `core-bancario` al iniciar. **Requiere
 reiniciar la app.**
 
-- [ ] T015 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
+- [X] T015 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
 - [ ] T016 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) con las herramientas de `core-bancario` (7 pasos) y comprobar cada resultado esperado
-- [ ] T017 Ejecutar [quickstart.md §3](quickstart.md) (operación repetida en `CORE_BANCARIO_FALLAS`, variante Bash o PowerShell): mensaje claro y código 1, sin traza
-- [ ] T018 Pasar `bloquear_pii.py --diff` sobre `git diff --unified=0 main...HEAD` sin hallazgos
+- [X] T017 Ejecutar [quickstart.md §3](quickstart.md) (operación repetida en `CORE_BANCARIO_FALLAS`, variante Bash o PowerShell): mensaje claro y código 1, sin traza
+- [X] T018 Pasar `bloquear_pii.py --diff` sobre `git diff --unified=0 main...HEAD` sin hallazgos
 
 ---
 
