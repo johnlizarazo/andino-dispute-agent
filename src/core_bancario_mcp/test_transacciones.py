@@ -1,14 +1,20 @@
+import asyncio
 import json
 import shutil
 from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
+from mcp.server.fastmcp import FastMCP
 
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas
 from core_bancario_mcp.repositorio import Repositorio
-from core_bancario_mcp.transacciones import consultar_transacciones, iniciar_disputa
+from core_bancario_mcp.transacciones import (
+    consultar_transacciones,
+    iniciar_disputa,
+    registrar,
+)
 
 DATOS = Path(__file__).with_name("datos")
 HOY = date(2026, 10, 23)
@@ -250,3 +256,38 @@ def test_fuera_de_politica_y_sobre_el_umbral_responde_politica(tmp_path):
     contexto = _contexto_con(tmp_path, {"TRX-002": {"dias_atras": 121}})
     respuesta = iniciar_disputa(contexto, "TRX-002", MOTIVO)
     assert _error(respuesta, "negocio", "FUERA_DE_POLITICA")
+
+
+# --- registro con inyección de fallas ---
+
+
+def _servidor_con_fallas(configuracion: str) -> tuple[FastMCP, Contexto]:
+    contexto = Contexto(Repositorio(hoy=HOY), InyectorFallas(configuracion))
+    servidor = FastMCP("prueba")
+    registrar(servidor, contexto)
+    return servidor, contexto
+
+
+def _llamar(servidor: FastMCP, nombre: str, argumentos: dict) -> dict:
+    (contenido,) = asyncio.run(servidor.call_tool(nombre, argumentos))
+    return json.loads(contenido.text)
+
+
+def test_consultar_respeta_la_falla_inyectada_y_luego_responde():
+    servidor, _ = _servidor_con_fallas("consultar_transacciones:1")
+    argumentos = {"cliente_id": "CLI-001", "ultimos4": "4821"}
+    primera = _llamar(servidor, "consultar_transacciones", argumentos)
+    assert primera["ok"] is False
+    assert primera["error"]["tipo"] == "transitorio"
+    assert primera["error"]["reintentable"] is True
+    assert _ids(_llamar(servidor, "consultar_transacciones", argumentos))
+
+
+def test_falla_inyectada_en_disputa_no_abre_caso():
+    servidor, contexto = _servidor_con_fallas("iniciar_disputa:1")
+    argumentos = {"transaccion_id": "TRX-001", "motivo": MOTIVO}
+    primera = _llamar(servidor, "iniciar_disputa", argumentos)
+    assert primera["error"]["tipo"] == "transitorio"
+    assert contexto.disputas.caso_de("TRX-001") is None
+    assert _llamar(servidor, "iniciar_disputa", argumentos)["ok"] is True
+    assert contexto.disputas.caso_de("TRX-001") is not None

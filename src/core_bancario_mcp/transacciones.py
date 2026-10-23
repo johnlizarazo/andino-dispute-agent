@@ -8,8 +8,12 @@ sobre un ``Contexto``; ``registrar`` las publica en el servidor.
 import re
 from datetime import date, timedelta
 
+from mcp.server.fastmcp import FastMCP
+
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.errores import Codigo, TipoError, error, exito
+from core_bancario_mcp.fallas import con_fallas
+from core_bancario_mcp.identificacion import Texto
 from core_bancario_mcp.repositorio import PATRON_CUATRO_DIGITOS
 
 # date.fromisoformat también acepta "20261023" o semanas ISO; se exige año-mes-día.
@@ -17,6 +21,22 @@ PATRON_FECHA = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 DIAS_POR_OMISION = 30
 DIAS_MAXIMOS_RANGO = 365
 LARGO_MAXIMO_MOTIVO = 500
+
+DESCRIPCION_CONSULTAR = (
+    "Lista los cobros de una tarjeta del cliente, identificada por cliente_id y ultimos4, "
+    "en un rango de fechas AAAA-MM-DD (fecha_desde y fecha_hasta; por omisión, los "
+    "últimos 30 días). Requiere la identidad verificada del titular de la tarjeta. Úsala "
+    "para ubicar con el cliente el cobro que no reconoce antes de disputarlo. Un cobro con "
+    "caso_disputa ya tiene una disputa abierta. Una lista vacía significa que no hay "
+    "cobros en el rango; no es un error."
+)
+DESCRIPCION_DISPUTAR = (
+    "Abre una disputa sobre un cobro que el cliente no reconoce (transaccion_id de "
+    "consultar_transacciones y el motivo) y devuelve el número de caso. Requiere la "
+    "identidad verificada del titular. El monto lo toma el core de sus datos; no se envía. "
+    "Si responde FUERA_DE_POLITICA o REQUIERE_ANALISTA, no reintentes: el caso debe "
+    "escalarse a un analista. Si responde DISPUTA_EXISTENTE, informa el caso que ya existe."
+)
 
 
 def _invalido(mensaje: str) -> dict:
@@ -169,3 +189,24 @@ def iniciar_disputa(contexto: Contexto, transaccion_id=None, motivo=None) -> dic
             "estado": caso.estado,
         }
     )
+
+
+def registrar(servidor: FastMCP, contexto: Contexto) -> None:
+    """Publica las herramientas de transacciones sobre ``contexto``."""
+
+    @servidor.tool(name="consultar_transacciones", description=DESCRIPCION_CONSULTAR)
+    @con_fallas(contexto.inyector, "consultar_transacciones")
+    def _consultar(
+        cliente_id: Texto = None,
+        ultimos4: Texto = None,
+        fecha_desde: Texto = None,
+        fecha_hasta: Texto = None,
+    ) -> dict:
+        return consultar_transacciones(
+            contexto, cliente_id, ultimos4, fecha_desde, fecha_hasta
+        )
+
+    @servidor.tool(name="iniciar_disputa", description=DESCRIPCION_DISPUTAR)
+    @con_fallas(contexto.inyector, "iniciar_disputa")
+    def _disputar(transaccion_id: Texto = None, motivo: Texto = None) -> dict:
+        return iniciar_disputa(contexto, transaccion_id, motivo)
