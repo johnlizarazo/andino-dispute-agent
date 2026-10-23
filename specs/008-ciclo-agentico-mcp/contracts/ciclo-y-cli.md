@@ -11,7 +11,7 @@ class ResultadoTurno:
 
 def clasificar(resultado: ResultMessage) -> str: ...
 async def procesar_turno(mensajes: AsyncIterable[Message]) -> ResultadoTurno: ...
-def estado_core(respuesta_mcp_status: dict) -> bool: ...
+def estado_core(respuesta_mcp_status: dict) -> str: ...  # "connected", "pending", ..., "ausente"
 ```
 
 `procesar_turno` recorre los mensajes del turno hasta el `ResultMessage` (sin contar ni
@@ -28,7 +28,7 @@ Tests (`test_ciclo.py`, mensajes construidos con las clases del SDK):
 - Otro error → `error`; flujo sin resultado → `error`.
 - Un texto del modelo que contenga palabras como "listo" o "fin" no cambia el estado
   (prueba de que no hay búsqueda de palabras).
-- `estado_core` es verdadero solo si `core-bancario` figura como `connected`.
+- `estado_core` devuelve el estado de `core-bancario` (`connected`, `pending`, `failed`…) o `ausente`; la CLI espera mientras esté `pending` y solo sigue con `connected`.
 
 ## `cli.py` y `__main__.py`
 

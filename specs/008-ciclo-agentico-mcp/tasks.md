@@ -72,13 +72,13 @@ su uso.
 
 **Independent Test**: `uv run pytest src/agente_disputas/test_ciclo.py`.
 
-- [ ] T009 [US2] Escribir `src/agente_disputas/test_ciclo.py` **antes** del módulo, con mensajes construidos con las clases reales de `claude_agent_sdk` (`AssistantMessage`, `UserMessage`, `ResultMessage`, `TextBlock`, `ToolUseBlock`, `ToolResultBlock`) entregados por un generador asíncrono, y verlo fallar:
+- [X] T009 [US2] Escribir `src/agente_disputas/test_ciclo.py` **antes** del módulo, con mensajes construidos con las clases reales de `claude_agent_sdk` (`AssistantMessage`, `UserMessage`, `ResultMessage`, `TextBlock`, `ToolUseBlock`, `ToolResultBlock`) entregados por un generador asíncrono, y verlo fallar:
   - `tool_use` + resultado + `end_turn` con texto + `ResultMessage(subtype="success")` → `ResultadoTurno(estado="completado")`, el texto final y `herramientas == ("mcp__core-bancario__buscar_cliente",)`.
   - `subtype="error_max_turns"` → `salvaguarda`; `terminal_reason="max_turns"` → `salvaguarda`.
   - `is_error=True, api_error_status=529` → `falla_servicio`; otro error → `error`; flujo sin `ResultMessage` → `error`.
   - Un texto del modelo con "listo", "fin" o "terminé" antes de un `tool_use` no cierra el turno (no hay búsqueda de palabras).
   - `estado_core` es verdadero solo con `core-bancario` en estado `connected` (respuestas simuladas con la forma de `get_mcp_status`).
-- [ ] T010 [US2] Implementar `src/agente_disputas/ciclo.py`: `ResultadoTurno` (dataclass inmutable con "`estado`: `completado`, `salvaguarda`, `falla_servicio`, `error`", `texto`, `herramientas`, `detalle`), `clasificar(resultado)`, `procesar_turno(mensajes)` y `estado_core(respuesta)` según [research.md R2 y R6](research.md); sin contadores ni búsqueda de palabras. Dejar verdes los tests y hacer commit `feat(#8): ciclo del turno según la razón de parada`
+- [X] T010 [US2] Implementar `src/agente_disputas/ciclo.py`: `ResultadoTurno` (dataclass inmutable con "`estado`: `completado`, `salvaguarda`, `falla_servicio`, `error`", `texto`, `herramientas`, `detalle`), `clasificar(resultado)`, `procesar_turno(mensajes)` y `estado_core(respuesta)` según [research.md R2 y R6](research.md); sin contadores ni búsqueda de palabras. Dejar verdes los tests y hacer commit `feat(#8): ciclo del turno según la razón de parada`
 
 ---
 
