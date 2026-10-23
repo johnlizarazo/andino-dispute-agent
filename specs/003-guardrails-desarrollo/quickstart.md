@@ -30,7 +30,7 @@ El texto de prueba lo genera un script en el momento, para no dejar literales.
 
 1. Pedir al asistente que escriba en `tmp-prueba.txt` una tarjeta válida generada → se
    **bloquea**, con un mensaje enmascarado.
-2. Pedir `CC 12345678` → se **bloquea**.
+2. Pedir un documento generado (`CC` seguido de 8 dígitos aleatorios) → se **bloquea**.
 3. Pedir `1250000`, `CC-FIC-0001` y una secuencia de 16 dígitos que no pasa Luhn → se
    **permiten**.
 4. Borrar `tmp-prueba.txt`.
@@ -66,7 +66,10 @@ El texto de prueba lo genera un script en el momento, para no dejar literales.
 
 ## 7. CI (FR-007)
 
-1. El PR de este ticket dispara `guardrails`, y el job pasa.
-2. En una rama desechable publicada solo para la prueba, `996-prueba-ci`, un commit hecho
-   fuera del asistente con una tarjeta generada hace fallar el job. Cerrar ese PR sin
-   fusionar y borrar la rama.
+1. El PR de este ticket dispara `guardrails`, y el job pasa: valida el workflow en positivo.
+2. Prueba negativa **local**, con el mismo comando que corre el job: un script genera en
+   el momento un diff con una tarjeta válida por Luhn en una línea agregada, y
+   `bloquear_pii.py --diff` sale con 1 y la reporta enmascarada.
+
+   No se publica ninguna rama de prueba con datos con forma real: quedarían en el
+   historial del repositorio público (principio III).

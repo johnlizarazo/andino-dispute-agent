@@ -21,6 +21,9 @@ jobs:
       - name: Datos con forma real en el diff
         run: |
           BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$(git rev-parse HEAD~1)"
+          fi
           git diff --unified=0 "$BASE"...HEAD > cambios.diff
           uv run --no-project python plugins/andino-guardrails/hooks/bloquear_pii.py --diff cambios.diff
       - name: Tests deterministas
