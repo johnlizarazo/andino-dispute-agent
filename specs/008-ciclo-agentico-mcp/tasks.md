@@ -105,7 +105,7 @@ su uso.
 lee su valor) y una sesión que la vea.
 
 - [X] T014 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src tests` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T015 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md)) y la conversación de [quickstart.md §3](quickstart.md) (4 pasos y las dos variantes de arranque fallido), anotando el tiempo de la primera respuesta frente al objetivo de SC-005 (menos de 30 s; ajuste L1)
+- [X] T015 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md)) y la conversación de [quickstart.md §3](quickstart.md) (4 pasos y las dos variantes de arranque fallido), anotando el tiempo de la primera respuesta frente al objetivo de SC-005 (menos de 30 s; ajuste L1)
 - [ ] T016 *(Opcional, si hay una máquina o contenedor Linux disponible)* Ejecutar [quickstart.md §3b](quickstart.md); si no hay entorno, anotarlo en el comentario de avance del PR y no bloquear el cierre
 - [X] T017 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §4](quickstart.md))
 
@@ -113,8 +113,8 @@ lee su valor) y una sesión que la vea.
 
 ## Phase 7: Cierre con `/abrir-pr`
 
-- [ ] T018 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T019 Marcar T001 a T019 en `specs/008-ciclo-agentico-mcp/tasks.md` (T016 marcada solo si se hizo) y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
+- [X] T018 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T019 Marcar T001 a T019 en `specs/008-ciclo-agentico-mcp/tasks.md` (T016 marcada solo si se hizo) y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
 - [ ] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #8`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T021 Después del merge, hecho por el desarrollador: verificar que el #8 queda cerrado y en *Done*
 
