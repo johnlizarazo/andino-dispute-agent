@@ -68,7 +68,7 @@ US2 → US3, luego verificación en sesión nueva y cierre. Los hooks del plugin
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_identificacion.py -k buscar`.
 
-- [ ] T007 [US1] Escribir en `src/core_bancario_mcp/test_identificacion.py` (nuevo), **antes** que el módulo, los tests de búsqueda de [contracts/buscar_cliente.md](contracts/buscar_cliente.md), llamando a la función pura con un `Contexto` armado en una fixture (`Repositorio(hoy=date(2026, 10, 23))`, `InyectorFallas(None)`):
+- [X] T007 [US1] Escribir en `src/core_bancario_mcp/test_identificacion.py` (nuevo), **antes** que el módulo, los tests de búsqueda de [contracts/buscar_cliente.md](contracts/buscar_cliente.md), llamando a la función pura con un `Contexto` armado en una fixture (`Repositorio(hoy=date(2026, 10, 23))`, `InyectorFallas(None)`):
   - Documento `CC-FIC-0001` → 1 coincidencia (CLI-001); últimos 4 `4821` → CLI-001.
   - "Carlos Andrés Pérez", "carlos perez" y "CARLOS ANDRES PEREZ" → CLI-002 y CLI-003, en ese orden.
   - "an" no encuentra a nadie (palabras completas, no subcadenas); "Pérez," con puntuación encuentra a los dos homónimos (ajuste U1).
@@ -76,7 +76,7 @@ US2 → US3, luego verificación en sesión nueva y cierre. Los hooks del plugin
   - Ninguna coincidencia de ninguna búsqueda tiene claves distintas de `cliente_id` y `nombre`.
   - Validación `PARAMETRO_INVALIDO` no reintentable: sin criterio, dos criterios, texto vacío o de solo espacios como único criterio, documento `CC-0001`, últimos 4 `48a1` y `482`, últimos 4 como número (`4821`) y como lista (ajuste C1), nombre `"a"` y nombre de 101 caracteres.
   - Últimos 4 compartidos: datos copiados a `tmp_path` con una tarjeta extra `4821` de CLI-004 → CLI-001 y CLI-004, sin repetir.
-- [ ] T008 [US1] Implementar `buscar_cliente(contexto, documento=None, nombre=None, ultimos4=None)` en `src/core_bancario_mcp/identificacion.py` según [research.md R4](research.md): todo valor que no sea `None` debe ser `str` (si no, `PARAMETRO_INVALIDO`); exactamente un criterio no vacío ni de solo espacios; documento "`^CC-FIC-[0-9]{4}$`" tras `strip()`; nombre con "2+ letras tras normalizar, hasta 100 caracteres", normalizado con NFKD sin marcas combinantes y `casefold()`, palabras extraídas con `re.findall(r"\w+")`, coincidencia por palabras completas; últimos 4 "`^[0-9]{4}$`"; resultado `exito([...])` ordenado por `cliente_id`, solo `cliente_id` y `nombre`. Errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#5): buscar_cliente`
+- [X] T008 [US1] Implementar `buscar_cliente(contexto, documento=None, nombre=None, ultimos4=None)` en `src/core_bancario_mcp/identificacion.py` según [research.md R4](research.md): todo valor que no sea `None` debe ser `str` (si no, `PARAMETRO_INVALIDO`); exactamente un criterio no vacío ni de solo espacios; documento "`^CC-FIC-[0-9]{4}$`" tras `strip()`; nombre con "2+ letras tras normalizar, hasta 100 caracteres", normalizado con NFKD sin marcas combinantes y `casefold()`, palabras extraídas con `re.findall(r"\w+")`, coincidencia por palabras completas; últimos 4 "`^[0-9]{4}$`"; resultado `exito([...])` ordenado por `cliente_id`, solo `cliente_id` y `nombre`. Errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#5): buscar_cliente`
 
 ---
 
