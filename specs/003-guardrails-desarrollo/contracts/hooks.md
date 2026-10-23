@@ -39,8 +39,13 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
 ## `bloquear_pii.py`
 
 - **Modo hook**: lee el evento de stdin, extrae los textos nuevos y busca:
-  - **Tarjeta**: `(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)`. Al quitar separadores debe tener de 13
-    a 19 dígitos y pasar Luhn.
+  - **Tarjeta**: 13 a 19 dígitos contiguos; o grupos de 4 separados por espacio o guion
+    (4-4-4-1…3, 4-4-4-4, 4-4-4-4-1…3); o la forma 4-6-5. Al quitar separadores debe pasar
+    Luhn.
+
+    *Ajuste de implementación*: el patrón genérico `(?:\d[ -]?){12,18}\d` podía unir montos
+    separados por un espacio ("180000 1250000") y, en un 10% de los casos, pasar Luhn. Exigir
+    grupos de 4 refleja cómo se escriben las tarjetas reales.
   - **Documento**: `(?i)\b(?:c\.?c\.?|c[eé]dula|documento|nit|pasaporte)\b\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?!\d)`.
   - **Excepción**: `CC-FIC-\d{4}`.
 - **Si hay hallazgos**: stderr con `Bloqueado: dato con forma real (<tipo>) en <archivo>

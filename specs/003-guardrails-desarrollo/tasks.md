@@ -27,8 +27,8 @@ tener sus tests en verde.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Crear las carpetas `plugins/andino-guardrails/.claude-plugin/`, `plugins/andino-guardrails/hooks/`, `plugins/andino-guardrails/agents/`, `plugins/andino-guardrails/skills/revisar-cumplimiento/`, `.claude-plugin/`, `.claude/rules/` y `.github/workflows/`
-- [ ] T002 En `pyproject.toml`, cambiar `testpaths` a `["src", "tests", "plugins"]` sin tocar `markers` ni `addopts`
+- [X] T001 Crear las carpetas `plugins/andino-guardrails/.claude-plugin/`, `plugins/andino-guardrails/hooks/`, `plugins/andino-guardrails/agents/`, `plugins/andino-guardrails/skills/revisar-cumplimiento/`, `.claude-plugin/`, `.claude/rules/` y `.github/workflows/`
+- [X] T002 En `pyproject.toml`, cambiar `testpaths` a `["src", "tests", "plugins"]` sin tocar `markers` ni `addopts`
 
 ---
 
@@ -46,7 +46,7 @@ scripts, y el empaquetado (US6) reúne lo anterior.
 **Independent Test**: `uv run pytest plugins/andino-guardrails/hooks/test_bloquear_pii.py`
 y [quickstart.md §2](quickstart.md).
 
-- [ ] T003 [US1] Escribir `plugins/andino-guardrails/hooks/test_bloquear_pii.py` **antes** que el script, con:
+- [X] T003 [US1] Escribir `plugins/andino-guardrails/hooks/test_bloquear_pii.py` **antes** que el script, con:
   - Un helper `tarjeta_valida(longitud, separador)` que genere números válidos por Luhn calculando el dígito verificador sobre un prefijo aleatorio.
   - Un test parametrizado con al menos 20 tarjetas generadas (longitudes 13 a 19, con espacio, guion y sin separador), todas detectadas (SC-001).
   - Al menos 20 casos legítimos sin hallazgos (SC-002): `180000`, `1250000`, `$1.250.000`, `CC-FIC-0001`, secuencias de 16 dígitos que no pasan Luhn construidas al vuelo, el texto "13 a 19 dígitos" y un hash hexadecimal.
@@ -55,8 +55,8 @@ y [quickstart.md §2](quickstart.md).
   - `textos_nuevos` con eventos de Write, Edit, MultiEdit y NotebookEdit.
   - Que un JSON inválido en stdin salga con código 2 (fallo cerrado, FR-005).
   - El modo `--diff`: solo cuenta las líneas `+` y sale con 1 si hay hallazgos y con 0 si no.
-- [ ] T004 [US1] Implementar `plugins/andino-guardrails/hooks/bloquear_pii.py` según [contracts/hooks.md](contracts/hooks.md): solo biblioteca estándar; funciones `luhn_valido`, `buscar_hallazgos` y `textos_nuevos`; modo hook (salida 2 con el mensaje enmascarado) y modo `--diff`; `try/except` global que sale con 2 ante cualquier error
-- [ ] T005 [US1] Ejecutar `uv run pytest plugins/andino-guardrails/hooks/test_bloquear_pii.py` hasta verde y hacer commit `feat(#3): hook bloquear_pii con tests`
+- [X] T004 [US1] Implementar `plugins/andino-guardrails/hooks/bloquear_pii.py` según [contracts/hooks.md](contracts/hooks.md): solo biblioteca estándar; funciones `luhn_valido`, `buscar_hallazgos` y `textos_nuevos`; modo hook (salida 2 con el mensaje enmascarado) y modo `--diff`; `try/except` global que sale con 2 ante cualquier error
+- [X] T005 [US1] Ejecutar `uv run pytest plugins/andino-guardrails/hooks/test_bloquear_pii.py` hasta verde y hacer commit `feat(#3): hook bloquear_pii con tests`
 
 **Checkpoint**: la detección está probada; todavía no se ha activado.
 
