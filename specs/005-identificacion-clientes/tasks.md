@@ -86,14 +86,14 @@ US2 → US3, luego verificación en sesión nueva y cierre. Los hooks del plugin
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_identificacion.py -k verificar`.
 
-- [ ] T009 [US2] Agregar a `src/core_bancario_mcp/test_identificacion.py`, **antes** de implementar, los tests de [contracts/verificar_identidad.md](contracts/verificar_identidad.md), leyendo el dato correcto del repositorio (no como literal en el test):
+- [X] T009 [US2] Agregar a `src/core_bancario_mcp/test_identificacion.py`, **antes** de implementar, los tests de [contracts/verificar_identidad.md](contracts/verificar_identidad.md), leyendo el dato correcto del repositorio (no como literal en el test):
   - Dato correcto → `{"cliente_id": ..., "verificado": True}`.
   - Dato incorrecto → permiso `VERIFICACION_FALLIDA` no reintentable, y el mensaje no contiene el dato correcto.
   - Cliente `CLI-999` → validación `NO_ENCONTRADO`; parámetro ausente, vacío o que no es texto (`dato_verificacion` como número) → validación `PARAMETRO_INVALIDO`.
   - 3 fallos → el cuarto intento con el dato correcto es negocio `INTENTOS_AGOTADOS` no reintentable.
   - 2 fallos + éxito → hacen falta 3 fallos más para agotar.
   - Los fallos de CLI-001 no afectan a CLI-002; un cliente inexistente no suma intentos.
-- [ ] T010 [US2] Agregar a `Codigo` en `src/core_bancario_mcp/errores.py` los códigos `VERIFICACION_FALLIDA` e `INTENTOS_AGOTADOS`, e implementar `verificar_identidad(contexto, cliente_id=None, dato_verificacion=None)` (parámetro con el nombre del campo de los datos, ajuste I1) en `src/core_bancario_mcp/identificacion.py` con el orden de evaluación del contrato (parámetros → cliente existe → agotados → `hmac.compare_digest` exacto; éxito reinicia, fallo suma). El mensaje de `INTENTOS_AGOTADOS` indica escalar a un analista. Dejar verdes los tests y hacer commit `feat(#5): verificar_identidad con límite de intentos`
+- [X] T010 [US2] Agregar a `Codigo` en `src/core_bancario_mcp/errores.py` los códigos `VERIFICACION_FALLIDA` e `INTENTOS_AGOTADOS`, e implementar `verificar_identidad(contexto, cliente_id=None, dato_verificacion=None)` (parámetro con el nombre del campo de los datos, ajuste I1) en `src/core_bancario_mcp/identificacion.py` con el orden de evaluación del contrato (parámetros → cliente existe → agotados → `hmac.compare_digest` exacto; éxito reinicia, fallo suma). El mensaje de `INTENTOS_AGOTADOS` indica escalar a un analista. Dejar verdes los tests y hacer commit `feat(#5): verificar_identidad con límite de intentos`
 
 ---
 

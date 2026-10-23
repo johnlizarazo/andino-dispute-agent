@@ -7,7 +7,7 @@ import pytest
 
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas
-from core_bancario_mcp.identificacion import buscar_cliente
+from core_bancario_mcp.identificacion import buscar_cliente, verificar_identidad
 from core_bancario_mcp.repositorio import Repositorio
 
 DATOS = Path(__file__).with_name("datos")
@@ -121,3 +121,95 @@ def test_ultimos4_compartidos_devuelven_todos_los_titulares(tmp_path):
     ruta.write_text(json.dumps(tarjetas), encoding="utf-8")
     contexto = Contexto(Repositorio(hoy=HOY, carpeta=carpeta), InyectorFallas(None))
     assert _ids(buscar_cliente(contexto, ultimos4="4821")) == ["CLI-001", "CLI-004"]
+
+
+# --- verificar_identidad ---
+
+
+def _dato(contexto: Contexto, cliente_id: str) -> str:
+    return contexto.repositorio.clientes[cliente_id].dato_verificacion
+
+
+def _incorrecto(contexto: Contexto, cliente_id: str) -> str:
+    """Un dato de 4 dígitos distinto del correcto."""
+    return f"{(int(_dato(contexto, cliente_id)) + 1) % 10000:04d}"
+
+
+def _error(respuesta: dict, tipo: str, codigo: str) -> bool:
+    return (
+        respuesta["ok"] is False
+        and respuesta["error"]["tipo"] == tipo
+        and respuesta["error"]["codigo"] == codigo
+        and respuesta["error"]["reintentable"] is False
+    )
+
+
+def test_verificar_con_dato_correcto_confirma_la_identidad(contexto):
+    respuesta = verificar_identidad(contexto, "CLI-001", _dato(contexto, "CLI-001"))
+    assert respuesta == {
+        "ok": True,
+        "datos": {"cliente_id": "CLI-001", "verificado": True},
+    }
+
+
+def test_verificar_con_dato_incorrecto_es_permiso_sin_revelar_el_dato(contexto):
+    respuesta = verificar_identidad(
+        contexto, "CLI-001", _incorrecto(contexto, "CLI-001")
+    )
+    assert _error(respuesta, "permiso", "VERIFICACION_FALLIDA")
+    assert _dato(contexto, "CLI-001") not in respuesta["error"]["mensaje"]
+
+
+def test_verificar_cliente_inexistente_es_validacion(contexto):
+    respuesta = verificar_identidad(contexto, "CLI-999", "1234")
+    assert _error(respuesta, "validacion", "NO_ENCONTRADO")
+
+
+@pytest.mark.parametrize(
+    "argumentos",
+    [
+        {},
+        {"cliente_id": "CLI-001"},
+        {"dato_verificacion": "1234"},
+        {"cliente_id": "", "dato_verificacion": "1234"},
+        {"cliente_id": "CLI-001", "dato_verificacion": "  "},
+        {"cliente_id": "CLI-001", "dato_verificacion": 1987},
+        {"cliente_id": ["CLI-001"], "dato_verificacion": "1987"},
+    ],
+)
+def test_verificar_parametros_invalidos_son_validacion(contexto, argumentos):
+    assert _es_validacion(verificar_identidad(contexto, **argumentos))
+
+
+def test_tres_fallos_bloquean_aunque_el_cuarto_dato_sea_correcto(contexto):
+    for _ in range(3):
+        respuesta = verificar_identidad(
+            contexto, "CLI-004", _incorrecto(contexto, "CLI-004")
+        )
+        assert _error(respuesta, "permiso", "VERIFICACION_FALLIDA")
+    respuesta = verificar_identidad(contexto, "CLI-004", _dato(contexto, "CLI-004"))
+    assert _error(respuesta, "negocio", "INTENTOS_AGOTADOS")
+    assert "analista" in respuesta["error"]["mensaje"]
+
+
+def test_exito_reinicia_el_contador(contexto):
+    incorrecto, correcto = _incorrecto(contexto, "CLI-001"), _dato(contexto, "CLI-001")
+    for _ in range(2):
+        verificar_identidad(contexto, "CLI-001", incorrecto)
+    assert verificar_identidad(contexto, "CLI-001", correcto)["ok"] is True
+    for _ in range(2):
+        verificar_identidad(contexto, "CLI-001", incorrecto)
+    assert verificar_identidad(contexto, "CLI-001", correcto)["ok"] is True
+
+
+def test_fallos_de_un_cliente_no_afectan_a_otro(contexto):
+    for _ in range(3):
+        verificar_identidad(contexto, "CLI-001", _incorrecto(contexto, "CLI-001"))
+    respuesta = verificar_identidad(contexto, "CLI-002", _dato(contexto, "CLI-002"))
+    assert respuesta["ok"] is True
+
+
+def test_cliente_inexistente_no_suma_intentos(contexto):
+    for _ in range(5):
+        verificar_identidad(contexto, "CLI-999", "1234")
+    assert not contexto.intentos.agotados("CLI-999")

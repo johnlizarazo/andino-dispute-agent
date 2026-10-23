@@ -5,6 +5,7 @@ elige entre varias. Las funciones son puras sobre un ``Contexto``; ``registrar``
 en el servidor con sus descripciones y la inyección de fallas.
 """
 
+import hmac
 import re
 import unicodedata
 
@@ -72,4 +73,42 @@ def buscar_cliente(
             {"cliente_id": c.id, "nombre": c.nombre}
             for c in sorted(encontrados, key=lambda c: c.id)
         ]
+    )
+
+
+def verificar_identidad(
+    contexto: Contexto, cliente_id=None, dato_verificacion=None
+) -> dict:
+    for campo, valor in (
+        ("cliente_id", cliente_id),
+        ("dato_verificacion", dato_verificacion),
+    ):
+        if not isinstance(valor, str) or not valor.strip():
+            return _invalido(f"{campo} es obligatorio y debe ser texto")
+    cliente = contexto.repositorio.clientes.get(cliente_id)
+    if cliente is None:
+        return error(
+            TipoError.VALIDACION,
+            Codigo.NO_ENCONTRADO,
+            f"No existe el cliente {cliente_id}. Búscalo antes con buscar_cliente.",
+        )
+    intentos = contexto.intentos
+    if intentos.agotados(cliente.id):
+        return error(
+            TipoError.NEGOCIO,
+            Codigo.INTENTOS_AGOTADOS,
+            "La verificación de este cliente está bloqueada por intentos fallidos. "
+            "No sigas intentando: escala el caso a un analista.",
+        )
+    if hmac.compare_digest(
+        dato_verificacion.encode(), cliente.dato_verificacion.encode()
+    ):
+        intentos.reiniciar(cliente.id)
+        return exito({"cliente_id": cliente.id, "verificado": True})
+    intentos.registrar_fallo(cliente.id)
+    return error(
+        TipoError.PERMISO,
+        Codigo.VERIFICACION_FALLIDA,
+        "El dato de verificación no coincide. Pide al cliente que lo confirme; "
+        "no lo reintentes con un dato inventado.",
     )
