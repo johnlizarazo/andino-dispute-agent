@@ -68,7 +68,7 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_transacciones.py -k consultar`.
 
-- [ ] T010 [US1] Escribir `src/core_bancario_mcp/test_transacciones.py` (nuevo), **antes** que el módulo, con una fixture `contexto` (`Repositorio(hoy=HOY)`, `InyectorFallas(None)`) y los tests de consulta del contrato; verlos fallar:
+- [X] T010 [US1] Escribir `src/core_bancario_mcp/test_transacciones.py` (nuevo), **antes** que el módulo, con una fixture `contexto` (`Repositorio(hoy=HOY)`, `InyectorFallas(None)`) y los tests de consulta del contrato; verlos fallar:
   - CLI-001, `4821`, rango ayer–ayer → TRX-001 y TRX-002, parametrizado con 3 "hoy" (fin de año, fin de febrero, fin de mes).
   - Sin rango → cobros de hoy y los 29 días anteriores ("`fecha_desde = fecha_hasta − 29 días`", ajuste A1); con datos en `tmp_path`, un cobro de hace 29 días entra y uno de hace 30 no; en orden "fecha descendente y, a igual fecha, `transaccion_id` ascendente".
   - Solo `fecha_desde` o solo `fecha_hasta` → se completa la otra.
@@ -77,7 +77,7 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
   - Validación `PARAMETRO_INVALIDO`: `20261023`, `2026-W43-5`, `2026-02-30`, desde > hasta, hasta = mañana, rango de 366 días, fecha numérica, `ultimos4` `48a1`, `cliente_id` vacío o numérico.
   - `NO_ENCONTRADO` con el **mismo mensaje** para CLI-002 con `4821` y para CLI-999 con `4821`.
   - Cada cobro tiene exactamente las claves `transaccion_id`, `fecha`, `monto`, `comercio`, `pais`, `caso_disputa`; `fecha` en `AAAA-MM-DD`; `caso_disputa` es `None` sin caso y el id del caso tras abrir uno con `contexto.disputas.abrir(...)`.
-- [ ] T011 [US1] Implementar `consultar_transacciones(contexto, cliente_id=None, ultimos4=None, fecha_desde=None, fecha_hasta=None)` en `src/core_bancario_mcp/transacciones.py` según [research.md R2 y R4](research.md): tipos `str` o `None`; textos recortados; fechas con "`^[0-9]{4}-[0-9]{2}-[0-9]{2}$`" (`fullmatch`) y luego `date.fromisoformat` (un `ValueError` es `PARAMETRO_INVALIDO`); "desde ≤ hasta ≤ hoy, como máximo 365 días" con `contexto.repositorio.hoy`; `tarjetas_de` vacío → `NO_ENCONTRADO` ("No hay una tarjeta terminada en NNNN para ese cliente"); errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#6): consultar_transacciones`
+- [X] T011 [US1] Implementar `consultar_transacciones(contexto, cliente_id=None, ultimos4=None, fecha_desde=None, fecha_hasta=None)` en `src/core_bancario_mcp/transacciones.py` según [research.md R2 y R4](research.md): tipos `str` o `None`; textos recortados; fechas con "`^[0-9]{4}-[0-9]{2}-[0-9]{2}$`" (`fullmatch`) y luego `date.fromisoformat` (un `ValueError` es `PARAMETRO_INVALIDO`); "desde ≤ hasta ≤ hoy, como máximo 365 días" con `contexto.repositorio.hoy`; `tarjetas_de` vacío → `NO_ENCONTRADO` ("No hay una tarjeta terminada en NNNN para ese cliente"); errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#6): consultar_transacciones`
 
 ---
 
