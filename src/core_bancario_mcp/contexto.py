@@ -1,8 +1,9 @@
 """Estado que comparten las herramientas del core, pasado de forma explícita.
 
-``crear_servidor`` arma un ``Contexto`` (repositorio, fallas, intentos y disputas) y se lo entrega a ``registrar(servidor, contexto)``
-de cada módulo de herramientas. Así las herramientas no dependen de atributos agregados al
-vuelo a ``FastMCP`` y los tests las prueban como funciones puras.
+``crear_servidor`` arma un ``Contexto`` (repositorio, fallas, intentos y disputas) y se lo
+entrega a ``registrar(servidor, contexto)`` de cada módulo de herramientas. Así las
+herramientas no dependen de atributos agregados al vuelo a ``FastMCP`` y los tests las
+prueban como funciones puras.
 """
 
 from dataclasses import dataclass, field
