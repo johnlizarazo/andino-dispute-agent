@@ -114,13 +114,13 @@ fallas y servidor, y va primero.
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_servidor.py` y
 [quickstart.md §3 y §4](quickstart.md).
 
-- [ ] T017 [US5] Escribir `src/core_bancario_mcp/test_servidor.py` **antes** que el servidor, con los tests de [contracts/servidor.md](contracts/servidor.md):
+- [X] T017 [US5] Escribir `src/core_bancario_mcp/test_servidor.py` **antes** que el servidor, con los tests de [contracts/servidor.md](contracts/servidor.md):
   - `crear_servidor()` se llama `core-bancario` y no tiene herramientas.
   - El arranque real por stdio con el cliente de `mcp`, con un límite de 10 s, responde en menos de 5 s. El objetivo de 5 s (SC-005) se mide; el límite de 10 s da margen al arranque en frío del runner de CI.
   - Con `CORE_BANCARIO_FALLAS="op:0"`, sale con código 1.
-- [ ] T018 [US5] Implementar `src/core_bancario_mcp/servidor.py` (`crear_servidor`) y `src/core_bancario_mcp/__main__.py` según [contracts/servidor.md](contracts/servidor.md)
-- [ ] T019 [US5] Agregar el servidor `core-bancario` a `.mcp.json` exactamente como en el contrato, sin tocar `github`
-- [ ] T020 [US5] Ejecutar `uv run pytest` completo en verde. Ejecutar `uv build` y listar el wheel para confirmar que incluye los 4 archivos de `core_bancario_mcp/datos/`; si faltan, declararlos en `[tool.uv.build-backend]` de `pyproject.toml` y repetir. Borrar `dist/` y hacer commit `feat(#4): servidor core-bancario registrado en .mcp.json`
+- [X] T018 [US5] Implementar `src/core_bancario_mcp/servidor.py` (`crear_servidor`) y `src/core_bancario_mcp/__main__.py` según [contracts/servidor.md](contracts/servidor.md)
+- [X] T019 [US5] Agregar el servidor `core-bancario` a `.mcp.json` exactamente como en el contrato, sin tocar `github`
+- [X] T020 [US5] Ejecutar `uv run pytest` completo en verde. Ejecutar `uv build` y listar el wheel para confirmar que incluye los 4 archivos de `core_bancario_mcp/datos/`; si faltan, declararlos en `[tool.uv.build-backend]` de `pyproject.toml` y repetir. Borrar `dist/` y hacer commit `feat(#4): servidor core-bancario registrado en .mcp.json`
 
 ---
 

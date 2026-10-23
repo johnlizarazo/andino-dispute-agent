@@ -7,6 +7,11 @@
         "Authorization": "Bearer ${GITHUB_PAT}",
         "X-MCP-Toolsets": "context,repos,issues,pull_requests,projects"
       }
+    },
+    "core-bancario": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--no-sync", "python", "-m", "core_bancario_mcp"]
     }
   }
 }
