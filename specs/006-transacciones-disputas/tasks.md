@@ -128,9 +128,9 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 **Purpose**: Claude Code carga las herramientas de `core-bancario` al iniciar. **Requiere
 reiniciar la app.**
 
-- [ ] T019 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
+- [X] T019 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
 - [ ] T020 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) (9 pasos) con las herramientas de `core-bancario` y comprobar cada resultado esperado
-- [ ] T021 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §3](quickstart.md))
+- [X] T021 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §3](quickstart.md))
 
 ---
 
