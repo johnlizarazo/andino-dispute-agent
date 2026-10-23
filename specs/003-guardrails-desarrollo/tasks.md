@@ -137,9 +137,9 @@ desactiva el hook para esquivarlo.
 
 **Independent Test**: [quickstart.md §6](quickstart.md).
 
-- [ ] T021 [P] [US5] Crear `.claude/rules/tests.md` con el `paths` y el contenido de [contracts/rules.md](contracts/rules.md)
-- [ ] T022 [P] [US5] Crear `.claude/rules/herramientas-mcp.md` con el `paths` y el contenido de [contracts/rules.md](contracts/rules.md)
-- [ ] T023 [US5] Hacer commit `feat(#3): rules de tests y de herramientas MCP`
+- [X] T021 [P] [US5] Crear `.claude/rules/tests.md` con el `paths` y el contenido de [contracts/rules.md](contracts/rules.md)
+- [X] T022 [P] [US5] Crear `.claude/rules/herramientas-mcp.md` con el `paths` y el contenido de [contracts/rules.md](contracts/rules.md)
+- [X] T023 [US5] Hacer commit `feat(#3): rules de tests y de herramientas MCP`
 
 ---
 
