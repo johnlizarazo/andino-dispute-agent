@@ -141,16 +141,16 @@ fallas y servidor, y va primero.
 **Purpose**: Claude Code carga los servidores de `.mcp.json` al iniciar. **Requiere
 reiniciar la app** y, si lo pide, aprobar el nuevo servidor del proyecto.
 
-- [ ] T024 [US5] En `/mcp`, comprobar que `core-bancario` y `github` aparecen conectados y que `core-bancario` lista 0 herramientas ([quickstart.md §4](quickstart.md))
-- [ ] T025 [US2] Ejecutar [quickstart.md §2 y §3](quickstart.md): los dos cobros de ayer de la tarjeta 4821 y la salida con código 1 ante una configuración de fallas inválida
-- [ ] T026 Pasar `bloquear_pii.py --diff` sobre `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §5](quickstart.md))
+- [X] T024 [US5] En `/mcp`, comprobar que `core-bancario` y `github` aparecen conectados y que `core-bancario` lista 0 herramientas ([quickstart.md §4](quickstart.md))
+- [X] T025 [US2] Ejecutar [quickstart.md §2 y §3](quickstart.md): los dos cobros de ayer de la tarjeta 4821 y la salida con código 1 ante una configuración de fallas inválida
+- [X] T026 Pasar `bloquear_pii.py --diff` sobre `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §5](quickstart.md))
 
 ---
 
 ## Phase 10: Cierre con `/abrir-pr`
 
-- [ ] T027 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T028 Marcar T001 a T028 en `specs/004-datos-errores-fallas/tasks.md` y hacer commit. T029 y T030 ocurren después del último commit y se marcan en la rama del issue siguiente
+- [X] T027 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T028 Marcar T001 a T028 en `specs/004-datos-errores-fallas/tasks.md` y hacer commit. T029 y T030 ocurren después del último commit y se marcan en la rama del issue siguiente
 - [ ] T029 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO` (el principio III ahora tiene datos reales que auditar), PR con `Closes #4`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T030 Después del merge, hecho por el desarrollador: verificar que el #4 queda cerrado y en *Done*
 
