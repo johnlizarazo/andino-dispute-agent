@@ -30,7 +30,7 @@ su uso.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Crear la carpeta `tests/escenarios/` con un `__init__.py` vacío solo si pytest lo necesita para recolectar (comprobar con `uv run pytest --collect-only -q tests` tras crear el primer test)
+- [X] T001 Crear la carpeta `tests/escenarios/` con un `__init__.py` vacío solo si pytest lo necesita para recolectar (comprobar con `uv run pytest --collect-only -q tests` tras crear el primer test)
 
 ---
 
@@ -95,7 +95,7 @@ su uso.
   - `main` sin `ANTHROPIC_API_KEY` (entorno parchado) devuelve 1 y el mensaje nombra la variable sin trazas.
   - Una entrada simulada que lanza `KeyboardInterrupt` (Ctrl+C) hace que `conversar` termine con código 0 y una despedida, sin traza (ajuste L2).
 - [X] T012 [US1] Implementar `src/agente_disputas/cli.py` (`conversar(cliente, entrada, salida) -> int` y `main() -> int`) y `src/agente_disputas/__main__.py` según [contracts/ciclo-y-cli.md](contracts/ciclo-y-cli.md): validar la credencial; crear opciones; conectar con `ClaudeSDKClient`; comprobar el core con `estado_core` (no conectado → "el core bancario no arrancó" y 1); conversar; capturar `CLINotFoundError`, `CLIConnectionError` y `ProcessError` con mensaje claro y 1; Ctrl+C → despedida y 0; desconectar siempre. Dejar verdes los tests y hacer commit `feat(#8): línea de comandos para conversar con el agente`
-- [ ] T013 [US4] Escribir `tests/escenarios/test_conversacion_e2e.py` (marcado `e2e`, `pytest.skip` si falta `ANTHROPIC_API_KEY`): con `CORE_BANCARIO_FALLAS="buscar_cliente:1"`, un mensaje del cliente que da un documento ficticio (distinto de los ejemplos del prompt) → `ResultadoTurno.estado == "completado"`, `mcp__core-bancario__buscar_cliente` aparece al menos dos veces en `herramientas` y el texto no contiene `FALLA_TRANSITORIA`. Agregar un segundo escenario (ajuste M1): con `CORE_BANCARIO_FALLAS="buscar_cliente:5"` (falla persistente), el turno termina `completado`, `mcp__core-bancario__buscar_cliente` aparece **como máximo 3 veces** (la llamada y dos reintentos), el texto ofrece escalar o hablar con una persona y no contiene `FALLA_TRANSITORIA`. Ambos escenarios registran con `print` el tiempo hasta el resultado como dato, sin fallar por él (ajuste L1). Confirmar con `uv run pytest` que se excluyen por omisión. Commit `test(#8): escenarios e2e de falla transitoria y persistente`
+- [X] T013 [US4] Escribir `tests/escenarios/test_conversacion_e2e.py` (marcado `e2e`, `pytest.skip` si falta `ANTHROPIC_API_KEY`): con `CORE_BANCARIO_FALLAS="buscar_cliente:1"`, un mensaje del cliente que da un documento ficticio (distinto de los ejemplos del prompt) → `ResultadoTurno.estado == "completado"`, `mcp__core-bancario__buscar_cliente` aparece al menos dos veces en `herramientas` y el texto no contiene `FALLA_TRANSITORIA`. Agregar un segundo escenario (ajuste M1): con `CORE_BANCARIO_FALLAS="buscar_cliente:5"` (falla persistente), el turno termina `completado`, `mcp__core-bancario__buscar_cliente` aparece **como máximo 3 veces** (la llamada y dos reintentos), el texto ofrece escalar o hablar con una persona y no contiene `FALLA_TRANSITORIA`. Ambos escenarios registran con `print` el tiempo hasta el resultado como dato, sin fallar por él (ajuste L1). Confirmar con `uv run pytest` que se excluyen por omisión. Commit `test(#8): escenarios e2e de falla transitoria y persistente`
 
 ---
 
