@@ -113,8 +113,8 @@ Claude Code** antes de T011.
 
 - [X] T014 Verificar que `uv run pytest` sigue en verde y que no quedan cambios sin commitear
 - [X] T015 Marcar T001 a T015 en `specs/002-automatizacion-ciclo/tasks.md` y hacer commit, para que el árbol quede limpio antes de `/abrir-pr`. T016 y T017 ocurren después del último commit de la rama y se marcan con la fase 9, en la rama del issue #3
-- [ ] T016 Ejecutar `/abrir-pr` en `002-automatizacion-ciclo`; el desarrollador aprueba el push y la creación del PR. Esperado: veredicto `APROBADO`, PR con `Closes #2`, issue en *In Review* y comentario "**PR abierto**" con los ajustes de los puntos de control y el resultado de T010
-- [ ] T017 Ejecutar `/abrir-pr` otra vez y comprobar que no duplica el PR ni el comentario ni cambia el estado (FR-012)
+- [X] T016 Ejecutar `/abrir-pr` en `002-automatizacion-ciclo`; el desarrollador aprueba el push y la creación del PR. Esperado: veredicto `APROBADO`, PR con `Closes #2`, issue en *In Review* y comentario "**PR abierto**" con los ajustes de los puntos de control y el resultado de T010
+- [X] T017 Ejecutar `/abrir-pr` otra vez y comprobar que no duplica el PR ni el comentario ni cambia el estado (FR-012)
 
 ---
 
@@ -123,9 +123,9 @@ Claude Code** antes de T011.
 **Purpose**: estas tareas ocurren cuando la rama ya está fusionada. Su evidencia queda en
 GitHub y sus casillas se marcan en la rama del issue #3.
 
-- [ ] T018 **El desarrollador** fusiona el PR
-- [ ] T019 Verificar que el issue #2 queda cerrado y en *Done* sin intervención (SC-001, FR-013)
-- [ ] T020 [US1] En `main` actualizado, ejecutar `/siguiente-ticket` sin argumentos ([quickstart.md §6](quickstart.md)). Esperado: elige el #3 explicando por qué, lo mueve a *In Progress*, comenta el inicio, crea la rama `003-...`, genera la spec con `Issue: #3` y se detiene pidiendo revisión (SC-001, SC-004). Después, ejecutar `/siguiente-ticket 3`: debe avisar que el #3 ya está en *In Progress* y pedir confirmación, sin duplicar el comentario de inicio (FR-012)
+- [X] T018 **El desarrollador** fusiona el PR
+- [X] T019 Verificar que el issue #2 queda cerrado y en *Done* sin intervención (SC-001, FR-013)
+- [X] T020 [US1] En `main` actualizado, ejecutar `/siguiente-ticket` sin argumentos ([quickstart.md §6](quickstart.md)). Esperado: elige el #3 explicando por qué, lo mueve a *In Progress*, comenta el inicio, crea la rama `003-...`, genera la spec con `Issue: #3` y se detiene pidiendo revisión (SC-001, SC-004). Después, ejecutar `/siguiente-ticket 3`: debe avisar que el #3 ya está en *In Progress* y pedir confirmación, sin duplicar el comentario de inicio (FR-012)
 
 ---
 
