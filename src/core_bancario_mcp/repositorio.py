@@ -6,7 +6,8 @@ para que "ayer" sea siempre ayer y los tests sean deterministas.
 
 El agente reutiliza este módulo (no el servidor) para consultar el monto real de una
 transacción: monto y titular son inmutables, así que no importa que corran en procesos
-distintos.
+distintos. Las reglas de la política (umbral y antigüedad) viven en ``Politica`` para que el
+core y el hook del umbral (issue #9) usen una sola definición.
 """
 
 import json
@@ -59,6 +60,19 @@ class Politica:
     dias_maximos_disputa_exterior: int
     dias_maximos_disputa_nacional: int
     umbral_disputa_automatica: int
+
+    def requiere_analista(self, monto: int) -> bool:
+        """Regla 2: hasta el umbral (inclusive) se inicia sola; por encima, analista."""
+        return monto > self.umbral_disputa_automatica
+
+    def cubre(self, transaccion: Transaccion, hoy: date) -> bool:
+        """Regla 5: la antigüedad no supera el límite nacional (CO) o exterior, inclusive."""
+        limite = (
+            self.dias_maximos_disputa_nacional
+            if transaccion.pais == "CO"
+            else self.dias_maximos_disputa_exterior
+        )
+        return (hoy - transaccion.fecha).days <= limite
 
 
 # Campos exactos de cada archivo y su tipo: texto no vacío o entero (nunca bool ni float).
@@ -131,6 +145,7 @@ def _por_id(archivo: str, registros) -> dict[str, dict]:
 class Repositorio:
     def __init__(self, hoy: date | None = None, carpeta: Path | None = None):
         hoy = hoy or date.today()
+        self.hoy = hoy
         origen = carpeta or resources.files("core_bancario_mcp") / "datos"
 
         clientes = _por_id("clientes.json", _leer(origen, "clientes.json"))
@@ -199,6 +214,14 @@ class Repositorio:
             for k, v in transacciones.items()
         }
         self.politica = Politica(**politica)
+
+    def tarjetas_de(self, cliente_id: str, ultimos4: str) -> list[Tarjeta]:
+        """Tarjetas de ese cliente con esos últimos 4 (vacío si el cliente no existe)."""
+        return [
+            t
+            for t in self.tarjetas.values()
+            if t.cliente_id == cliente_id and t.ultimos4 == ultimos4
+        ]
 
     def obtener_transaccion(self, transaccion_id: str) -> Transaccion | None:
         """Transacción por id, o ``None`` si no existe (no es un error transitorio)."""

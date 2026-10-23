@@ -1,11 +1,11 @@
 import json
 import shutil
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
 
-from core_bancario_mcp.repositorio import DatosInvalidosError, Repositorio
+from core_bancario_mcp.repositorio import DatosInvalidosError, Repositorio, Transaccion
 
 DATOS = Path(__file__).with_name("datos")
 
@@ -205,3 +205,47 @@ def test_json_invalido_impide_cargar(tmp_path):
     (carpeta / "clientes.json").write_text("{no es json", encoding="utf-8")
     with pytest.raises(DatosInvalidosError, match="clientes.json"):
         Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
+
+
+# --- política y tarjetas del cliente (issue #6; el hook del umbral del #9 reutiliza Politica) ---
+
+HOY = date(2026, 10, 23)
+
+
+def _transaccion(dias: int, pais: str, monto: int = 1000) -> Transaccion:
+    return Transaccion(
+        id="TRX-X",
+        tarjeta_id="TAR-001",
+        cliente_id="CLI-001",
+        fecha=HOY - timedelta(days=dias),
+        monto=monto,
+        comercio="Comercio Ficticio",
+        pais=pais,
+        estado="aplicada",
+    )
+
+
+def test_repositorio_guarda_su_hoy():
+    assert Repositorio(hoy=HOY).hoy == HOY
+
+
+def test_umbral_es_inclusivo():
+    politica = Repositorio(hoy=HOY).politica
+    assert politica.requiere_analista(500000) is False
+    assert politica.requiere_analista(500001) is True
+
+
+@pytest.mark.parametrize(
+    ("dias", "pais", "cubre"),
+    [(90, "US", True), (91, "US", False), (120, "CO", True), (121, "CO", False)],
+)
+def test_politica_cubre_hasta_el_limite_inclusive(dias, pais, cubre):
+    politica = Repositorio(hoy=HOY).politica
+    assert politica.cubre(_transaccion(dias, pais), HOY) is cubre
+
+
+def test_tarjetas_de_solo_devuelve_las_del_cliente():
+    repo = Repositorio(hoy=HOY)
+    assert [t.id for t in repo.tarjetas_de("CLI-001", "4821")] == ["TAR-001"]
+    assert repo.tarjetas_de("CLI-002", "4821") == []
+    assert repo.tarjetas_de("CLI-999", "4821") == []

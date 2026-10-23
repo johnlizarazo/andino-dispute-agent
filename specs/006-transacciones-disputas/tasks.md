@@ -51,12 +51,12 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 
 **Purpose**: bloquea a US1–US3 ([contracts/politica-y-registro.md](contracts/politica-y-registro.md)).
 
-- [ ] T006 [P] Agregar a `src/core_bancario_mcp/test_repositorio.py`, **antes** de tocar el módulo, y verlos fallar:
+- [X] T006 [P] Agregar a `src/core_bancario_mcp/test_repositorio.py`, **antes** de tocar el módulo, y verlos fallar:
   - `Repositorio(hoy=d).hoy == d`.
   - `politica.requiere_analista(500000)` es `False` y `requiere_analista(500001)` es `True` ("`monto > umbral_disputa_automatica`").
   - `politica.cubre(...)` en los cuatro bordes con transacciones construidas en el test: exterior (`pais="US"`) con 90 días → `True` y 91 → `False`; nacional (`pais="CO"`) con 120 → `True` y 121 → `False`.
   - `tarjetas_de("CLI-001", "4821")` devuelve la tarjeta TAR-001; `tarjetas_de("CLI-002", "4821")` y `tarjetas_de("CLI-999", "4821")` devuelven `[]`.
-- [ ] T007 Implementar en `src/core_bancario_mcp/repositorio.py`: `self.hoy`; métodos `requiere_analista(monto)` y `cubre(transaccion, hoy)` en `Politica` (`CO` nacional con `dias_maximos_disputa_nacional`, cualquier otro país con `dias_maximos_disputa_exterior`, límites inclusivos, antigüedad `(hoy - fecha).days`); y `tarjetas_de(cliente_id, ultimos4)`. Actualizar el docstring del módulo (el hook del #9 reutiliza `Politica`). Dejar verdes los tests y hacer commit `feat(#6): reglas de política y tarjetas del cliente en el repositorio`
+- [X] T007 Implementar en `src/core_bancario_mcp/repositorio.py`: `self.hoy`; métodos `requiere_analista(monto)` y `cubre(transaccion, hoy)` en `Politica` (`CO` nacional con `dias_maximos_disputa_nacional`, cualquier otro país con `dias_maximos_disputa_exterior`, límites inclusivos, antigüedad `(hoy - fecha).days`); y `tarjetas_de(cliente_id, ultimos4)`. Actualizar el docstring del módulo (el hook del #9 reutiliza `Politica`). Dejar verdes los tests y hacer commit `feat(#6): reglas de política y tarjetas del cliente en el repositorio`
 - [ ] T008 [P] Agregar a `src/core_bancario_mcp/test_contexto.py`, **antes** de tocar el módulo, y verlos fallar: `abrir` asigna `CASO-0001` y luego `CASO-0002`; `caso_de` es `None` antes y el caso después; el caso copia `monto` de la transacción y su `estado` es `"abierta"`; abrir dos veces la misma transacción lanza `ValueError`; cada `Contexto` tiene su propio `disputas`
 - [ ] T009 Implementar en `src/core_bancario_mcp/contexto.py` la dataclass inmutable `Caso` (`id`, `transaccion_id`, `monto`, `motivo`, `estado`), `RegistroDisputas` (`caso_de`, `abrir`) y el campo `disputas: RegistroDisputas = field(default_factory=RegistroDisputas)` en `Contexto`. Dejar verdes los tests y hacer commit `feat(#6): registro de disputas en el contexto`
 
