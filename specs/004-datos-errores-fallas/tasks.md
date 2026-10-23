@@ -82,11 +82,11 @@ fallas y servidor, y va primero.
 
 **Independent Test**: los tests de consulta en `test_repositorio.py`.
 
-- [ ] T012 [US4] Agregar a `src/core_bancario_mcp/test_repositorio.py` los tests de `obtener_transaccion`:
+- [X] T012 [US4] Agregar a `src/core_bancario_mcp/test_repositorio.py` los tests de `obtener_transaccion`:
   - `TRX-002` devuelve monto 1250000, cliente `CLI-001` y la fecha de ayer.
   - Un id inexistente devuelve `None`.
   - El monto de cada transacción coincide con el JSON (SC-006).
-- [ ] T013 [US4] Comprobar que los tests de T012 fallan, implementar `Repositorio.obtener_transaccion` en `src/core_bancario_mcp/repositorio.py`, dejarlos verdes y hacer commit `feat(#4): consulta de transacción por id`
+- [X] T013 [US4] Comprobar que los tests de T012 fallan, implementar `Repositorio.obtener_transaccion` en `src/core_bancario_mcp/repositorio.py`, dejarlos verdes y hacer commit `feat(#4): consulta de transacción por id`
 
 ---
 

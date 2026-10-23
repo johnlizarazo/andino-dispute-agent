@@ -163,3 +163,7 @@ class Repositorio:
             for k, v in transacciones.items()
         }
         self.politica = Politica(**politica)
+
+    def obtener_transaccion(self, transaccion_id: str) -> Transaccion | None:
+        """Transacción por id, o ``None`` si no existe (no es un error transitorio)."""
+        return self.transacciones.get(transaccion_id)

@@ -69,6 +69,29 @@ def test_datos_solo_con_forma_ficticia():
     assert all(c.documento.startswith("CC-FIC-") for c in repo.clientes.values())
 
 
+# --- consulta por id (la reutiliza el hook del umbral, issue #9) ---
+
+
+def test_obtener_transaccion_devuelve_monto_titular_y_fecha():
+    repo = Repositorio(hoy=date(2026, 10, 23))
+    transaccion = repo.obtener_transaccion("TRX-002")
+    assert transaccion.monto == 1250000
+    assert transaccion.cliente_id == "CLI-001"
+    assert transaccion.fecha == date(2026, 10, 22)
+
+
+def test_obtener_transaccion_inexistente_devuelve_none():
+    repo = Repositorio(hoy=date(2026, 10, 23))
+    assert repo.obtener_transaccion("TRX-999") is None
+
+
+def test_obtener_transaccion_coincide_con_los_datos_para_todas():
+    repo = Repositorio(hoy=date(2026, 10, 23))
+    crudas = json.loads((DATOS / "transacciones.json").read_text(encoding="utf-8"))
+    for cruda in crudas:
+        assert repo.obtener_transaccion(cruda["id"]).monto == cruda["monto"]
+
+
 # --- validación de datos mal formados ---
 
 
