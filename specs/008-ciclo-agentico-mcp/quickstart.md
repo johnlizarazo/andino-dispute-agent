@@ -35,7 +35,9 @@ Esperado: todo en verde, sin llamar a la API.
 uv run pytest -m e2e
 ```
 
-Esperado: el escenario de falla transitoria pasa (se salta si falta la credencial).
+Esperado: los escenarios de falla transitoria y persistente pasan (se saltan si falta la
+credencial). Con `-s` se ve el tiempo hasta el resultado; el objetivo de SC-005 es menos de
+30 s para la primera respuesta.
 
 ## 3. Conversación en la terminal
 

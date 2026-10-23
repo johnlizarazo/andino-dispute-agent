@@ -51,6 +51,7 @@ Tests (`test_cli.py`, con un cliente falso que entrega mensajes preparados):
 - `salvaguarda`, `falla_servicio` y `error` muestran sus avisos sin datos técnicos y el bucle
   sigue.
 - Sin `ANTHROPIC_API_KEY`, `main` devuelve 1 y el mensaje nombra la variable.
+- `KeyboardInterrupt` en la entrada → `conversar` termina con 0 y una despedida (ajuste L2).
 
 ## Escenario `e2e` (`tests/escenarios/test_conversacion_e2e.py`)
 
@@ -59,3 +60,8 @@ Marcado `@pytest.mark.e2e`, se salta si falta `ANTHROPIC_API_KEY`. Con
 (mensaje distinto de los ejemplos del prompt): el turno termina `completado`, `buscar_cliente`
 aparece al menos dos veces en `herramientas` y la respuesta no contiene detalles técnicos del
 error (`FALLA_TRANSITORIA`).
+
+Segundo escenario (ajuste M1): con `CORE_BANCARIO_FALLAS="buscar_cliente:5"` la falla
+persiste; `buscar_cliente` aparece como máximo 3 veces, el turno termina `completado` y la
+respuesta ofrece escalar o una persona, sin `FALLA_TRANSITORIA`. Ambos registran el tiempo
+hasta el resultado como dato (ajuste L1), sin fallar por él.
