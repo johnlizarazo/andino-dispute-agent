@@ -106,12 +106,12 @@ desactiva el hook para esquivarlo.
 
 **Independent Test**: [quickstart.md §1](quickstart.md).
 
-- [ ] T011 [P] [US6] Crear `plugins/andino-guardrails/.claude-plugin/plugin.json` exactamente como en [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md), "sin `version`"
-- [ ] T012 [P] [US6] Crear `plugins/andino-guardrails/hooks/hooks.json` exactamente como en [contracts/hooks.md](contracts/hooks.md)
-- [ ] T013 [P] [US6] Crear `.claude-plugin/marketplace.json` exactamente como en [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md)
-- [ ] T014 [US6] En `.claude/settings.json`, agregar `extraKnownMarketplaces.banco-andino` con fuente `directory` y `path: "./"`, `enabledPlugins` con `"andino-guardrails@banco-andino": true` y `"Bash(uv run pytest *)"` en `permissions.allow`, sin alterar lo existente
-- [ ] T015 [P] [US6] Crear `plugins/andino-guardrails/README.md` con lo que exige [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md): qué trae el plugin, sus requisitos, cómo refrescarlo (`/reload-plugins` o una sesión nueva) y la garantía del auditor
-- [ ] T016 [US6] Ejecutar `claude plugin validate ./` y `claude plugin validate ./plugins/andino-guardrails` sin errores, y hacer commit `feat(#3): plugin andino-guardrails y marketplace banco-andino`
+- [X] T011 [P] [US6] Crear `plugins/andino-guardrails/.claude-plugin/plugin.json` exactamente como en [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md), "sin `version`"
+- [X] T012 [P] [US6] Crear `plugins/andino-guardrails/hooks/hooks.json` exactamente como en [contracts/hooks.md](contracts/hooks.md)
+- [X] T013 [P] [US6] Crear `.claude-plugin/marketplace.json` exactamente como en [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md)
+- [X] T014 [US6] En `.claude/settings.json`, agregar `extraKnownMarketplaces.banco-andino` con fuente `directory` y `path: "./"`, `enabledPlugins` con `"andino-guardrails@banco-andino": true` y `"Bash(uv run pytest *)"` en `permissions.allow`, sin alterar lo existente
+- [X] T015 [P] [US6] Crear `plugins/andino-guardrails/README.md` con lo que exige [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md): qué trae el plugin, sus requisitos, cómo refrescarlo (`/reload-plugins` o una sesión nueva) y la garantía del auditor
+- [X] T016 [US6] Ejecutar `claude plugin validate ./` y `claude plugin validate ./plugins/andino-guardrails` sin errores, y hacer commit `feat(#3): plugin andino-guardrails y marketplace banco-andino`
 
 ---
 
