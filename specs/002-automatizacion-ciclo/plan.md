@@ -42,7 +42,8 @@ GitHub. No hay tests de código porque no hay código ejecutable nuevo.
 **Constraints**:
 - `allowed-tools` pre-aprueba pero no restringe (R2).
 - El campo `tools` de un subagente no acepta patrones de Bash (R3).
-- Publicar solo a pedido del desarrollador (R4).
+- Publicar solo a pedido del desarrollador: `/abrir-pr` no lo puede disparar el modelo, y
+  el push y la creación del PR piden confirmación cada vez (R4).
 - Sin duplicados al reintentar (R7).
 
 **Scale/Scope**: 3 archivos de Claude Code nuevos, 2 archivos modificados (`CLAUDE.md` y

@@ -85,8 +85,12 @@ issue #1 y lo observado en el Project durante el cierre del PR #15.
   - `/abrir-pr` instruye delegar en el subagente `revisor-codigo` por nombre.
   - `/abrir-pr` lleva `disable-model-invocation: true`: publicar es una decisión del
     desarrollador, así que el modelo no puede dispararlo por su cuenta.
+  - `/abrir-pr` **no** pre-aprueba `git push` ni `create_pull_request`: las dos acciones
+    que publican piden confirmación al desarrollador cada vez.
 - **Rationale**: la invocación por instrucción en lenguaje natural es la documentada. El
-  bloqueo de `/abrir-pr` evita publicaciones no pedidas.
+  bloqueo de `/abrir-pr` evita publicaciones no pedidas. No pre-aprobar las publicaciones
+  agrega una segunda barrera: aunque el revisor fallara y aprobara un cambio con problemas,
+  nada se publica sin la confirmación del desarrollador.
 - **Alternatives considered**: `context: fork` + `agent: revisor-codigo` en `/abrir-pr`.
   Ejecutaría *todo* el comando dentro del revisor, de solo lectura, y no podría crear el PR.
 

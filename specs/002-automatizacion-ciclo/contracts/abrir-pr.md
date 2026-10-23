@@ -13,15 +13,16 @@ disable-model-invocation: true
 allowed-tools:
   - mcp__github__issue_read
   - mcp__github__list_pull_requests
-  - mcp__github__create_pull_request
   - mcp__github__projects_write
   - mcp__github__add_issue_comment
   - Bash(git status *)
-  - Bash(git push *)
 ```
 
-`disable-model-invocation: true` hace que solo el desarrollador pueda dispararlo (publica en
-GitHub).
+- `disable-model-invocation: true` hace que solo el desarrollador pueda dispararlo.
+- `git push` y `mcp__github__create_pull_request` **no** se pre-aprueban a propósito: las dos
+  acciones que publican piden confirmación al desarrollador cada vez. Así, publicar es
+  siempre una decisión explícita, y una falla del revisor no puede publicar nada por sí
+  sola (es la red de seguridad de la prueba de SC-003).
 
 ## Pasos obligatorios, en orden
 

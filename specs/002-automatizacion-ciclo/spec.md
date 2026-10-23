@@ -248,3 +248,7 @@ incluye los ajustes de sus puntos de control.
   cambiar el orden.
 - La revisión de cumplimiento de reglas de negocio queda fuera de alcance (issue #3); el
   comando de PR se diseña para incorporarla después.
+- "Sin intervención manual" se refiere a los movimientos de estado y a los comentarios. Las
+  dos acciones que publican (subir la rama y crear el PR) piden aprobación explícita del
+  desarrollador cada vez: publicar es una decisión humana, y así una falla del revisor no
+  puede publicar nada por sí sola. SC-001 mide solo los movimientos de estado.

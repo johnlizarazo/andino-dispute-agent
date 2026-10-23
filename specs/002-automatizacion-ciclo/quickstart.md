@@ -34,12 +34,14 @@ Escenarios que prueban la spec de punta a punta. Para los detalles, ver
    con `Issue: #2` y un requisito ("el archivo `demo.txt` MUST decir 'hola'"). Agregar un
    `demo.txt` que diga otra cosa y hacer commit.
 2. Ejecutar `/abrir-pr` → el revisor devuelve `BLOQUEADO` y el comando **no** publica la
-   rama, no crea un PR y no comenta.
+   rama, no crea un PR y no comenta. Si apareciera una confirmación de push o de PR, el
+   desarrollador la **rechaza** y se registra como falla.
 3. Volver a `002-automatizacion-ciclo` y borrar la rama de prueba sin publicarla.
 
 ## 5. Cierre de este ticket con `/abrir-pr` (US2, US3, US4 · FR-010, FR-016)
 
-1. En `002-automatizacion-ciclo`, con todo commiteado, ejecutar `/abrir-pr`.
+1. En `002-automatizacion-ciclo`, con todo commiteado, ejecutar `/abrir-pr`. El desarrollador
+   **aprueba** las confirmaciones de push y de creación del PR.
 2. Se espera:
    - Veredicto `APROBADO`.
    - Rama publicada.
