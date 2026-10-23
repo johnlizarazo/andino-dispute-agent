@@ -291,3 +291,11 @@ def test_falla_inyectada_en_disputa_no_abre_caso():
     assert contexto.disputas.caso_de("TRX-001") is None
     assert _llamar(servidor, "iniciar_disputa", argumentos)["ok"] is True
     assert contexto.disputas.caso_de("TRX-001") is not None
+
+
+@pytest.mark.parametrize("campo", ["fecha_desde", "fecha_hasta"])
+@pytest.mark.parametrize("vacia", ["", "   "])
+def test_fecha_vacia_o_de_espacios_se_trata_como_omitida(contexto, campo, vacia):
+    sin_fecha = consultar_transacciones(contexto, "CLI-001", "4821")
+    con_vacia = consultar_transacciones(contexto, "CLI-001", "4821", **{campo: vacia})
+    assert con_vacia == sin_fecha

@@ -48,6 +48,7 @@ class RegistroDisputas:
 
     def __init__(self):
         self._casos: dict[str, Caso] = {}
+        self._ultimo = 0
 
     def caso_de(self, transaccion_id: str) -> Caso | None:
         return self._casos.get(transaccion_id)
@@ -56,8 +57,9 @@ class RegistroDisputas:
         """Abre el siguiente ``CASO-NNNN`` con el monto del core, nunca uno recibido."""
         if transaccion.id in self._casos:
             raise ValueError(f"{transaccion.id} ya tiene un caso de disputa")
+        self._ultimo += 1
         caso = Caso(
-            id=f"CASO-{len(self._casos) + 1:04d}",
+            id=f"CASO-{self._ultimo:04d}",
             transaccion_id=transaccion.id,
             monto=transaccion.monto,
             motivo=motivo,

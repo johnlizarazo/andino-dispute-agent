@@ -65,14 +65,15 @@ class Politica:
         """Regla 2: hasta el umbral (inclusive) se inicia sola; por encima, analista."""
         return monto > self.umbral_disputa_automatica
 
+    def limite_dias(self, transaccion: Transaccion) -> int:
+        """Antigüedad máxima disputable: nacional si el país es CO, exterior si no."""
+        if transaccion.pais == "CO":
+            return self.dias_maximos_disputa_nacional
+        return self.dias_maximos_disputa_exterior
+
     def cubre(self, transaccion: Transaccion, hoy: date) -> bool:
-        """Regla 5: la antigüedad no supera el límite nacional (CO) o exterior, inclusive."""
-        limite = (
-            self.dias_maximos_disputa_nacional
-            if transaccion.pais == "CO"
-            else self.dias_maximos_disputa_exterior
-        )
-        return (hoy - transaccion.fecha).days <= limite
+        """Regla 5: la antigüedad no supera ``limite_dias``, inclusive."""
+        return (hoy - transaccion.fecha).days <= self.limite_dias(transaccion)
 
 
 # Campos exactos de cada archivo y su tipo: texto no vacío o entero (nunca bool ni float).

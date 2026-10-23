@@ -71,6 +71,9 @@ def consultar_transacciones(
             return _invalido(f"{campo} debe ser texto")
     cliente_id = (cliente_id or "").strip()
     ultimos4 = (ultimos4 or "").strip()
+    # Una fecha vacía o de solo espacios se trata como omitida.
+    fecha_desde = (fecha_desde or "").strip()
+    fecha_hasta = (fecha_hasta or "").strip()
     if not cliente_id:
         return _invalido("cliente_id es obligatorio")
     if not PATRON_CUATRO_DIGITOS.fullmatch(ultimos4):
@@ -79,9 +82,9 @@ def consultar_transacciones(
     repositorio = contexto.repositorio
     hoy = repositorio.hoy
     try:
-        hasta = _fecha("fecha_hasta", fecha_hasta.strip()) if fecha_hasta else hoy
+        hasta = _fecha("fecha_hasta", fecha_hasta) if fecha_hasta else hoy
         desde = (
-            _fecha("fecha_desde", fecha_desde.strip())
+            _fecha("fecha_desde", fecha_desde)
             if fecha_desde
             else hasta - timedelta(days=DIAS_POR_OMISION - 1)
         )
@@ -158,13 +161,8 @@ def iniciar_disputa(contexto: Contexto, transaccion_id=None, motivo=None) -> dic
     politica = repositorio.politica
     if not politica.cubre(transaccion, repositorio.hoy):
         antiguedad = (repositorio.hoy - transaccion.fecha).days
-        nacional = transaccion.pais == "CO"
-        limite = (
-            politica.dias_maximos_disputa_nacional
-            if nacional
-            else politica.dias_maximos_disputa_exterior
-        )
-        origen = "nacionales" if nacional else "en el exterior"
+        limite = politica.limite_dias(transaccion)
+        origen = "nacionales" if transaccion.pais == "CO" else "en el exterior"
         return error(
             TipoError.NEGOCIO,
             Codigo.FUERA_DE_POLITICA,

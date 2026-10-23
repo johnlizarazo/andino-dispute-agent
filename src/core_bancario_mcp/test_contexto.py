@@ -98,3 +98,11 @@ def test_cada_contexto_tiene_su_propio_registro():
     otro = Contexto(repositorio, InyectorFallas(None))
     uno.disputas.abrir(repositorio.obtener_transaccion("TRX-001"), "x")
     assert otro.disputas.caso_de("TRX-001") is None
+
+
+def test_numero_de_caso_no_depende_de_cuantos_casos_quedan():
+    disputas = RegistroDisputas()
+    disputas.abrir(_transaccion("TRX-001"), "x")
+    disputas.abrir(_transaccion("TRX-003"), "x")
+    disputas._casos.clear()  # simula casos cerrados en el futuro
+    assert disputas.abrir(_transaccion("TRX-004"), "x").id == "CASO-0003"
