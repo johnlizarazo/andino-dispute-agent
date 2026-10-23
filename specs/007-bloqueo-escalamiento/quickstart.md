@@ -22,8 +22,8 @@ Con la app reiniciada (para que `core-bancario` cargue las 6 herramientas):
 | 2 | `bloquear_tarjeta` CLI-001, 4821 otra vez | éxito, `ya_estaba_bloqueada` verdadero |
 | 3 | `bloquear_tarjeta` CLI-004, 9012 | éxito, `ya_estaba_bloqueada` verdadero (dato inicial) |
 | 4 | `bloquear_tarjeta` CLI-002, 4821 | validación `NO_ENCONTRADO` |
-| 5 | `escalar_a_analista` causa `umbral`, CLI-001, `["TRX-002"]`, acciones y recomendación | `ESC-0001`, monto 1250000 del core, estado `pendiente_analista` |
-| 6 | `escalar_a_analista` causa `persona_solicitada`, solo acciones y recomendación | `ESC-0002`, `cliente` null |
+| 5 | `escalar_a_analista` causa `umbral`, CLI-001, `["TRX-002"]`, acciones y recomendación | `ESC-0001`, estado `pendiente_analista`, `cantidad_transacciones` 1; sin montos ni nombre en la respuesta |
+| 6 | `escalar_a_analista` causa `persona_solicitada`, solo acciones y recomendación | `ESC-0002`, `cantidad_transacciones` 0 |
 | 7 | `escalar_a_analista` sin `accion_recomendada` | validación que nombra el campo |
 | 8 | `escalar_a_analista` causa `umbral` sin transacciones | validación |
 

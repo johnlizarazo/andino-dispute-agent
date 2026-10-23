@@ -11,8 +11,11 @@ Verificado en el entorno del proyecto (Python 3.14, `mcp` 1.30.0, `pydantic`).
     `estado_de(tarjeta) -> "activa" | "bloqueada"` (bloqueada si `tarjeta.estado ==
     "bloqueada"` o si está en el conjunto). `bloquear(tarjeta, motivo) -> bool`: devuelve si
     ya estaba bloqueada antes del llamado; nunca desbloquea.
-  - `Escalamiento` (dataclass inmutable) y `RegistroEscalamientos` con contador propio:
-    `registrar(...) -> Escalamiento` con `ESC-0001`, `ESC-0002`, ...
+  - `Escalamiento` (dataclass inmutable, con el detalle para el analista) y
+    `RegistroEscalamientos` con contador propio: `registrar(...) -> Escalamiento` con
+    `ESC-0001`, `ESC-0002`, ...; `todos()` sirve a los tests y a la vista del analista. El
+    hook `Stop` del #10 corre en el proceso del agente y no lee esta memoria: se basa en las
+    respuestas de las herramientas (ajuste I1).
   - Campos nuevos del `Contexto`: `bloqueos` y `escalamientos`, con `default_factory`.
 - **Rationale**: misma convención que intentos y disputas; las tarjetas del repositorio son
   inmutables y las comparte el hook del #9.
@@ -63,14 +66,21 @@ Verificado en el entorno del proyecto (Python 3.14, `mcp` 1.30.0, `pydantic`).
 - **Rationale**: el analista recibe siempre los seis elementos del handoff; la regla 4 no se
   frena (persona solicitada sin cliente ni transacciones).
 
-## R5. Resumen devuelto (FR-009, FR-010)
+## R5. Resumen registrado y respuesta al agente (FR-009, FR-010, FR-010b)
 
-- **Decision**: `{"escalamiento_id", "causa", "cliente": {"cliente_id", "nombre"} | null,
-  "transacciones": [{"transaccion_id", "fecha", "monto", "comercio", "caso_disputa"}],
-  "total", "acciones_realizadas", "accion_recomendada", "estado": "pendiente_analista"}`.
-  Fecha, monto y comercio salen del repositorio; `caso_disputa` del registro de disputas.
-- **Rationale**: el analista puede actuar sin volver a preguntar; ningún dato económico
-  viene del modelo.
+- **Decision** (ajuste C1 del análisis): el core **registra** para el analista un
+  `Escalamiento` con el resumen completo (cliente con nombre; transacciones con fecha, monto,
+  comercio y caso de disputa tomados del repositorio y del registro de disputas; total;
+  acciones; recomendación; estado `pendiente_analista`). Al agente le **responde** solo
+  `{"escalamiento_id", "causa", "estado", "cantidad_transacciones"}`.
+- **Rationale**: `escalar_a_analista` está exenta de identidad verificada (regla 1); si su
+  respuesta devolviera montos, fechas o comercios, sería un camino para consultar productos
+  sin verificación (con un `cliente_id` y unos `TRX-NNN` adivinables), justo en el caso
+  `intentos_agotados`. El agente solo necesita el identificador para informar al cliente; el
+  analista lee el registro.
+- **Alternatives considered**: devolver el resumen completo (descartado por lo anterior);
+  devolverlo solo si hubo verificación (el core no guarda sesiones de identidad, FR-010 del
+  #5).
 
 ## R6. Ajustes heredados del #6 (US4)
 

@@ -15,22 +15,40 @@ registro de bloqueos.
 activa ──bloquear──> bloqueada ──bloquear──> bloqueada (ya_estaba_bloqueada = true)
 ```
 
-## Escalamiento (dataclass inmutable)
+## DetalleTransaccion (dataclass inmutable, dentro del escalamiento)
+
+| Campo | Tipo | Origen |
+|---|---|---|
+| `transaccion_id` | texto | argumento |
+| `fecha` | texto `AAAA-MM-DD` | repositorio |
+| `monto` | entero | repositorio |
+| `comercio` | texto | repositorio |
+| `caso_disputa` | texto o `None` | registro de disputas |
+
+## Escalamiento (dataclass inmutable, registro para el analista)
 
 | Campo | Tipo | Nota |
 |---|---|---|
 | `id` | texto | `ESC-0001`, `ESC-0002`, ... (contador propio) |
 | `causa` | texto | `persona_solicitada`, `umbral`, `fuera_de_politica`, `intentos_agotados`, `otra` |
 | `cliente_id` | texto o `None` | `None` solo con `persona_solicitada` |
-| `transacciones` | tupla de ids | sin repetidos, en el orden recibido |
+| `cliente_nombre` | texto o `None` | del repositorio |
+| `transacciones` | tupla de `DetalleTransaccion` | sin repetidos, en el orden recibido |
+| `total` | entero | suma de montos del core |
 | `acciones_realizadas` | texto | hasta 1000 caracteres |
 | `accion_recomendada` | texto | hasta 500 caracteres |
 | `estado` | texto | `pendiente_analista` |
 
 ## RegistroEscalamientos (Contexto, campo `escalamientos`)
 
-- `registrar(causa, cliente_id, transacciones, acciones, recomendada) -> Escalamiento`.
-- `todos() -> list[Escalamiento]` (para tests y, después, para el hook del #10).
+- `registrar(...) -> Escalamiento` con el detalle ya armado por la herramienta.
+- `todos() -> list[Escalamiento]`: para tests y la vista del analista. El hook `Stop` del #10
+  corre en otro proceso y se basa en las respuestas de las herramientas (ajuste I1).
+
+## Respuesta al agente
+
+`{"escalamiento_id", "causa", "estado", "cantidad_transacciones"}`: sin montos, fechas,
+comercios ni nombre del cliente (ajuste C1).
 
 ## Reglas de validación
 

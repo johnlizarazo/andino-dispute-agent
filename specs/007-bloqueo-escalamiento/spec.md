@@ -60,14 +60,15 @@ reconstruir la conversación.
 fuera de política y persona a pedido.
 
 **Independent Test**: escalar el cobro de $1.250.000 con causa umbral y comprobar el
-resumen devuelto.
+escalamiento registrado.
 
 **Acceptance Scenarios**:
 
 1. **Given** un resumen completo con causa "umbral", el cliente CLI-001 y la transacción de
-   $1.250.000, **When** el agente escala, **Then** el core registra el escalamiento, devuelve
-   su identificador y el resumen con el nombre del cliente y el monto de cada transacción
-   tomado de sus datos.
+   $1.250.000, **When** el agente escala, **Then** el core registra para el analista el
+   resumen con el nombre del cliente y el monto de cada transacción tomado de sus datos, y al
+   agente le devuelve solo el identificador del escalamiento, la causa, el estado y cuántas
+   transacciones incluye.
 2. **Given** el cliente pide hablar con una persona antes de identificarse, **When** el agente
    escala con causa "persona solicitada" y sin cliente ni transacciones, **Then** el core lo
    acepta (regla 4: se escala de inmediato, sin investigar).
@@ -80,8 +81,11 @@ resumen devuelto.
    ellos, **When** escala, **Then** recibe un error de validación.
 6. **Given** una transacción inexistente o que no es del cliente indicado, **When** escala,
    **Then** recibe un error de validación y no se registra el escalamiento.
-7. **Given** una transacción con disputa abierta, **When** escala, **Then** el resumen muestra
-   el caso de esa disputa.
+7. **Given** una transacción con disputa abierta, **When** escala, **Then** el resumen
+   registrado para el analista incluye el caso de esa disputa.
+8. **Given** cualquier escalamiento, **When** el core responde al agente, **Then** la respuesta
+   no incluye montos, fechas, comercios ni el nombre del cliente: escalar no exige identidad
+   verificada y no debe servir para consultar productos (regla 1).
 
 ---
 
@@ -176,10 +180,14 @@ arrastrarlos a los siguientes tickets.
   cliente, pertenecerle.
 - **FR-009**: Los montos MUST salir de los datos del core por cada transacción; el resumen no
   acepta montos del agente.
-- **FR-010**: MUST registrar el escalamiento con un identificador único y devolver el resumen
-  completo: identificador, causa, cliente (identificador y nombre, o ninguno), transacciones
-  con monto y caso de disputa si existe, total, acciones realizadas, acción recomendada y
-  estado "pendiente de analista".
+- **FR-010**: MUST registrar para el analista el resumen completo: identificador único,
+  causa, cliente (identificador y nombre, o ninguno), transacciones con fecha, monto, comercio
+  y caso de disputa si existe, total, acciones realizadas, acción recomendada y estado
+  "pendiente de analista".
+- **FR-010b**: Al agente MUST devolverle solo el identificador del escalamiento, la causa, el
+  estado y la cantidad de transacciones incluidas; nunca montos, fechas, comercios ni el
+  nombre del cliente (ajuste C1: escalar está exento de identidad verificada y no puede ser
+  una vía de consulta).
 - **FR-011**: Un resumen inválido MUST no registrar nada.
 
 **Descripciones e integración**
@@ -206,13 +214,15 @@ arrastrarlos a los siguientes tickets.
 - **SC-001**: El 100% de los bloqueos de una tarjeta propia del cliente la dejan bloqueada en
   un solo llamado, sin ningún paso de aprobación.
 - **SC-002**: Bloquear una tarjeta ya bloqueada nunca produce un error.
-- **SC-003**: El 100% de los escalamientos registrados contienen los seis elementos del
+- **SC-003**: El 100% de los escalamientos registrados para el analista contienen los seis elementos del
   handoff (o el cliente explícitamente ausente con causa "persona solicitada"), con montos
   iguales a los del core.
 - **SC-004**: El 100% de los resúmenes incompletos o inválidos se rechazan sin registrar
   nada.
 - **SC-005**: Ninguna respuesta queda fuera del contrato de errores, con cualquier
   combinación de argumentos.
+- **SC-006**: Ninguna respuesta de `escalar_a_analista` contiene datos de productos (montos,
+  fechas, comercios) ni el nombre del cliente.
 
 ## Assumptions
 

@@ -10,13 +10,19 @@ class RegistroBloqueos:
     def bloquear(self, tarjeta: Tarjeta, motivo: str) -> bool: ...  # ¿ya estaba bloqueada?
 
 @dataclass(frozen=True)
+class DetalleTransaccion:
+    transaccion_id: str; fecha: str; monto: int; comercio: str; caso_disputa: str | None
+
+@dataclass(frozen=True)
 class Escalamiento:
-    id: str; causa: str; cliente_id: str | None; transacciones: tuple[str, ...]
+    id: str; causa: str; cliente_id: str | None; cliente_nombre: str | None
+    transacciones: tuple[DetalleTransaccion, ...]; total: int
     acciones_realizadas: str; accion_recomendada: str; estado: str
 
 class RegistroEscalamientos:
-    def registrar(self, causa, cliente_id, transacciones, acciones_realizadas,
-                  accion_recomendada) -> Escalamiento: ...
+    def registrar(self, causa, cliente_id, cliente_nombre, transacciones,
+                  acciones_realizadas, accion_recomendada) -> Escalamiento: ...
+    # total = suma de montos; id ESC-NNNN; estado pendiente_analista
     def todos(self) -> list[Escalamiento]: ...
 
 @dataclass

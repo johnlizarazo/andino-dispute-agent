@@ -42,6 +42,8 @@ Decisiones en [research.md](research.md).
 - `bloquear_tarjeta` no tiene ningún parámetro ni paso de aprobación (regla 3).
 - Los montos del escalamiento salen del repositorio; no hay parámetro de monto (regla 2).
 - Ninguna respuesta revela si una tarjeta es de otro cliente.
+- La respuesta de `escalar_a_analista` no incluye datos de productos ni el nombre del cliente;
+  el detalle queda registrado para el analista (ajuste C1).
 
 **Scale/Scope**: 1 módulo nuevo con su test; cambios en `contexto.py`, `errores.py`,
 `repositorio.py`, `transacciones.py`, `identificacion.py` (tipo `ListaTexto`), `servidor.py`,
