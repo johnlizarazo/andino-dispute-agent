@@ -80,7 +80,7 @@ imports sin uso entre ediciones: agregar el import en la misma edición que su u
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_bloqueo_escalamiento.py -k escalar`.
 
-- [ ] T009 [US2] Agregar a `src/core_bancario_mcp/test_bloqueo_escalamiento.py`, **antes** de implementar, los tests del contrato y verlos fallar:
+- [X] T009 [US2] Agregar a `src/core_bancario_mcp/test_bloqueo_escalamiento.py`, **antes** de implementar, los tests del contrato y verlos fallar:
   - `umbral`, CLI-001, `["TRX-002"]` → respuesta exactamente `{"escalamiento_id": "ESC-0001", "causa": "umbral", "estado": "pendiente_analista", "cantidad_transacciones": 1}` (ajuste C1: sin montos, fechas, comercios ni nombre); el registro (`contexto.escalamientos.todos()[0]`) tiene `cliente_nombre` del repositorio, un `DetalleTransaccion` con `monto` 1250000 y `caso_disputa` `None`, y `total` 1250000; un segundo → `ESC-0002`.
   - Ninguna respuesta de éxito contiene claves distintas de esas cuatro.
   - `persona_solicitada` solo con acciones y recomendación → éxito con `cantidad_transacciones` 0; el registro tiene `cliente_id` y `cliente_nombre` `None`.
@@ -94,7 +94,7 @@ imports sin uso entre ediciones: agregar el import en la misma edición que su u
   - `transacciones` como `'["TRX-002"]'` → aceptado; como `"TRX-002"`, `5`, `{"a": 1}` o `[1]` → `PARAMETRO_INVALIDO`.
   - Acciones de 1001 caracteres ("hasta 1000 caracteres") o recomendación de 501 ("hasta 500 caracteres") → `PARAMETRO_INVALIDO`.
   - Tras cada error, `contexto.escalamientos.todos()` sigue vacío.
-- [ ] T010 [US2] Implementar `escalar_a_analista(contexto, causa=None, cliente_id=None, transacciones=None, acciones_realizadas=None, accion_recomendada=None)` en `src/core_bancario_mcp/bloqueo_escalamiento.py` con el orden de [research.md R4](research.md): registra el `Escalamiento` completo y responde al agente solo las cuatro claves de R5 (ajuste C1); causas válidas exactamente "`persona_solicitada`, `umbral`, `fuera_de_politica`, `intentos_agotados`, `otra`"; lista según R3 (lista de textos o texto con una lista JSON de textos; ids recortados y sin repetir, en orden). Dejar verdes los tests y hacer commit `feat(#7): escalar_a_analista con resumen estructurado`
+- [X] T010 [US2] Implementar `escalar_a_analista(contexto, causa=None, cliente_id=None, transacciones=None, acciones_realizadas=None, accion_recomendada=None)` en `src/core_bancario_mcp/bloqueo_escalamiento.py` con el orden de [research.md R4](research.md): registra el `Escalamiento` completo y responde al agente solo las cuatro claves de R5 (ajuste C1); causas válidas exactamente "`persona_solicitada`, `umbral`, `fuera_de_politica`, `intentos_agotados`, `otra`"; lista según R3 (lista de textos o texto con una lista JSON de textos; ids recortados y sin repetir, en orden). Dejar verdes los tests y hacer commit `feat(#7): escalar_a_analista con resumen estructurado`
 
 ---
 
