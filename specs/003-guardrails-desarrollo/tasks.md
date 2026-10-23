@@ -156,11 +156,11 @@ desactiva el hook para esquivarlo.
 **Purpose**: el plugin y las rules se cargan al iniciar la sesión. **Requiere reiniciar la
 app y aceptar la confianza de la carpeta** antes de T027.
 
-- [ ] T027 [US6] Comprobar en `/plugin` que `andino-guardrails@banco-andino` está habilitado ([quickstart.md §1](quickstart.md)). Si la fuente `directory` no funciona, aplicar el fallback `github` de [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md), documentarlo en `research.md` R3 y repetir
-- [ ] T028 [US1] Ejecutar [quickstart.md §2](quickstart.md). Los textos con forma real los genera un script de Python ejecutado en la consola (nunca escritos por el asistente como literales), y se le pide al asistente que los escriba con Write: se bloquean. Los casos legítimos se permiten. Medir que el hook responde en menos de 2 s
-- [ ] T029 [US2] Ejecutar [quickstart.md §3](quickstart.md): permitido en la rama del ticket, bloqueado en una rama local `998-sin-spec` (borrarla al terminar)
-- [ ] T030 [US3] Ejecutar [quickstart.md §4](quickstart.md) y borrar el archivo de prueba. SC-004 se cubre con los tests de T008 (todos los casos) y con esta prueba real de un archivo
-- [ ] T031 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 1: `/andino-guardrails:revisar-cumplimiento` devuelve `APROBADO`, con las reglas en "NO APLICA". Si `agent:` falla, aplicar el fallback de [contracts/cumplimiento.md](contracts/cumplimiento.md) y repetir
+- [X] T027 [US6] Comprobar en `/plugin` que `andino-guardrails@banco-andino` está habilitado ([quickstart.md §1](quickstart.md)). Si la fuente `directory` no funciona, aplicar el fallback `github` de [contracts/plugin-marketplace.md](contracts/plugin-marketplace.md), documentarlo en `research.md` R3 y repetir
+- [X] T028 [US1] Ejecutar [quickstart.md §2](quickstart.md). Los textos con forma real los genera un script de Python ejecutado en la consola (nunca escritos por el asistente como literales), y se le pide al asistente que los escriba con Write: se bloquean. Los casos legítimos se permiten. Medir que el hook responde en menos de 2 s
+- [X] T029 [US2] Ejecutar [quickstart.md §3](quickstart.md): permitido en la rama del ticket, bloqueado en una rama local `998-sin-spec` (borrarla al terminar)
+- [X] T030 [US3] Ejecutar [quickstart.md §4](quickstart.md) y borrar el archivo de prueba. SC-004 se cubre con los tests de T008 (todos los casos) y con esta prueba real de un archivo
+- [X] T031 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 1: `/andino-guardrails:revisar-cumplimiento` devuelve `APROBADO`, con las reglas en "NO APLICA". Si `agent:` falla, aplicar el fallback de [contracts/cumplimiento.md](contracts/cumplimiento.md) y repetir
 - [ ] T032 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 3:
   - Crear la rama local `997-prueba-cumplimiento` desde `003-guardrails-desarrollo` y copiar `spec.md`, `plan.md` y `tasks.md` de `specs/003-guardrails-desarrollo/` a `specs/997-prueba-cumplimiento/`, conservando el título y la línea `**Issue**: #3`. Así el revisor de código no bloquea por falta de artefactos en el paso 2.
   - Agregar un test que falle a propósito (`assert False`) en `plugins/andino-guardrails/hooks/test_bloquear_pii.py` y hacer commit. El desarrollador ejecuta `/abrir-pr`.

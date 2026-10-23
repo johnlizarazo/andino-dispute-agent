@@ -180,7 +180,7 @@ los controles de US1 a US3 están activos sin configuración manual.
 
 ### Edge Cases
 
-- **Número de tarjeta partido** con espacios o guiones (`4111 1111 ...`): se detecta igual.
+- **Número de tarjeta partido** con espacios o guiones (`NNNN NNNN NNNN NNNN`): se detecta igual.
 - **Secuencias largas que no pasan Luhn** (identificadores, marcas de tiempo, hashes): no se
   bloquean.
 - **Documentación que habla del formato** ("13 a 19 dígitos", `CC-FIC-NNNN`): no se bloquea.
