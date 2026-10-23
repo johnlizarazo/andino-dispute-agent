@@ -131,8 +131,8 @@ reiniciar la app.**
 
 - [X] T019 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T020 Marcar T001 a T020 en `specs/005-identificacion-clientes/tasks.md` y hacer commit. T021 y T022 ocurren después del último commit y se marcan en la rama del issue siguiente
-- [ ] T021 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #5`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T022 Después del merge, hecho por el desarrollador: verificar que el #5 queda cerrado y en *Done*
+- [X] T021 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #5`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T022 Después del merge, hecho por el desarrollador: verificar que el #5 queda cerrado y en *Done*
 
 ---
 
