@@ -52,9 +52,9 @@ su uso.
 
 **Independent Test**: `uv run pytest src/agente_disputas/test_prompts.py src/agente_disputas/test_configuracion.py`.
 
-- [ ] T005 [P] [US3] Escribir `src/agente_disputas/test_prompts.py` **antes** del módulo: `PROMPT_SISTEMA` menciona las 6 herramientas, "$500.000", "reintentable" y "dos veces"; `VERSION_PROMPT` no está vacío; verlo fallar
-- [ ] T006 [US3] Escribir `src/agente_disputas/prompts.py` con `VERSION_PROMPT = "1"` y `PROMPT_SISTEMA` según [contracts/configuracion.md](contracts/configuracion.md): rol, español, las 5 reglas de la constitución, cuándo usar cada herramienta, no inventar datos ni montos, y manejo de errores ("reintentable: true" → reintentar la misma llamada hasta dos veces y luego informar sin detalles técnicos y ofrecer escalar; "reintentable: false" → no repetir y actuar según tipo). Sin datos de clientes reales; los ejemplos usan solo datos ficticios. Dejar verde el test
-- [ ] T007 [P] [US3] Escribir `src/agente_disputas/test_configuracion.py` **antes** del módulo, sin API, con un `entorno` de prueba (diccionario) que contiene una clave ficticia `"clave-de-prueba"` (nunca una real), y verlo fallar:
+- [X] T005 [P] [US3] Escribir `src/agente_disputas/test_prompts.py` **antes** del módulo: `PROMPT_SISTEMA` menciona las 6 herramientas, "$500.000", "reintentable" y "dos veces"; `VERSION_PROMPT` no está vacío; verlo fallar
+- [X] T006 [US3] Escribir `src/agente_disputas/prompts.py` con `VERSION_PROMPT = "1"` y `PROMPT_SISTEMA` según [contracts/configuracion.md](contracts/configuracion.md): rol, español, las 5 reglas de la constitución, cuándo usar cada herramienta, no inventar datos ni montos, y manejo de errores ("reintentable: true" → reintentar la misma llamada hasta dos veces y luego informar sin detalles técnicos y ofrecer escalar; "reintentable: false" → no repetir y actuar según tipo). Sin datos de clientes reales; los ejemplos usan solo datos ficticios. Dejar verde el test
+- [X] T007 [P] [US3] Escribir `src/agente_disputas/test_configuracion.py` **antes** del módulo, sin API, con un `entorno` de prueba (diccionario) que contiene una clave ficticia `"clave-de-prueba"` (nunca una real), y verlo fallar:
   - `tools == []`, `permission_mode == "dontAsk"`, `strict_mcp_config is True`, `setting_sources == []`, `max_turns == 25`.
   - `allowed_tools` es exactamente `["mcp__core-bancario__" + n for n in HERRAMIENTAS]` y `HERRAMIENTAS` son las 6 del core.
   - `mcp_servers` tiene solo `core-bancario`: `type` `"stdio"`, `command` `sys.executable`, `args` `["-m", "core_bancario_mcp"]`.
@@ -62,7 +62,7 @@ su uso.
   - `model` es `"claude-sonnet-5-5"` por omisión y `ANDINO_MODELO` lo cambia.
   - `system_prompt` es `PROMPT_SISTEMA`.
   - `validar_credencial` lanza `CredencialFaltanteError` sin `ANTHROPIC_API_KEY` y con `"   "`; el mensaje contiene "ANTHROPIC_API_KEY" y no contiene "clave-de-prueba".
-- [ ] T008 [US3] Implementar `src/agente_disputas/configuracion.py` según [research.md R3 y R4](research.md): `HERRAMIENTAS`, `MODELO_POR_OMISION`, `MAXIMO_PASOS_POR_TURNO = 25` con un comentario que lo declare salvaguarda (FR-006), `CredencialFaltanteError`, `validar_credencial(entorno)` y `crear_opciones(entorno)` (recibe el entorno como `Mapping` para que los tests no toquen `os.environ`). La clave no se copia a las opciones: el SDK la hereda del entorno. Dejar verdes los tests y hacer commit `feat(#8): prompt y configuración del agente limitada al core bancario`
+- [X] T008 [US3] Implementar `src/agente_disputas/configuracion.py` según [research.md R3 y R4](research.md): `HERRAMIENTAS`, `MODELO_POR_OMISION`, `MAXIMO_PASOS_POR_TURNO = 25` con un comentario que lo declare salvaguarda (FR-006), `CredencialFaltanteError`, `validar_credencial(entorno)` y `crear_opciones(entorno)` (recibe el entorno como `Mapping` para que los tests no toquen `os.environ`). La clave no se copia a las opciones: el SDK la hereda del entorno. Dejar verdes los tests y hacer commit `feat(#8): prompt y configuración del agente limitada al core bancario`
 
 ---
 
