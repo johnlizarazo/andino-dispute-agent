@@ -29,7 +29,7 @@ Project), y después verificación y cierre.
 
 **Purpose**: crear las carpetas de las piezas nuevas.
 
-- [ ] T001 Crear las carpetas `.claude/agents/`, `.claude/commands/` y `.claude/skills/siguiente-ticket/`
+- [X] T001 Crear las carpetas `.claude/agents/`, `.claude/commands/` y `.claude/skills/siguiente-ticket/`
 
 ---
 
@@ -37,7 +37,7 @@ Project), y después verificación y cierre.
 
 **Purpose**: las reglas `allow` que acotan al revisor ([research.md R3](research.md)).
 
-- [ ] T002 Agregar a `.claude/settings.json` la clave `permissions.allow` con exactamente `"Bash(git diff *)"`, `"Bash(git log *)"` y `"Bash(git show *)"`, sin alterar `permissions.deny` ni `env`
+- [X] T002 Agregar a `.claude/settings.json` la clave `permissions.allow` con exactamente `"Bash(git diff *)"`, `"Bash(git log *)"` y `"Bash(git show *)"`, sin alterar `permissions.deny` ni `env`
 
 **Checkpoint**: settings listos para el revisor.
 
@@ -50,9 +50,9 @@ FR-012).
 
 **Independent Test**: [quickstart.md §3 y §4](quickstart.md).
 
-- [ ] T003 [US2] Crear `.claude/agents/revisor-codigo.md` según [contracts/revisor-codigo.md](contracts/revisor-codigo.md): frontmatter con `name: revisor-codigo`, `description`, `tools: Read, Grep, Glob, Bash` y `permissionMode: dontAsk`. En el cuerpo, en español, qué revisa (los tres puntos del contrato), la restricción de no editar nada y el formato de salida fijo con "`VEREDICTO: BLOQUEADO` si y solo si hay al menos un bloqueante"
-- [ ] T004 [US2] Crear `.claude/commands/abrir-pr.md` según [contracts/abrir-pr.md](contracts/abrir-pr.md): frontmatter con `description`, `argument-hint`, `disable-model-invocation: true` y `allowed-tools` **sin** `git push` ni `create_pull_request`. En el cuerpo, los 7 pasos del contrato en orden, con los criterios de parada, la idempotencia (reutilizar el PR, omitir estado y comentario ya hechos) y la plantilla "PR abierto" de [contracts/comentarios.md](contracts/comentarios.md)
-- [ ] T005 [US2] Hacer commit `feat(#2): subagente revisor-codigo y comando /abrir-pr`
+- [X] T003 [US2] Crear `.claude/agents/revisor-codigo.md` según [contracts/revisor-codigo.md](contracts/revisor-codigo.md): frontmatter con `name: revisor-codigo`, `description`, `tools: Read, Grep, Glob, Bash` y `permissionMode: dontAsk`. En el cuerpo, en español, qué revisa (los tres puntos del contrato), la restricción de no editar nada y el formato de salida fijo con "`VEREDICTO: BLOQUEADO` si y solo si hay al menos un bloqueante"
+- [X] T004 [US2] Crear `.claude/commands/abrir-pr.md` según [contracts/abrir-pr.md](contracts/abrir-pr.md): frontmatter con `description`, `argument-hint`, `disable-model-invocation: true` y `allowed-tools` **sin** `git push` ni `create_pull_request`. En el cuerpo, los 7 pasos del contrato en orden, con los criterios de parada, la idempotencia (reutilizar el PR, omitir estado y comentario ya hechos) y la plantilla "PR abierto" de [contracts/comentarios.md](contracts/comentarios.md)
+- [X] T005 [US2] Hacer commit `feat(#2): subagente revisor-codigo y comando /abrir-pr`
 
 **Checkpoint**: revisor y comando listos; se verifican en la fase 7 (necesitan una sesión
 nueva para cargarse).
