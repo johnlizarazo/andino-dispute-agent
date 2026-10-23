@@ -7,8 +7,12 @@ queda registrado para el analista. Las funciones son puras sobre un ``Contexto``
 
 import json
 
+from mcp.server.fastmcp import FastMCP
+
 from core_bancario_mcp.contexto import Contexto, DetalleTransaccion
 from core_bancario_mcp.errores import Codigo, TipoError, error, exito
+from core_bancario_mcp.fallas import con_fallas
+from core_bancario_mcp.identificacion import ListaTexto, Texto
 from core_bancario_mcp.repositorio import PATRON_CUATRO_DIGITOS
 from core_bancario_mcp.transacciones import tarjeta_no_encontrada
 
@@ -26,6 +30,23 @@ CAUSAS_SIN_CLIENTE = {
     "persona_solicitada"
 }  # regla 4: se escala aunque no esté identificado
 CAUSAS_CON_TRANSACCIONES = {"umbral", "fuera_de_politica"}
+
+DESCRIPCION_BLOQUEAR = (
+    "Bloquea de inmediato una tarjeta del cliente, identificada por cliente_id y ultimos4, "
+    "por sospecha de fraude, con el motivo. Requiere la identidad verificada del titular. "
+    "No requiere ni espera la aprobación de un analista: el bloqueo ocurre en el mismo "
+    "llamado. Si la tarjeta ya estaba bloqueada responde ya_estaba_bloqueada; no es un error."
+)
+DESCRIPCION_ESCALAR = (
+    "Escala el caso a un analista humano con un resumen estructurado: causa, cliente_id, "
+    "transacciones (solo sus ids), acciones_realizadas y accion_recomendada. No requiere "
+    "identidad verificada. Si el cliente pide hablar con una persona, escala de inmediato "
+    "con causa persona_solicitada, aunque no esté identificado. Úsala también cuando el "
+    "core responde REQUIERE_ANALISTA (causa umbral), FUERA_DE_POLITICA (causa "
+    "fuera_de_politica) o INTENTOS_AGOTADOS (causa intentos_agotados); para lo demás, causa "
+    "otra. El core completa los montos y guarda el resumen para el analista; responde el "
+    "número de escalamiento para informarlo al cliente."
+)
 
 
 def _invalido(mensaje: str) -> dict:
@@ -179,3 +200,32 @@ def escalar_a_analista(
             "cantidad_transacciones": len(escalamiento.transacciones),
         }
     )
+
+
+def registrar(servidor: FastMCP, contexto: Contexto) -> None:
+    """Publica las herramientas de bloqueo y escalamiento sobre ``contexto``."""
+
+    @servidor.tool(name="bloquear_tarjeta", description=DESCRIPCION_BLOQUEAR)
+    @con_fallas(contexto.inyector, "bloquear_tarjeta")
+    def _bloquear(
+        cliente_id: Texto = None, ultimos4: Texto = None, motivo: Texto = None
+    ) -> dict:
+        return bloquear_tarjeta(contexto, cliente_id, ultimos4, motivo)
+
+    @servidor.tool(name="escalar_a_analista", description=DESCRIPCION_ESCALAR)
+    @con_fallas(contexto.inyector, "escalar_a_analista")
+    def _escalar(
+        causa: Texto = None,
+        cliente_id: Texto = None,
+        transacciones: ListaTexto = None,
+        acciones_realizadas: Texto = None,
+        accion_recomendada: Texto = None,
+    ) -> dict:
+        return escalar_a_analista(
+            contexto,
+            causa,
+            cliente_id,
+            transacciones,
+            acciones_realizadas,
+            accion_recomendada,
+        )

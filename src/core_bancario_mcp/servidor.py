@@ -1,14 +1,14 @@
 """Servidor MCP ``core-bancario``: simula el core de Banco Andino (ficticio).
 
-``crear_servidor`` arma un ``Contexto`` explícito (repositorio, inyector de fallas, intentos
-y disputas) y registra sobre él las herramientas de cada módulo: identificación
-(#5) y transacciones (#6). Las de bloqueo y escalamiento llegan en el #7 con su propio
-``registrar``.
+``crear_servidor`` arma un ``Contexto`` explícito (repositorio, inyector de fallas, intentos,
+disputas, bloqueos y escalamientos) y registra sobre él las seis herramientas de la
+constitución: identificación (#5), transacciones (#6) y bloqueo y escalamiento (#7), cada
+grupo con su propio ``registrar``.
 """
 
 from mcp.server.fastmcp import FastMCP
 
-from core_bancario_mcp import identificacion, transacciones
+from core_bancario_mcp import bloqueo_escalamiento, identificacion, transacciones
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas, desde_entorno
 from core_bancario_mcp.repositorio import Repositorio
@@ -21,4 +21,5 @@ def crear_servidor(
     contexto = Contexto(repositorio or Repositorio(), inyector or desde_entorno())
     identificacion.registrar(servidor, contexto)
     transacciones.registrar(servidor, contexto)
+    bloqueo_escalamiento.registrar(servidor, contexto)
     return servidor

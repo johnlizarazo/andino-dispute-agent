@@ -1,8 +1,15 @@
+import asyncio
+import json
 from datetime import date
 
 import pytest
+from mcp.server.fastmcp import FastMCP
 
-from core_bancario_mcp.bloqueo_escalamiento import bloquear_tarjeta, escalar_a_analista
+from core_bancario_mcp.bloqueo_escalamiento import (
+    bloquear_tarjeta,
+    escalar_a_analista,
+    registrar,
+)
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas
 from core_bancario_mcp.repositorio import Repositorio
@@ -258,3 +265,43 @@ def test_largos_y_tipos_invalidos_son_validacion(contexto, argumentos):
 def test_ningun_error_registra_el_escalamiento(contexto, argumentos):
     assert _escalar(contexto, **argumentos)["ok"] is False
     assert contexto.escalamientos.todos() == []
+
+
+# --- registro con inyección de fallas ---
+
+
+def _servidor_con_fallas(configuracion: str) -> tuple[FastMCP, Contexto]:
+    contexto = Contexto(Repositorio(hoy=HOY), InyectorFallas(configuracion))
+    servidor = FastMCP("prueba")
+    registrar(servidor, contexto)
+    return servidor, contexto
+
+
+def _llamar(servidor: FastMCP, nombre: str, argumentos: dict) -> dict:
+    (contenido,) = asyncio.run(servidor.call_tool(nombre, argumentos))
+    return json.loads(contenido.text)
+
+
+def test_falla_inyectada_en_bloqueo_no_bloquea():
+    servidor, contexto = _servidor_con_fallas("bloquear_tarjeta:1")
+    argumentos = {"cliente_id": "CLI-001", "ultimos4": "4821", "motivo": MOTIVO}
+    primera = _llamar(servidor, "bloquear_tarjeta", argumentos)
+    assert primera["error"]["tipo"] == "transitorio"
+    assert primera["error"]["reintentable"] is True
+    assert _estado(contexto, "TAR-001") == "activa"
+    assert _llamar(servidor, "bloquear_tarjeta", argumentos)["ok"] is True
+    assert _estado(contexto, "TAR-001") == "bloqueada"
+
+
+def test_falla_inyectada_en_escalamiento_no_registra():
+    servidor, contexto = _servidor_con_fallas("escalar_a_analista:1")
+    argumentos = {
+        "causa": "persona_solicitada",
+        "acciones_realizadas": "Ninguna; el cliente pidió una persona",
+        "accion_recomendada": "Contactar al cliente",
+    }
+    primera = _llamar(servidor, "escalar_a_analista", argumentos)
+    assert primera["error"]["tipo"] == "transitorio"
+    assert contexto.escalamientos.todos() == []
+    assert _llamar(servidor, "escalar_a_analista", argumentos)["ok"] is True
+    assert len(contexto.escalamientos.todos()) == 1
