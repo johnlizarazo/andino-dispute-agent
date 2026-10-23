@@ -50,3 +50,15 @@ def test_problema_no_corregible_se_reporta_con_salida_2(tmp_path):
 
 def test_archivo_inexistente_se_permite(tmp_path):
     assert _correr(tmp_path / "no_existe.py").returncode == 0
+
+
+def test_json_invalido_sale_con_2_y_mensaje_de_error_interno():
+    r = subprocess.run(
+        [sys.executable, str(SCRIPT)],
+        input=b"no es json",
+        capture_output=True,
+        check=False,
+        env={**os.environ, "CLAUDE_PROJECT_DIR": str(PROYECTO)},
+    )
+    assert r.returncode == 2
+    assert "error interno" in r.stderr.decode("utf-8")

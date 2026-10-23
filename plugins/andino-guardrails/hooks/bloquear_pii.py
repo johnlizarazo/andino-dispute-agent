@@ -115,11 +115,11 @@ def modo_diff(ruta: str) -> int:
 
 
 def main() -> int:
-    for flujo in (sys.stdout, sys.stderr):
-        flujo.reconfigure(encoding="utf-8")
-    if len(sys.argv) == 3 and sys.argv[1] == "--diff":
-        return modo_diff(sys.argv[2])
     try:
+        for flujo in (sys.stdout, sys.stderr):
+            flujo.reconfigure(encoding="utf-8")
+        if len(sys.argv) == 3 and sys.argv[1] == "--diff":
+            return modo_diff(sys.argv[2])
         return modo_hook()
     except Exception as error:  # noqa: BLE001 - fallo cerrado intencional
         print(

@@ -161,20 +161,20 @@ app y aceptar la confianza de la carpeta** antes de T027.
 - [X] T029 [US2] Ejecutar [quickstart.md §3](quickstart.md): permitido en la rama del ticket, bloqueado en una rama local `998-sin-spec` (borrarla al terminar)
 - [X] T030 [US3] Ejecutar [quickstart.md §4](quickstart.md) y borrar el archivo de prueba. SC-004 se cubre con los tests de T008 (todos los casos) y con esta prueba real de un archivo
 - [X] T031 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 1: `/andino-guardrails:revisar-cumplimiento` devuelve `APROBADO`, con las reglas en "NO APLICA". Si `agent:` falla, aplicar el fallback de [contracts/cumplimiento.md](contracts/cumplimiento.md) y repetir
-- [ ] T032 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 3:
+- [X] T032 [US4] Ejecutar [quickstart.md §5](quickstart.md), paso 3:
   - Crear la rama local `997-prueba-cumplimiento` desde `003-guardrails-desarrollo` y copiar `spec.md`, `plan.md` y `tasks.md` de `specs/003-guardrails-desarrollo/` a `specs/997-prueba-cumplimiento/`, conservando el título y la línea `**Issue**: #3`. Así el revisor de código no bloquea por falta de artefactos en el paso 2.
   - Agregar un test que falle a propósito (`assert False`) en `plugins/andino-guardrails/hooks/test_bloquear_pii.py` y hacer commit. El desarrollador ejecuta `/abrir-pr`.
   - Si el revisor de código igualmente bloquea en el paso 2, invocar directamente `/andino-guardrails:revisar-cumplimiento` sobre la rama y registrar que devuelve `BLOQUEADO`.
   - Esperado: se detiene en el paso 2b sin publicar. Si apareciera una confirmación de push o de PR, se **rechaza** y se registra como falla.
   - Borrar la rama.
-- [ ] T033 [US5] Ejecutar [quickstart.md §6](quickstart.md): leer un `test_*.py` del plugin y confirmar que la rule de tests se carga
+- [X] T033 [US5] Ejecutar [quickstart.md §6](quickstart.md): leer un `test_*.py` del plugin y confirmar que la rule de tests se carga
 
 ---
 
 ## Phase 11: Cierre con `/abrir-pr`
 
-- [ ] T034 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T035 Marcar T001 a T035 en `specs/003-guardrails-desarrollo/tasks.md` y hacer commit. Las tareas T036 en adelante ocurren después del último commit de la rama y se marcan en la rama del issue siguiente
+- [X] T034 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T035 Marcar T001 a T035 en `specs/003-guardrails-desarrollo/tasks.md` y hacer commit. Las tareas T036 en adelante ocurren después del último commit de la rama y se marcan en la rama del issue siguiente
 - [ ] T036 El desarrollador ejecuta `/abrir-pr`, que ahora incluye cumplimiento, y aprueba el push y el PR. Esperado:
   - Revisión de código `APROBADO`.
   - Cumplimiento `APROBADO`.

@@ -24,6 +24,14 @@ def _ruff(proyecto: Path, *args: str) -> subprocess.CompletedProcess:
 
 
 def main() -> int:
+    try:
+        return formatear()
+    except Exception as error:  # noqa: BLE001 - un error siempre se reporta a Claude
+        print(f"formatear: error interno: {type(error).__name__}", file=sys.stderr)
+        return 2
+
+
+def formatear() -> int:
     sys.stderr.reconfigure(encoding="utf-8")
     evento = json.loads(sys.stdin.buffer.read().decode("utf-8"))
     archivo = Path((evento.get("tool_input") or {}).get("file_path", ""))

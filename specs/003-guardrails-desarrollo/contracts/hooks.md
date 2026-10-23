@@ -48,8 +48,8 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
     grupos de 4 refleja cómo se escriben las tarjetas reales.
   - **Documento**: `(?i)\b(?:c\.?c\.?|c[eé]dula|documento|nit|pasaporte)\b\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?!\d)`.
   - **Excepción**: `CC-FIC-\d{4}`.
-- **Si hay hallazgos**: stderr con `Bloqueado: dato con forma real (<tipo>) en <archivo>
-  línea <n>: <muestra enmascarada>. Usa datos ficticios (tarjeta: solo últimos 4;
+- **Si hay hallazgos**: stderr con `Bloqueado: dato con forma real (<tipo>) en <archivo>,
+  línea <n> del texto nuevo: <muestra enmascarada>. Usa datos ficticios (tarjeta: solo últimos 4;
   documento: CC-FIC-NNNN).` y salida 2.
 - **Modo CLI** (para CI): `python bloquear_pii.py --diff <archivo_diff>`. Analiza solo las
   líneas agregadas (`+` sin `+++`) de un diff unificado y reporta todos los hallazgos con su
@@ -61,7 +61,8 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
 
 1. Si `tool_input.file_path`, relativo a `CLAUDE_PROJECT_DIR` (o a `cwd`), no empieza por
    `src/`: sale con 0.
-2. Obtiene la rama con `git rev-parse --abbrev-ref HEAD`. Si no cumple
+2. Obtiene la rama con `git symbolic-ref --short HEAD`. A diferencia de `rev-parse
+   --abbrev-ref HEAD`, funciona también en una rama recién creada sin commits. Si no cumple
    `^\d{3}-[a-z0-9-]+$`: bloquea ("escribir en src/ requiere una rama de ticket NNN-slug").
 3. Si falta cualquiera de `specs/<rama>/{spec,plan,tasks}.md`: bloquea, nombrando los que
    faltan.
@@ -69,8 +70,12 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
 ## `formatear.py`
 
 1. Si el archivo no termina en `.py` o no existe: sale con 0.
-2. En `CLAUDE_PROJECT_DIR`, ejecuta `uv run ruff format <archivo>` y luego
-   `uv run ruff check --fix <archivo>`.
-3. Si `ruff check` deja problemas: stderr con su salida y salida 2. Es retroalimentación; la
+2. En `CLAUDE_PROJECT_DIR`, ejecuta `uv run --no-sync ruff format <archivo>` y luego
+   `uv run --no-sync ruff check --fix <archivo>`. Con `--no-sync`, el hook no reinstala el
+   proyecto en cada edición: es más rápido y evita el bloqueo de archivos de `.venv` que
+   se observó en Windows.
+3. Como los demás hooks, envuelve todo en `try/except`: un error interno se reporta a Claude
+   con salida 2. En `PostToolUse` eso es retroalimentación, porque la edición ya ocurrió.
+4. Si `ruff check` deja problemas: stderr con su salida y salida 2. Es retroalimentación; la
    edición ya ocurrió.
-4. Si `uv` o `ruff` no están disponibles: un aviso en stderr y salida 0, sin bloquear.
+5. Si `uv` o `ruff` no están disponibles: un aviso en stderr y salida 0, sin bloquear.
