@@ -207,3 +207,46 @@ def test_disputa_con_parametros_invalidos_es_validacion(contexto, argumentos):
     respuesta = iniciar_disputa(contexto, **argumentos)
     assert _error(respuesta, "validacion", "PARAMETRO_INVALIDO")
     assert contexto.disputas.caso_de("TRX-001") is None
+
+
+# --- iniciar_disputa: rechazos por política y por umbral ---
+
+
+def test_politica_rechaza_cobro_en_el_exterior_de_120_dias(contexto):
+    respuesta = iniciar_disputa(contexto, "TRX-006", MOTIVO)
+    assert _error(respuesta, "negocio", "FUERA_DE_POLITICA")
+    assert "analista" in respuesta["error"]["mensaje"]
+    assert contexto.disputas.caso_de("TRX-006") is None
+
+
+def test_umbral_rechaza_cobro_de_1250000_sin_abrir_caso(contexto):
+    respuesta = iniciar_disputa(contexto, "TRX-002", MOTIVO)
+    assert _error(respuesta, "negocio", "REQUIERE_ANALISTA")
+    assert "analista" in respuesta["error"]["mensaje"]
+    assert contexto.disputas.caso_de("TRX-002") is None
+    cobros = consultar_transacciones(contexto, "CLI-001", "4821")["datos"]
+    assert {c["transaccion_id"]: c["caso_disputa"] for c in cobros}["TRX-002"] is None
+
+
+@pytest.mark.parametrize(
+    ("transaccion_id", "dias", "se_abre"),
+    [
+        ("TRX-006", 90, True),  # exterior en el límite
+        ("TRX-006", 91, False),
+        ("TRX-003", 120, True),  # nacional en el límite
+        ("TRX-003", 121, False),
+    ],
+)
+def test_bordes_de_la_politica(tmp_path, transaccion_id, dias, se_abre):
+    contexto = _contexto_con(tmp_path, {transaccion_id: {"dias_atras": dias}})
+    respuesta = iniciar_disputa(contexto, transaccion_id, MOTIVO)
+    if se_abre:
+        assert respuesta["ok"] is True
+    else:
+        assert _error(respuesta, "negocio", "FUERA_DE_POLITICA")
+
+
+def test_fuera_de_politica_y_sobre_el_umbral_responde_politica(tmp_path):
+    contexto = _contexto_con(tmp_path, {"TRX-002": {"dias_atras": 121}})
+    respuesta = iniciar_disputa(contexto, "TRX-002", MOTIVO)
+    assert _error(respuesta, "negocio", "FUERA_DE_POLITICA")

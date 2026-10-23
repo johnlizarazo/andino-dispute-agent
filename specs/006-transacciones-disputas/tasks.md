@@ -102,12 +102,12 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_transacciones.py -k "politica or umbral"`.
 
-- [ ] T014 [US3] Agregar a `src/core_bancario_mcp/test_transacciones.py`, **antes** de implementar, y verlos fallar:
+- [X] T014 [US3] Agregar a `src/core_bancario_mcp/test_transacciones.py`, **antes** de implementar, y verlos fallar:
   - TRX-006 (exterior, 120 días) → negocio `FUERA_DE_POLITICA` no reintentable; el mensaje contiene "analista".
   - TRX-002 ($1.250.000) → negocio `REQUIERE_ANALISTA` no reintentable; el mensaje contiene "analista"; después, `consultar_transacciones` muestra TRX-002 con `caso_disputa` `None` y `contexto.disputas.caso_de("TRX-002")` es `None`.
   - Bordes con datos copiados a `tmp_path` (editando `dias_atras` y `monto` de transacciones existentes): exterior de 90 días → se abre y de 91 → `FUERA_DE_POLITICA`; nacional de 120 → se abre y de 121 → `FUERA_DE_POLITICA`.
   - Fuera de política **y** sobre el umbral a la vez (datos en `tmp_path`) → `FUERA_DE_POLITICA`.
-- [ ] T015 [US3] Completar `iniciar_disputa` en `src/core_bancario_mcp/transacciones.py` con los pasos 5 y 6 de [research.md R3](research.md) usando `politica.cubre(transaccion, repositorio.hoy)` y `politica.requiere_analista(transaccion.monto)`; mensajes con la antigüedad y el límite, o con el umbral, y la indicación de escalar a un analista. Dejar verdes los tests y hacer commit `feat(#6): rechazo por política y por umbral en iniciar_disputa`
+- [X] T015 [US3] Completar `iniciar_disputa` en `src/core_bancario_mcp/transacciones.py` con los pasos 5 y 6 de [research.md R3](research.md) usando `politica.cubre(transaccion, repositorio.hoy)` y `politica.requiere_analista(transaccion.monto)`; mensajes con la antigüedad y el límite, o con el umbral, y la indicación de escalar a un analista. Dejar verdes los tests y hacer commit `feat(#6): rechazo por política y por umbral en iniciar_disputa`
 
 ---
 

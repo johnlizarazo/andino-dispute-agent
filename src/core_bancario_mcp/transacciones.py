@@ -133,6 +133,33 @@ def iniciar_disputa(contexto: Contexto, transaccion_id=None, motivo=None) -> dic
             "Informa ese caso al cliente.",
         )
 
+    # La política decide primero si el caso es disputable; después, el umbral (regla 2).
+    repositorio = contexto.repositorio
+    politica = repositorio.politica
+    if not politica.cubre(transaccion, repositorio.hoy):
+        antiguedad = (repositorio.hoy - transaccion.fecha).days
+        nacional = transaccion.pais == "CO"
+        limite = (
+            politica.dias_maximos_disputa_nacional
+            if nacional
+            else politica.dias_maximos_disputa_exterior
+        )
+        origen = "nacionales" if nacional else "en el exterior"
+        return error(
+            TipoError.NEGOCIO,
+            Codigo.FUERA_DE_POLITICA,
+            f"El cobro tiene {antiguedad} días y la política cubre cobros {origen} "
+            f"hasta {limite} días. No reintentes: escala el caso a un analista.",
+        )
+    if politica.requiere_analista(transaccion.monto):
+        umbral = f"{politica.umbral_disputa_automatica:,}".replace(",", ".")
+        return error(
+            TipoError.NEGOCIO,
+            Codigo.REQUIERE_ANALISTA,
+            f"El monto supera el umbral de disputa automática (${umbral}). "
+            "No reintentes: escala el caso a un analista.",
+        )
+
     caso = contexto.disputas.abrir(transaccion, motivo)
     return exito(
         {
