@@ -29,14 +29,17 @@ def _rama(proyecto: Path) -> str:
 
 def evaluar(evento: dict, proyecto: Path) -> str | None:
     """Devuelve el motivo del bloqueo, o None si la escritura se permite."""
-    ruta = Path((evento.get("tool_input") or {}).get("file_path", ""))
+    entrada = evento.get("tool_input") or {}
+    # NotebookEdit envía la ruta en notebook_path, no en file_path.
+    ruta = Path(entrada.get("file_path") or entrada.get("notebook_path") or "")
     if not ruta.is_absolute():
         ruta = proyecto / ruta
     try:
         relativa = ruta.resolve().relative_to(proyecto.resolve())
     except ValueError:
         return None  # fuera del proyecto
-    if not relativa.parts or relativa.parts[0] != "src":
+    # En Windows el sistema de archivos no distingue mayúsculas: SRC/ es src/.
+    if not relativa.parts or relativa.parts[0].lower() != "src":
         return None
 
     rama = _rama(proyecto)
@@ -55,8 +58,8 @@ def evaluar(evento: dict, proyecto: Path) -> str | None:
 
 
 def main() -> int:
-    sys.stderr.reconfigure(encoding="utf-8")
     try:
+        sys.stderr.reconfigure(encoding="utf-8")
         evento = json.loads(sys.stdin.buffer.read().decode("utf-8"))
         proyecto = Path(
             os.environ.get("CLAUDE_PROJECT_DIR") or evento.get("cwd") or "."

@@ -23,7 +23,7 @@ PATRON_TARJETA = re.compile(
 )
 PATRON_DOCUMENTO = re.compile(
     r"(?i)(?<!\w)(?:c\.?c\.?|c[eé]dula|documento|nit|pasaporte)(?!\w)"
-    r"\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?![\d.])"
+    r"\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?!\d|\.\d)"
 )
 
 
@@ -85,7 +85,8 @@ def _mensaje(archivo: str, hallazgo: dict) -> str:
 
 def modo_hook() -> int:
     evento = json.loads(sys.stdin.buffer.read().decode("utf-8"))
-    archivo = (evento.get("tool_input") or {}).get("file_path", "?")
+    entrada = evento.get("tool_input") or {}
+    archivo = entrada.get("file_path") or entrada.get("notebook_path") or "?"
     mensajes = [
         _mensaje(archivo, h)
         for texto in textos_nuevos(evento)

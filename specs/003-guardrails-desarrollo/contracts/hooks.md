@@ -32,8 +32,12 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
 ## Reglas comunes
 
 - Solo biblioteca estándar.
-- El punto de entrada envuelve todo en `try/except`. Ante cualquier excepción, escribe
-  `"<script>: error interno, se bloquea por seguridad: <tipo>"` en stderr y sale con 2.
+- El punto de entrada envuelve todo en `try/except`. Ante cualquier excepción, escribe en
+  stderr y sale con 2.
+  - En los `PreToolUse` el mensaje es `"<script>: error interno, se bloquea por seguridad:
+    <tipo>"`.
+  - En `formatear` (`PostToolUse`) es `"formatear: error interno: <tipo>"`, porque ahí no hay
+    bloqueo: la edición ya ocurrió.
 - Salida 0 sin texto si se permite.
 
 ## `bloquear_pii.py`
@@ -46,7 +50,10 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
     *Ajuste de implementación*: el patrón genérico `(?:\d[ -]?){12,18}\d` podía unir montos
     separados por un espacio ("180000 1250000") y, en un 10% de los casos, pasar Luhn. Exigir
     grupos de 4 refleja cómo se escriben las tarjetas reales.
-  - **Documento**: `(?i)\b(?:c\.?c\.?|c[eé]dula|documento|nit|pasaporte)\b\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?!\d)`.
+  - **Documento**: `(?i)(?<!\w)(?:c\.?c\.?|c[eé]dula|documento|nit|pasaporte)(?!\w)\W{0,3}(\d{1,3}(?:\.\d{3}){1,3}|\d{6,10})(?!\d|\.\d)`.
+    El cierre `(?!\d|\.\d)` rechaza que siga otro dígito o la continuación de unos miles,
+    pero acepta el punto final de una oración. Lo detectó la revisión independiente: un
+    cierre `(?![\d.])` dejaba pasar un documento al final de una oración.
   - **Excepción**: `CC-FIC-\d{4}`.
 - **Si hay hallazgos**: stderr con `Bloqueado: dato con forma real (<tipo>) en <archivo>,
   línea <n> del texto nuevo: <muestra enmascarada>. Usa datos ficticios (tarjeta: solo últimos 4;
@@ -59,8 +66,9 @@ Fundamento en [research.md R4, R5, R7 y R8](../research.md).
 
 ## `exigir_spec.py`
 
-1. Si `tool_input.file_path`, relativo a `CLAUDE_PROJECT_DIR` (o a `cwd`), no empieza por
-   `src/`: sale con 0.
+1. Si la ruta (`tool_input.file_path`, o `notebook_path` en NotebookEdit), relativa a
+   `CLAUDE_PROJECT_DIR` (o a `cwd`), no empieza por `src/`: sale con 0. La comparación no
+   distingue mayúsculas, porque en Windows `SRC/` es la misma carpeta.
 2. Obtiene la rama con `git symbolic-ref --short HEAD`. A diferencia de `rev-parse
    --abbrev-ref HEAD`, funciona también en una rama recién creada sin commits. Si no cumple
    `^\d{3}-[a-z0-9-]+$`: bloquea ("escribir en src/ requiere una rama de ticket NNN-slug").

@@ -74,6 +74,21 @@ def test_src_con_los_tres_artefactos_se_permite(tmp_path, ruta):
     assert _correr(repo, ruta).returncode == 0
 
 
+def test_notebook_bajo_src_sin_artefactos_se_bloquea(tmp_path):
+    repo = _repo(tmp_path, "main")
+    evento = {
+        "tool_name": "NotebookEdit",
+        "tool_input": {"notebook_path": str(repo / "src" / "analisis.ipynb")},
+    }
+    r = _correr(repo, "", entrada=json.dumps(evento))
+    assert r.returncode == 2
+
+
+def test_src_en_mayusculas_tambien_se_controla(tmp_path):
+    repo = _repo(tmp_path, "main")
+    assert _correr(repo, "SRC/paquete/modulo.py").returncode == 2
+
+
 def test_json_invalido_falla_cerrado(tmp_path):
     repo = _repo(tmp_path, "004-algo")
     assert _correr(repo, "src/x.py", entrada="no es json").returncode == 2

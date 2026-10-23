@@ -109,6 +109,19 @@ def test_documentos_se_detectan(texto):
     assert [h["tipo"] for h in hallazgos] == ["documento"]
 
 
+@pytest.mark.parametrize(
+    "texto",
+    [
+        f"El cliente es {documento('CC', 8)}.",
+        f"Su {documento('cédula', 7, con_puntos=True)}. Gracias",
+        f"({documento('documento', 10)}).",
+    ],
+)
+def test_documentos_seguidos_de_puntuacion_se_detectan(texto):
+    hallazgos = bloquear_pii.buscar_hallazgos(texto)
+    assert [h["tipo"] for h in hallazgos] == ["documento"]
+
+
 def test_luhn_valido():
     numero = tarjeta_valida(16)
     assert bloquear_pii.luhn_valido(numero)
