@@ -8,12 +8,38 @@ en el servidor con sus descripciones y la inyección de fallas.
 import hmac
 import re
 import unicodedata
+from typing import Annotated
+
+from mcp.server.fastmcp import FastMCP
+from pydantic import WithJsonSchema
 
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.errores import Codigo, TipoError, error, exito
+from core_bancario_mcp.fallas import con_fallas
 from core_bancario_mcp.repositorio import PATRON_CUATRO_DIGITOS, PATRON_DOCUMENTO
 
 LARGO_MAXIMO_NOMBRE = 100
+
+# El esquema publicado dice "texto" (guía al modelo), pero cualquier valor llega a la
+# herramienta: así un número o una lista se responden con el contrato y no con un error de
+# validación de FastMCP fuera de él.
+Texto = Annotated[object, WithJsonSchema({"type": "string"})]
+
+DESCRIPCION_BUSCAR = (
+    "Busca clientes por UN solo criterio: documento (formato CC-FIC-NNNN), nombre o "
+    "ultimos4 (los últimos 4 dígitos de una tarjeta). Devuelve todas las coincidencias, "
+    "solo con cliente_id y nombre. Buscar NO verifica identidad: después de una única "
+    "coincidencia usa verificar_identidad. Si hay varias coincidencias, NO elijas: pide "
+    "al cliente otro identificador (su documento o los últimos 4 de su tarjeta) y busca "
+    "de nuevo. Una lista vacía significa que no hay coincidencias; no es un error."
+)
+DESCRIPCION_VERIFICAR = (
+    "Confirma la identidad de un cliente con su dato de verificación, un dato que solo "
+    "el cliente conoce. Úsala solo después de que buscar_cliente devolvió una única "
+    "coincidencia, con su cliente_id. Si el dato no coincide, no reintentes con un dato "
+    "inventado: pide al cliente que lo confirme. Tras 3 fallos el core bloquea la "
+    "verificación de ese cliente y debes escalar a un analista."
+)
 
 
 def _invalido(mensaje: str) -> dict:
@@ -112,3 +138,19 @@ def verificar_identidad(
         "El dato de verificación no coincide. Pide al cliente que lo confirme; "
         "no lo reintentes con un dato inventado.",
     )
+
+
+def registrar(servidor: FastMCP, contexto: Contexto) -> None:
+    """Publica las herramientas de identificación sobre ``contexto``."""
+
+    @servidor.tool(name="buscar_cliente", description=DESCRIPCION_BUSCAR)
+    @con_fallas(contexto.inyector, "buscar_cliente")
+    def _buscar(
+        documento: Texto = None, nombre: Texto = None, ultimos4: Texto = None
+    ) -> dict:
+        return buscar_cliente(contexto, documento, nombre, ultimos4)
+
+    @servidor.tool(name="verificar_identidad", description=DESCRIPCION_VERIFICAR)
+    @con_fallas(contexto.inyector, "verificar_identidad")
+    def _verificar(cliente_id: Texto = None, dato_verificacion: Texto = None) -> dict:
+        return verificar_identidad(contexto, cliente_id, dato_verificacion)

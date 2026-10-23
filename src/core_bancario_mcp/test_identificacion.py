@@ -1,13 +1,19 @@
+import asyncio
 import json
 import shutil
 from datetime import date
 from pathlib import Path
 
 import pytest
+from mcp.server.fastmcp import FastMCP
 
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas
-from core_bancario_mcp.identificacion import buscar_cliente, verificar_identidad
+from core_bancario_mcp.identificacion import (
+    buscar_cliente,
+    registrar,
+    verificar_identidad,
+)
 from core_bancario_mcp.repositorio import Repositorio
 
 DATOS = Path(__file__).with_name("datos")
@@ -213,3 +219,42 @@ def test_cliente_inexistente_no_suma_intentos(contexto):
     for _ in range(5):
         verificar_identidad(contexto, "CLI-999", "1234")
     assert not contexto.intentos.agotados("CLI-999")
+
+
+# --- registro con inyección de fallas ---
+
+
+def _servidor_con_fallas(configuracion: str) -> tuple[FastMCP, Contexto]:
+    contexto = Contexto(Repositorio(hoy=HOY), InyectorFallas(configuracion))
+    servidor = FastMCP("prueba")
+    registrar(servidor, contexto)
+    return servidor, contexto
+
+
+def _llamar(servidor: FastMCP, nombre: str, argumentos: dict) -> dict:
+    (contenido,) = asyncio.run(servidor.call_tool(nombre, argumentos))
+    return json.loads(contenido.text)
+
+
+def test_buscar_respeta_la_falla_inyectada_y_luego_responde():
+    servidor, _ = _servidor_con_fallas("buscar_cliente:1")
+    primera = _llamar(servidor, "buscar_cliente", {"documento": "CC-FIC-0001"})
+    assert primera["ok"] is False
+    assert primera["error"]["tipo"] == "transitorio"
+    assert primera["error"]["reintentable"] is True
+    segunda = _llamar(servidor, "buscar_cliente", {"documento": "CC-FIC-0001"})
+    assert _ids(segunda) == ["CLI-001"]
+
+
+def test_falla_inyectada_en_verificar_no_cuenta_como_intento():
+    servidor, contexto = _servidor_con_fallas("verificar_identidad:1")
+    argumentos = {
+        "cliente_id": "CLI-001",
+        "dato_verificacion": _incorrecto(contexto, "CLI-001"),
+    }
+    assert _llamar(servidor, "verificar_identidad", argumentos)["error"]["tipo"] == (
+        "transitorio"
+    )
+    for _ in range(2):
+        _llamar(servidor, "verificar_identidad", argumentos)
+    assert not contexto.intentos.agotados("CLI-001")
