@@ -116,6 +116,7 @@ def main() -> int:
         return 0
     except CLINotFoundError:
         print("No se encontró el motor del agente (Claude Code).", file=sys.stderr)
-    except CLIConnectionError, ProcessError:
+    except CLIConnectionError, ProcessError, ClaudeSDKError:
+        # Cualquier otra falla del SDK al arrancar también termina sin traza (SC-004).
         print("No se pudo iniciar el agente; inténtalo de nuevo.", file=sys.stderr)
     return 1

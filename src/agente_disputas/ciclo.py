@@ -27,6 +27,11 @@ class ResultadoTurno:
     detalle: str | None  # solo para el registro; nunca se muestra al cliente
 
 
+def _es_temporal(estado_http: int | None) -> bool:
+    """Saturación (429) o falla del servicio (5xx, incluido 529): reintentar puede servir."""
+    return estado_http is not None and (estado_http == 429 or estado_http >= 500)
+
+
 def clasificar(resultado: ResultMessage) -> tuple[str, str | None]:
     """Estado del turno y detalle técnico según cómo terminó el ciclo del SDK."""
     if (
@@ -34,7 +39,7 @@ def clasificar(resultado: ResultMessage) -> tuple[str, str | None]:
         or resultado.terminal_reason == "max_turns"
     ):
         return SALVAGUARDA, None
-    if resultado.is_error and resultado.api_error_status is not None:
+    if resultado.is_error and _es_temporal(resultado.api_error_status):
         return FALLA_SERVICIO, f"API respondió {resultado.api_error_status}"
     if resultado.subtype == "success" and not resultado.is_error:
         return COMPLETADO, None

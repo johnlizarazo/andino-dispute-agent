@@ -1,7 +1,12 @@
 import asyncio
 
 import pytest
-from claude_agent_sdk import AssistantMessage, ResultMessage, TextBlock
+from claude_agent_sdk import (
+    AssistantMessage,
+    CLIJSONDecodeError,
+    ResultMessage,
+    TextBlock,
+)
 
 from agente_disputas import cli
 
@@ -170,4 +175,23 @@ def test_core_no_conectado_termina_con_uno(monkeypatch, sin_espera, capsys):
     salida = capsys.readouterr()
     assert codigo == 1
     assert "core bancario no arrancó" in salida.err
+    assert "clave-de-prueba" not in salida.out + salida.err
+
+
+def test_cualquier_error_del_sdk_al_arrancar_termina_sin_traza(monkeypatch, capsys):
+    class ClienteQueFalla:
+        def __init__(self, **_):
+            pass
+
+        async def __aenter__(self):
+            raise CLIJSONDecodeError("línea inválida", ValueError("x"))
+
+        async def __aexit__(self, *_):
+            return False
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "clave-de-prueba")
+    monkeypatch.setattr(cli, "ClaudeSDKClient", ClienteQueFalla)
+    assert cli.main() == 1
+    salida = capsys.readouterr()
+    assert "Traceback" not in salida.out + salida.err
     assert "clave-de-prueba" not in salida.out + salida.err

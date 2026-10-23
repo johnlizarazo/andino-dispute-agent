@@ -77,10 +77,18 @@ def test_maximo_de_pasos_es_salvaguarda(campos):
     assert resultado.estado == "salvaguarda"
 
 
-def test_error_de_la_api_es_falla_del_servicio():
-    resultado = _procesar(_resultado(is_error=True, api_error_status=529))
+@pytest.mark.parametrize("estado_http", [429, 500, 503, 529])
+def test_saturacion_o_falla_del_servicio_es_temporal(estado_http):
+    resultado = _procesar(_resultado(is_error=True, api_error_status=estado_http))
     assert resultado.estado == "falla_servicio"
-    assert "529" in resultado.detalle
+    assert str(estado_http) in resultado.detalle
+
+
+@pytest.mark.parametrize("estado_http", [400, 401, 403])
+def test_errores_de_la_peticion_o_la_clave_no_son_temporales(estado_http):
+    # Reintentar no los arregla: no se le dice al cliente que escriba de nuevo.
+    resultado = _procesar(_resultado(is_error=True, api_error_status=estado_http))
+    assert resultado.estado == "error"
 
 
 def test_otro_error_es_error():

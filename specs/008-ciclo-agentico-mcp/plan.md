@@ -42,8 +42,9 @@ quickstart §3b.
 **Performance Goals**: primera respuesta en menos de 30 s (SC-005)
 
 **Constraints**:
-- Solo `mcp__core-bancario__*` (6 herramientas); `tools=[]`, `dontAsk`, `strict_mcp_config`,
-  `setting_sources=[]`.
+- Solo `mcp__core-bancario__*`; hasta el #9, solo las 3 exentas de identidad
+  (`allowed_tools`) y las 3 sobre productos en `disallowed_tools`; `tools=[]`, `dontAsk`,
+  `strict_mcp_config`, `setting_sources=[]`.
 - La clave solo desde `ANTHROPIC_API_KEY`, nunca impresa.
 - Ningún control del ciclo por contadores o palabras; `max_turns` solo como salvaguarda.
 
@@ -56,7 +57,7 @@ quickstart §3b.
 
 | Principio | Cómo lo cumple este plan | Estado |
 |---|---|---|
-| I. Reglas de negocio | El prompt orienta las 5 reglas; su garantía determinista (hooks de reglas 1 y 2, hook `Stop`) llega en #9 y #10, que se enganchan a estas mismas opciones. | ✅ |
+| I. Reglas de negocio | El prompt orienta las 5 reglas. Regla 1: hasta el #9, las herramientas sobre productos están deshabilitadas, así que no se puede operar sin identidad (imposible por diseño). Reglas 2 y 5: el servidor las aplica; sus hooks (y el `Stop`) llegan en #9 y #10. | ✅ |
 | II. Garantías deterministas | Herramientas limitadas por configuración (determinista, con test). Ciclo por razón de parada, por diseño. Reintentos por instrucción + escenario, justificado en la spec (no es regla de negocio). | ✅ |
 | III. Datos ficticios y cero credenciales | `ANTHROPIC_API_KEY` solo del entorno, nunca impresa ni versionada; sin `.env` en tiempo de ejecución; mensajes de tests ficticios. | ✅ |
 | IV. Spec-first | Spec aprobada (commit `a91c797`); plan y tareas antes de `src/`. | ✅ |

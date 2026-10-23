@@ -52,6 +52,9 @@ uv run --no-sync python -m agente_disputas
 | 3 | una línea vacía | nada se envía; la terminal sigue esperando |
 | 4 | `/salir` | despedida y fin sin traza |
 
+Hasta el #9, si se pide consultar, disputar o bloquear, el agente verifica la identidad y
+escala el caso (las herramientas sobre productos están deshabilitadas).
+
 Variante: sin `ANTHROPIC_API_KEY` en la sesión, el comando termina con un mensaje que nombra la
 variable, sin traza. Con la configuración de fallas inválida, termina diciendo que el core no
 arrancó:

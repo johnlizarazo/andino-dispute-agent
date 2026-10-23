@@ -15,7 +15,7 @@
 |---|---|---|
 | `subtype == "success"` y no `is_error` | `completado` | el texto del agente |
 | `subtype == "error_max_turns"` o `terminal_reason == "max_turns"` | `salvaguarda` | aviso de que no se pudo terminar y opción de pedir una persona |
-| `is_error` con `api_error_status` | `falla_servicio` | aviso de problema temporal; puede reintentar |
+| `is_error` con `api_error_status` 429 o 5xx | `falla_servicio` | aviso de problema temporal; puede reintentar |
 | otro | `error` | aviso genérico sin datos técnicos |
 
 ## Opciones del agente
@@ -23,7 +23,8 @@
 | Opción | Valor |
 |---|---|
 | `tools` | `[]` |
-| `allowed_tools` | `mcp__core-bancario__` + cada una de las 6 herramientas |
+| `allowed_tools` | hasta el #9: `mcp__core-bancario__` + `buscar_cliente`, `verificar_identidad`, `escalar_a_analista` |
+| `disallowed_tools` | hasta el #9: `consultar_transacciones`, `iniciar_disputa`, `bloquear_tarjeta` del core |
 | `permission_mode` | `dontAsk` |
 | `mcp_servers` | solo `core-bancario` por stdio (`sys.executable -m core_bancario_mcp`) |
 | `strict_mcp_config` | `True` |

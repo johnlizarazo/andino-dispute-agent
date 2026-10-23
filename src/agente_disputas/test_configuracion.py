@@ -4,6 +4,7 @@ import pytest
 
 from agente_disputas.configuracion import (
     HERRAMIENTAS,
+    HERRAMIENTAS_HABILITADAS,
     CredencialFaltanteError,
     crear_opciones,
     validar_credencial,
@@ -33,11 +34,27 @@ def test_sin_herramientas_ni_settings_del_entorno_ni_permisos_interactivos():
     assert opciones.setting_sources == []
 
 
-def test_solo_se_preaprueban_las_herramientas_del_core():
+def test_hasta_el_issue_9_solo_se_habilitan_las_exentas_de_identidad():
+    # Regla 1 por diseño: sin los hooks del #9, el agente no puede operar sobre productos.
+    assert set(HERRAMIENTAS_HABILITADAS) == {
+        "buscar_cliente",
+        "verificar_identidad",
+        "escalar_a_analista",
+    }
     opciones = crear_opciones(ENTORNO)
     assert opciones.allowed_tools == [
-        f"mcp__core-bancario__{nombre}" for nombre in HERRAMIENTAS
+        f"mcp__core-bancario__{nombre}" for nombre in HERRAMIENTAS_HABILITADAS
     ]
+
+
+def test_las_herramientas_sobre_productos_quedan_deshabilitadas():
+    opciones = crear_opciones(ENTORNO)
+    assert set(opciones.disallowed_tools) == {
+        "mcp__core-bancario__consultar_transacciones",
+        "mcp__core-bancario__iniciar_disputa",
+        "mcp__core-bancario__bloquear_tarjeta",
+    }
+    assert not set(opciones.allowed_tools) & set(opciones.disallowed_tools)
 
 
 def test_max_turns_es_la_salvaguarda():

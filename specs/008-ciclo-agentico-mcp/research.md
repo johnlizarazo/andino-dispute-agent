@@ -28,7 +28,9 @@ API verificada por introspección de `claude-agent-sdk` 0.2.168 instalado (campo
   contar ni buscar palabras, junta el texto de los `TextBlock` y delega en `clasificar`:
   - `subtype == "success"` y no `is_error` → **completado** (el modelo indicó fin de turno).
   - `subtype == "error_max_turns"` o `terminal_reason == "max_turns"` → **salvaguarda**.
-  - `is_error` con `api_error_status` (429, 500, 529…) → **falla del servicio** (temporal).
+  - `is_error` con `api_error_status` 429 o 5xx (incluido 529) → **falla del servicio**
+    (temporal); 400, 401 o 403 → **error**, porque reintentar no los arregla (ajuste de la
+    revisión de código).
   - cualquier otro error → **error** con detalle técnico solo para el registro.
 - `max_turns` (`MAXIMO_PASOS_POR_TURNO = 25`) es la salvaguarda documentada (FR-006).
 - **Alternatives considered**: implementar el ciclo de herramientas a mano con la API de
@@ -39,7 +41,11 @@ API verificada por introspección de `claude-agent-sdk` 0.2.168 instalado (campo
 - **Decision** en `crear_opciones`:
   - `tools=[]`: desactiva todas las herramientas propias de Claude Code (docstring: "Disable
     all built-in tools").
-  - `allowed_tools=[f"mcp__core-bancario__{n}" for n in HERRAMIENTAS]`: las 6 preaprobadas.
+  - `allowed_tools`: hasta el #9, solo las 3 exentas de identidad (`buscar_cliente`,
+    `verificar_identidad`, `escalar_a_analista`); `disallowed_tools`: las 3 que operan sobre
+    productos, que además se retiran del contexto del modelo. Ajuste tras la revisión de
+    cumplimiento del PR: sin el hook de identidad del #9, habilitarlas dejaba la regla 1 solo en
+    el prompt. El #9 las habilita junto con sus hooks.
   - `permission_mode="dontAsk"`: "Don't prompt for permissions; deny if not pre-approved".
   - `mcp_servers={"core-bancario": {...stdio...}}` con `strict_mcp_config=True` (ignora el
     `.mcp.json` del proyecto, que trae también el servidor de GitHub).

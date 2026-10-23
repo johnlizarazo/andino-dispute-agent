@@ -37,7 +37,8 @@ def crear_opciones(entorno: Mapping[str, str]) -> ClaudeAgentOptions: ...
 Tests (`test_configuracion.py`, sin API):
 - `tools == []`, `permission_mode == "dontAsk"`, `strict_mcp_config is True`,
   `setting_sources == []`, `max_turns == 25`.
-- `allowed_tools` es exactamente `mcp__core-bancario__` + las 6 herramientas.
+- Hasta el #9, `allowed_tools` es exactamente `mcp__core-bancario__` + las 3 exentas
+  (`HERRAMIENTAS_HABILITADAS`) y `disallowed_tools` las 3 sobre productos, sin solaparse.
 - `mcp_servers` tiene solo `core-bancario`, de tipo stdio, con `sys.executable` y
   `-m core_bancario_mcp`.
 - `CORE_BANCARIO_FALLAS` se pasa en el `env` del servidor solo si está en el entorno.

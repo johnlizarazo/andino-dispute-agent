@@ -87,9 +87,10 @@ seis herramientas y ninguna otra.
 **Acceptance Scenarios**:
 
 1. **Given** la configuración del agente, **When** se revisan las herramientas habilitadas,
-   **Then** son exactamente `buscar_cliente`, `verificar_identidad`,
-   `consultar_transacciones`, `iniciar_disputa`, `bloquear_tarjeta` y `escalar_a_analista`
-   del core bancario.
+   **Then** hasta el issue #9 son exactamente las exentas de identidad verificada:
+   `buscar_cliente`, `verificar_identidad` y `escalar_a_analista`; `consultar_transacciones`,
+   `iniciar_disputa` y `bloquear_tarjeta` están deshabilitadas (ajuste por la revisión de
+   cumplimiento: regla 1 garantizada por diseño hasta que existan sus hooks).
 2. **Given** la configuración, **When** se revisa el acceso a herramientas del entorno (leer o
    escribir archivos, ejecutar comandos, navegar), **Then** está deshabilitado.
 3. **Given** una llamada a herramienta, **When** ocurre, **Then** nunca se le pide permiso
@@ -186,8 +187,12 @@ transacción sin identidad verificada.
 
 - **FR-007**: El agente MUST conectarse al core bancario como servidor local, arrancado por el
   propio agente.
-- **FR-008**: El agente MUST tener habilitadas exactamente las seis herramientas del core y
-  ninguna herramienta del entorno, sin permisos interactivos.
+- **FR-008**: El agente MUST tener habilitadas solo herramientas del core y ninguna del
+  entorno, sin permisos interactivos. Hasta que el issue #9 agregue los hooks de identidad
+  verificada y umbral, solo se habilitan las tres exentas de la regla 1 (`buscar_cliente`,
+  `verificar_identidad`, `escalar_a_analista`) y las tres que operan sobre productos quedan
+  deshabilitadas; el #9 las habilita junto con sus hooks. Mientras tanto, el agente escala lo
+  que requiera consultar, disputar o bloquear.
 - **FR-009**: El prompt de sistema MUST vivir versionado en un único módulo del agente y
   orientar: rol, idioma español, las cinco reglas de negocio, cuándo usar cada herramienta,
   no inventar datos y cómo actuar ante cada tipo de error.
@@ -225,8 +230,9 @@ transacción sin identidad verificada.
 
 - **SC-001**: El 100% de los turnos terminan por fin de turno del modelo, por la salvaguarda
   documentada o por un error informado; ninguno se corta por contar mensajes o por palabras.
-- **SC-002**: La configuración del agente habilita exactamente 6 herramientas y 0 herramientas
-  del entorno.
+- **SC-002**: La configuración del agente habilita exactamente las 3 herramientas exentas,
+  deshabilita las 3 que operan sobre productos y habilita 0 herramientas del entorno (hasta
+  el #9).
 - **SC-003**: Con una falla transitoria inyectada una vez, el agente completa la petición del
   cliente en el mismo turno en el 100% de las ejecuciones de escenario.
 - **SC-004**: Ningún arranque o cierre de la línea de comandos termina con una traza visible
@@ -237,8 +243,12 @@ transacción sin identidad verificada.
 ## Assumptions
 
 - **Garantías** (principio II):
-  - Solo las seis herramientas y sin permisos interactivos: **garantizado por configuración**
+  - Solo herramientas del core y sin permisos interactivos: **garantizado por configuración**
     (determinista) y verificado con un test.
+  - Regla 1 (identidad verificada) en esta rama: **imposible por diseño**, porque las
+    herramientas que operan sobre productos están deshabilitadas hasta que el #9 agregue su
+    hook; así el prompt nunca es la única garantía (ajuste por la revisión de cumplimiento del
+    PR).
   - Continuar o terminar según la razón de parada: **por diseño** del ciclo, verificado con
     tests sin API que simulan respuestas del modelo.
   - Reintentar errores reintentables y no repetir los definitivos: **orientado por

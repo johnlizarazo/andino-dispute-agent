@@ -120,6 +120,19 @@ lee su valor) y una sesión que la vea.
 
 ---
 
+## Phase 8: Ajustes de las revisiones del PR
+
+**Purpose**: correcciones pedidas por `revisor-codigo` (bloqueante y no bloqueantes) y por
+`revisar-cumplimiento` (bloqueante de la regla 1, opción A aprobada por el desarrollador).
+
+- [X] T022 Alinear el contrato con la firma real de `clasificar` (`(estado, detalle)`) y con los nombres de `conversar` (`leer`, `escribir`); test de credencial con `pytest.raises` y `"   "`; tests de la espera del core y del arranque con el core no conectado; texto de T003 alineado con el mensaje unificado
+- [X] T023 Regla 1 por diseño hasta el #9: en `src/agente_disputas/configuracion.py`, `HERRAMIENTAS_HABILITADAS` con las 3 exentas en `allowed_tools` y las 3 sobre productos en `disallowed_tools`; tests en `src/agente_disputas/test_configuracion.py`; prompt (versión 2) con la disponibilidad actual en `src/agente_disputas/prompts.py`
+- [X] T024 En `src/agente_disputas/ciclo.py`, solo 429 y 5xx son `falla_servicio`; 400, 401 y 403 son `error` (tests en `test_ciclo.py`). En `src/agente_disputas/cli.py`, cualquier `ClaudeSDKError` al arrancar termina sin traza (test en `test_cli.py`)
+- [X] T025 Actualizar spec (FR-008, SC-002, US3, supuestos), plan, research, data-model, contrato y quickstart
+- [ ] T026 Volver a ejecutar las dos revisiones de `/abrir-pr` y, si aprueban, continuar con T020
+
+---
+
 ## Dependencies & Execution Order
 
 - **Setup (T001)** y **US5 (T002–T004)**: primero; independientes del agente.
