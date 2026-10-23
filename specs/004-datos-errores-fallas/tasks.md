@@ -27,7 +27,7 @@ verificación y cierre. Los hooks del plugin están activos: `exigir_spec` permi
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Crear la carpeta `src/core_bancario_mcp/datos/`
+- [X] T001 Crear la carpeta `src/core_bancario_mcp/datos/`
 
 ---
 
@@ -44,12 +44,12 @@ fallas y servidor, y va primero.
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_errores.py`.
 
-- [ ] T002 [US1] Escribir `src/core_bancario_mcp/test_errores.py` **antes** que el módulo, con los tests de [contracts/errores.md](contracts/errores.md):
+- [X] T002 [US1] Escribir `src/core_bancario_mcp/test_errores.py` **antes** que el módulo, con los tests de [contracts/errores.md](contracts/errores.md):
   - `exito` con un dict, una lista y una lista vacía.
   - La forma completa del error para cada `TipoError`, con "`reintentable` verdadero solo en `transitorio`".
   - Que un tipo inválido lanza una excepción.
-- [ ] T003 [US1] Implementar `src/core_bancario_mcp/errores.py` según [contracts/errores.md](contracts/errores.md): `TipoError` (`StrEnum`), `Codigo` y las funciones `exito` y `error`, con `reintentable` derivado del tipo
-- [ ] T004 [US1] Dejar verdes los tests y hacer commit `feat(#4): contrato de errores del core bancario`
+- [X] T003 [US1] Implementar `src/core_bancario_mcp/errores.py` según [contracts/errores.md](contracts/errores.md): `TipoError` (`StrEnum`), `Codigo` y las funciones `exito` y `error`, con `reintentable` derivado del tipo
+- [X] T004 [US1] Dejar verdes los tests y hacer commit `feat(#4): contrato de errores del core bancario`
 
 ---
 
