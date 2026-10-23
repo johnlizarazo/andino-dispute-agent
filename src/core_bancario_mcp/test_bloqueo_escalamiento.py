@@ -198,18 +198,25 @@ def test_umbral_y_politica_exigen_transacciones(contexto, causa, transacciones):
     assert _error(respuesta, "validacion", "PARAMETRO_INVALIDO")
 
 
-def test_transaccion_inexistente_ajena_o_cliente_inexistente(contexto):
-    assert _error(
-        _escalar(contexto, transacciones=["TRX-999"]), "validacion", "NO_ENCONTRADO"
-    )
-    assert _error(
-        _escalar(contexto, transacciones=["TRX-004"]),
-        "validacion",
-        "PARAMETRO_INVALIDO",
-    )
+def test_transaccion_inexistente_o_ajena_dan_la_misma_respuesta(contexto):
+    inexistente = _escalar(contexto, transacciones=["TRX-999"])
+    ajena = _escalar(contexto, transacciones=["TRX-004"])
+    assert _error(inexistente, "validacion", "NO_ENCONTRADO")
+    assert ajena == inexistente  # no permite sondear qué ids existen
     assert _error(
         _escalar(contexto, cliente_id="CLI-999"), "validacion", "NO_ENCONTRADO"
     )
+
+
+def test_persona_solicitada_sin_cliente_acepta_transacciones(contexto):
+    respuesta = _escalar(
+        contexto,
+        causa="persona_solicitada",
+        cliente_id=None,
+        transacciones=["TRX-001"],
+    )
+    assert respuesta["ok"] is True
+    assert respuesta["datos"]["cantidad_transacciones"] == 1
 
 
 def test_transacciones_repetidas_se_cuentan_una_vez(contexto):

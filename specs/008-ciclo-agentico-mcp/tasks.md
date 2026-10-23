@@ -40,9 +40,9 @@ su uso.
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_bloqueo_escalamiento.py`.
 
-- [ ] T002 [US5] (a) y (b) En `src/core_bancario_mcp/test_bloqueo_escalamiento.py`, **antes** de tocar el módulo: cambiar `test_transaccion_inexistente_ajena_o_cliente_inexistente` para que `TRX-999` y `TRX-004` con CLI-001 den respuestas **idénticas** (`NO_ENCONTRADO`, mismo mensaje), y agregar un test de `persona_solicitada` sin cliente y con `["TRX-001"]` → éxito con `cantidad_transacciones` 1; ver fallar el primero
-- [ ] T003 [US5] (a) y (c) En `src/core_bancario_mcp/bloqueo_escalamiento.py`: un solo `NO_ENCONTRADO` con el mensaje "No hay una transacción {id} de ese cliente." para transacción inexistente o de otro cliente (sin cliente, la inexistente da ese mismo error); `CAUSAS_SIN_CLIENTE` en una sola línea con su comentario en la línea de arriba. Dejar verdes los tests
-- [ ] T004 [P] [US5] (d) En `specs/007-bloqueo-escalamiento/plan.md`, quitar `errores.py` del alcance (Scale/Scope y estructura). Commit `fix(#8): ajustes heredados de la revisión del #7`
+- [X] T002 [US5] (a) y (b) En `src/core_bancario_mcp/test_bloqueo_escalamiento.py`, **antes** de tocar el módulo: cambiar `test_transaccion_inexistente_ajena_o_cliente_inexistente` para que `TRX-999` y `TRX-004` con CLI-001 den respuestas **idénticas** (`NO_ENCONTRADO`, mismo mensaje), y agregar un test de `persona_solicitada` sin cliente y con `["TRX-001"]` → éxito con `cantidad_transacciones` 1; ver fallar el primero
+- [X] T003 [US5] (a) y (c) En `src/core_bancario_mcp/bloqueo_escalamiento.py`: un solo `NO_ENCONTRADO` con el mensaje "No hay una transacción {id} de ese cliente." para transacción inexistente o de otro cliente (sin cliente, la inexistente da ese mismo error); `CAUSAS_SIN_CLIENTE` en una sola línea con su comentario en la línea de arriba. Dejar verdes los tests
+- [X] T004 [P] [US5] (d) En `specs/007-bloqueo-escalamiento/plan.md`, quitar `errores.py` del alcance (Scale/Scope y estructura). Commit `fix(#8): ajustes heredados de la revisión del #7`
 
 ---
 

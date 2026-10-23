@@ -83,8 +83,9 @@ API verificada por introspección de `claude-agent-sdk` 0.2.168 instalado (campo
 ## R7. Ajustes heredados del #7
 
 - **(a)** `escalar_a_analista`: transacción inexistente o de otro cliente → el mismo
-  `NO_ENCONTRADO` con el mismo mensaje ("No hay una transacción {id} de ese cliente."); sin
-  cliente, la inexistente da ese mismo error.
+  `NO_ENCONTRADO` con el mismo mensaje, sin el id ("Una de las transacciones indicadas no
+  corresponde a ese cliente."), para que las respuestas sean idénticas; sin cliente, la
+  inexistente da ese mismo error.
 - **(b)** Test de `persona_solicitada` sin cliente y con una transacción existente → éxito.
 - **(c)** `CAUSAS_SIN_CLIENTE` en una línea, con el comentario arriba.
 - **(d)** `specs/007-bloqueo-escalamiento/plan.md`: quitar `errores.py` del alcance.

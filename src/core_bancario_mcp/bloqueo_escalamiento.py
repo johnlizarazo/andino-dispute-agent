@@ -26,9 +26,8 @@ CAUSAS = (
     "intentos_agotados",
     "otra",
 )
-CAUSAS_SIN_CLIENTE = {
-    "persona_solicitada"
-}  # regla 4: se escala aunque no esté identificado
+# Regla 4: con un pedido de persona se escala aunque el cliente no esté identificado.
+CAUSAS_SIN_CLIENTE = {"persona_solicitada"}
 CAUSAS_CON_TRANSACCIONES = {"umbral", "fuera_de_politica"}
 
 DESCRIPCION_BLOQUEAR = (
@@ -164,14 +163,17 @@ def escalar_a_analista(
     detalles = []
     for transaccion_id in ids:
         transaccion = repositorio.obtener_transaccion(transaccion_id)
-        if transaccion is None:
+        ajena = transaccion is not None and (
+            cliente is not None and transaccion.cliente_id != cliente.id
+        )
+        if transaccion is None or ajena:
+            # Mismo error si no existe o es de otro cliente: escalar no exige identidad
+            # y no debe servir para sondear qué transacciones existen.
             return error(
                 TipoError.VALIDACION,
                 Codigo.NO_ENCONTRADO,
-                f"No existe la transacción {transaccion_id}.",
+                "Una de las transacciones indicadas no corresponde a ese cliente.",
             )
-        if cliente is not None and transaccion.cliente_id != cliente.id:
-            return _invalido(f"La transacción {transaccion_id} no es de ese cliente")
         caso = contexto.disputas.caso_de(transaccion.id)
         detalles.append(
             DetalleTransaccion(
