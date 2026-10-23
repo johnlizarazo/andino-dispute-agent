@@ -104,10 +104,10 @@ su uso.
 **Purpose**: requiere `ANTHROPIC_API_KEY` en el entorno (el desarrollador la define; nunca se
 lee su valor) y una sesión que la vea.
 
-- [ ] T014 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src tests` en verde ([quickstart.md §1](quickstart.md))
+- [X] T014 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src tests` en verde ([quickstart.md §1](quickstart.md))
 - [ ] T015 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md)) y la conversación de [quickstart.md §3](quickstart.md) (4 pasos y las dos variantes de arranque fallido), anotando el tiempo de la primera respuesta frente al objetivo de SC-005 (menos de 30 s; ajuste L1)
 - [ ] T016 *(Opcional, si hay una máquina o contenedor Linux disponible)* Ejecutar [quickstart.md §3b](quickstart.md); si no hay entorno, anotarlo en el comentario de avance del PR y no bloquear el cierre
-- [ ] T017 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §4](quickstart.md))
+- [X] T017 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §4](quickstart.md))
 
 ---
 
