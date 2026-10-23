@@ -35,4 +35,7 @@ jobs:
 - **Sin secretos:** `permissions: contents: read`.
 - **Mismo script que el hook:** una sola regla de detección para todo el proyecto.
 - **El job falla** si hay hallazgos o si fallan los tests.
-- **Versiones de las actions:** se fijan en la implementación con las versiones vigentes.
+- **Versiones de las actions:** se fijan en la implementación con las versiones vigentes:
+  `actions/checkout@v7` y `astral-sh/setup-uv@v10.3.2`. setup-uv no publica etiqueta mayor
+  (`v10` no existe), y la primera ejecución del job falló por eso. Ahora se comprueba que
+  cada etiqueta exista con `gh api repos/<action>/git/ref/tags/<etiqueta>`.

@@ -16,7 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v10
+      # setup-uv no publica etiqueta mayor: se fija la versión exacta.
+      - uses: astral-sh/setup-uv@v10.3.2
 
       - name: Datos con forma real en las líneas agregadas
         run: |
