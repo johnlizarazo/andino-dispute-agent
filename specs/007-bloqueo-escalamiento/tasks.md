@@ -49,12 +49,12 @@ imports sin uso entre ediciones: agregar el import en la misma edición que su u
 
 **Purpose**: bloquea a US1 y US2 ([contracts/registros-y-servidor.md](contracts/registros-y-servidor.md)).
 
-- [ ] T005 Agregar a `src/core_bancario_mcp/test_contexto.py`, **antes** de tocar el módulo, y verlos fallar:
+- [X] T005 Agregar a `src/core_bancario_mcp/test_contexto.py`, **antes** de tocar el módulo, y verlos fallar:
   - `RegistroBloqueos().estado_de(...)`: TAR-004 → `"bloqueada"` (dato inicial), TAR-001 → `"activa"`.
   - `bloquear(TAR-001, motivo)` devuelve `False` y después `estado_de` es `"bloqueada"`; un segundo `bloquear` devuelve `True`; `bloquear(TAR-004, ...)` devuelve `True`.
   - `RegistroEscalamientos().registrar(...)` con dos `DetalleTransaccion` asigna `ESC-0001` y luego `ESC-0002`, calcula `total` como la suma de montos, deja `estado` `"pendiente_analista"`, y `todos()` los devuelve en orden.
   - Cada `Contexto` tiene sus propios `bloqueos` y `escalamientos`.
-- [ ] T006 Implementar en `src/core_bancario_mcp/contexto.py`: `RegistroBloqueos` (`estado_de`, `bloquear`; nunca desbloquea), las dataclasses inmutables `DetalleTransaccion` (`transaccion_id`, `fecha`, `monto`, `comercio`, `caso_disputa`) y `Escalamiento` (`id`, `causa`, `cliente_id`, `cliente_nombre`, `transacciones` como tupla de `DetalleTransaccion`, `total`, `acciones_realizadas`, `accion_recomendada`, `estado`) según [data-model.md](data-model.md), `RegistroEscalamientos` (`registrar`, `todos`, contador propio) y los campos `bloqueos` y `escalamientos` del `Contexto` con `default_factory`. Actualizar el docstring del módulo. Dejar verdes los tests y hacer commit `feat(#7): registros de bloqueos y escalamientos en el contexto`
+- [X] T006 Implementar en `src/core_bancario_mcp/contexto.py`: `RegistroBloqueos` (`estado_de`, `bloquear`; nunca desbloquea), las dataclasses inmutables `DetalleTransaccion` (`transaccion_id`, `fecha`, `monto`, `comercio`, `caso_disputa`) y `Escalamiento` (`id`, `causa`, `cliente_id`, `cliente_nombre`, `transacciones` como tupla de `DetalleTransaccion`, `total`, `acciones_realizadas`, `accion_recomendada`, `estado`) según [data-model.md](data-model.md), `RegistroEscalamientos` (`registrar`, `todos`, contador propio) y los campos `bloqueos` y `escalamientos` del `Contexto` con `default_factory`. Actualizar el docstring del módulo. Dejar verdes los tests y hacer commit `feat(#7): registros de bloqueos y escalamientos en el contexto`
 
 ---
 
