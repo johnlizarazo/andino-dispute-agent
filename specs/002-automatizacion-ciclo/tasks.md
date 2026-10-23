@@ -66,8 +66,8 @@ nueva para cargarse).
 **Independent Test**: [quickstart.md §6](quickstart.md), que se ejecuta con el issue #3
 después del merge de este ticket (T020).
 
-- [ ] T006 [US1] Crear `.claude/skills/siguiente-ticket/SKILL.md` según [contracts/siguiente-ticket.md](contracts/siguiente-ticket.md): frontmatter con `name`, `description`, `argument-hint: "[número de issue opcional]"` y `allowed-tools` con las 4 herramientas MCP y los 2 comandos git del contrato, **sin** `context: fork`. En el cuerpo, los 7 pasos en orden: la regla de selección ("Todo, menor número, dependencias de 'Depende de' cerradas"), el cálculo de `NNN-slug`, la idempotencia, la plantilla "Inicio" de [contracts/comentarios.md](contracts/comentarios.md), la invocación de `speckit-specify` y la parada obligatoria antes de `speckit-plan`
-- [ ] T007 [US1] Hacer commit `feat(#2): skill siguiente-ticket`
+- [X] T006 [US1] Crear `.claude/skills/siguiente-ticket/SKILL.md` según [contracts/siguiente-ticket.md](contracts/siguiente-ticket.md): frontmatter con `name`, `description`, `argument-hint: "[número de issue opcional]"` y `allowed-tools` con las 4 herramientas MCP y los 2 comandos git del contrato, **sin** `context: fork`. En el cuerpo, los 7 pasos en orden: la regla de selección ("Todo, menor número, dependencias de 'Depende de' cerradas"), el cálculo de `NNN-slug`, la idempotencia, la plantilla "Inicio" de [contracts/comentarios.md](contracts/comentarios.md), la invocación de `speckit-specify` y la parada obligatoria antes de `speckit-plan`
+- [X] T007 [US1] Hacer commit `feat(#2): skill siguiente-ticket`
 
 **Checkpoint**: la skill existe; su prueba real es T020.
 
