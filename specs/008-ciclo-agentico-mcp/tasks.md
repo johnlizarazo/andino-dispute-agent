@@ -129,7 +129,7 @@ lee su valor) y una sesión que la vea.
 - [X] T023 Regla 1 por diseño hasta el #9: en `src/agente_disputas/configuracion.py`, `HERRAMIENTAS_HABILITADAS` con las 3 exentas en `allowed_tools` y las 3 sobre productos en `disallowed_tools`; tests en `src/agente_disputas/test_configuracion.py`; prompt (versión 2) con la disponibilidad actual en `src/agente_disputas/prompts.py`
 - [X] T024 En `src/agente_disputas/ciclo.py`, solo 429 y 5xx son `falla_servicio`; 400, 401 y 403 son `error` (tests en `test_ciclo.py`). En `src/agente_disputas/cli.py`, cualquier `ClaudeSDKError` al arrancar termina sin traza (test en `test_cli.py`)
 - [X] T025 Actualizar spec (FR-008, SC-002, US3, supuestos), plan, research, data-model, contrato y quickstart
-- [ ] T026 Volver a ejecutar las dos revisiones de `/abrir-pr` y, si aprueban, continuar con T020
+- [X] T026 Volver a ejecutar las dos revisiones de `/abrir-pr` y, si aprueban, continuar con T020
 
 ---
 
