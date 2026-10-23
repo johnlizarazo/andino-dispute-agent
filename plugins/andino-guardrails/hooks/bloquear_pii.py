@@ -104,7 +104,9 @@ def modo_diff(ruta: str) -> int:
         for numero, linea in enumerate(diff, start=1):
             if linea.startswith("+++ "):
                 archivo = linea[4:].strip().removeprefix("b/")
-            elif linea.startswith("+"):
+            elif linea.startswith("+") and archivo != "/dev/null":
+                # Un archivo borrado no agrega líneas; se ignora por si un diff anómalo
+                # trajera líneas "+" hacia /dev/null.
                 for h in buscar_hallazgos(linea[1:]):
                     print(
                         f"{archivo} (línea {numero} del diff): {h['tipo']} {h['muestra']}"

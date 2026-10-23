@@ -219,3 +219,25 @@ def test_diff_ignora_lineas_eliminadas(tmp_path):
     contenido = f"--- a/datos.txt\n+++ b/datos.txt\n@@ -1 +0,0 @@\n-pago {numero}\n"
     r = _correr_diff(tmp_path, contenido)
     assert r.returncode == 0
+
+
+def test_tarjeta_en_formato_4_6_5_se_detecta():
+    numero = tarjeta_valida(15)
+    agrupado = f"{numero[:4]} {numero[4:10]} {numero[10:]}"
+    hallazgos = bloquear_pii.buscar_hallazgos(f"pago con {agrupado}")
+    assert [h["tipo"] for h in hallazgos] == ["tarjeta"]
+
+
+def test_diff_de_archivo_borrado_no_reporta(tmp_path):
+    numero = tarjeta_valida(16)
+    contenido = f"--- a/datos.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-pago {numero}\n"
+    assert _correr_diff(tmp_path, contenido).returncode == 0
+
+
+def test_diff_ignora_lineas_si_el_destino_es_dev_null(tmp_path):
+    # Defensa explícita: aunque un diff anómalo trajera líneas "+" hacia /dev/null.
+    numero = tarjeta_valida(16)
+    contenido = f"+++ /dev/null\n@@ -0,0 +1 @@\n+pago {numero}\n"
+    r = _correr_diff(tmp_path, contenido)
+    assert r.returncode == 0
+    assert "/dev/null" not in r.stdout.decode("utf-8")

@@ -1,0 +1,7 @@
+[
+  {"id": "TAR-001", "cliente_id": "CLI-001", "ultimos4": "4821", "estado": "activa"},
+  {"id": "TAR-002", "cliente_id": "CLI-002", "ultimos4": "1357", "estado": "activa"},
+  {"id": "TAR-003", "cliente_id": "CLI-003", "ultimos4": "2468", "estado": "activa"},
+  {"id": "TAR-004", "cliente_id": "CLI-004", "ultimos4": "9012", "estado": "bloqueada"},
+  {"id": "TAR-005", "cliente_id": "CLI-004", "ultimos4": "3344", "estado": "activa"}
+]
