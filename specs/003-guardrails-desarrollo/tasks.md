@@ -68,14 +68,14 @@ y [quickstart.md §2](quickstart.md).
 
 **Independent Test**: los tests del script y [quickstart.md §3](quickstart.md).
 
-- [ ] T006 [P] [US2] Escribir `plugins/andino-guardrails/hooks/test_exigir_spec.py`. Cada test crea un repositorio git temporal (`tmp_path`, `git init`, rama con `git checkout -b`) y fija `CLAUDE_PROJECT_DIR`. Casos:
+- [X] T006 [P] [US2] Escribir `plugins/andino-guardrails/hooks/test_exigir_spec.py`. Cada test crea un repositorio git temporal (`tmp_path`, `git init`, rama con `git checkout -b`) y fija `CLAUDE_PROJECT_DIR`. Casos:
   - Escritura fuera de `src/` → 0.
   - Bajo `src/` en `main` → 2.
   - En `004-algo` sin carpeta de spec → 2, y el mensaje nombra los faltantes.
   - Con solo `spec.md` → 2.
   - Con los tres artefactos → 0.
   - JSON inválido → 2.
-- [ ] T007 [US2] Implementar `plugins/andino-guardrails/hooks/exigir_spec.py` según [contracts/hooks.md](contracts/hooks.md) y dejar verdes sus tests
+- [X] T007 [US2] Implementar `plugins/andino-guardrails/hooks/exigir_spec.py` según [contracts/hooks.md](contracts/hooks.md) y dejar verdes sus tests
 
 ---
 
@@ -85,13 +85,13 @@ y [quickstart.md §2](quickstart.md).
 
 **Independent Test**: los tests del script y [quickstart.md §4](quickstart.md).
 
-- [ ] T008 [P] [US3] Escribir `plugins/andino-guardrails/hooks/test_formatear.py`. Casos:
+- [X] T008 [P] [US3] Escribir `plugins/andino-guardrails/hooks/test_formatear.py`. Casos:
   - Un `.py` mal formateado en `tmp_path` queda formateado y sale con 0.
   - Un archivo que no es `.py` no se toca y sale con 0.
   - Un `.py` con un problema no corregible (por ejemplo, un nombre no definido, F821) sale con 2 y lo reporta por stderr.
   - Un archivo inexistente sale con 0.
-- [ ] T009 [US3] Implementar `plugins/andino-guardrails/hooks/formatear.py` según [contracts/hooks.md](contracts/hooks.md) y dejar verdes sus tests
-- [ ] T010 [US3] Ejecutar `uv run pytest` completo en verde y hacer commit `feat(#3): hooks exigir_spec y formatear con tests`
+- [X] T009 [US3] Implementar `plugins/andino-guardrails/hooks/formatear.py` según [contracts/hooks.md](contracts/hooks.md) y dejar verdes sus tests
+- [X] T010 [US3] Ejecutar `uv run pytest` completo en verde y hacer commit `feat(#3): hooks exigir_spec y formatear con tests`
 
 ---
 

@@ -11,9 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 import bloquear_pii
+import pytest
 
 SCRIPT = Path(__file__).with_name("bloquear_pii.py")
 rng = random.Random(20261023)
@@ -32,7 +31,9 @@ def _digito_luhn(carga: str) -> str:
 
 
 def tarjeta_valida(longitud: int, separador: str = "") -> str:
-    carga = str(rng.randint(1, 9)) + "".join(str(rng.randint(0, 9)) for _ in range(longitud - 2))
+    carga = str(rng.randint(1, 9)) + "".join(
+        str(rng.randint(0, 9)) for _ in range(longitud - 2)
+    )
     numero = carga + _digito_luhn(carga)
     if not separador:
         return numero
@@ -46,7 +47,9 @@ def tarjeta_invalida(longitud: int) -> str:
 
 
 def documento(palabra: str, digitos: int, con_puntos: bool = False) -> str:
-    numero = str(rng.randint(1, 9)) + "".join(str(rng.randint(0, 9)) for _ in range(digitos - 1))
+    numero = str(rng.randint(1, 9)) + "".join(
+        str(rng.randint(0, 9)) for _ in range(digitos - 1)
+    )
     if con_puntos:
         numero = f"{int(numero):,}".replace(",", ".")
     return f"{palabra} {numero}"
@@ -95,7 +98,11 @@ def test_casos_legitimos_no_se_detectan(texto):
 
 @pytest.mark.parametrize(
     "texto",
-    [documento("CC", 8), documento("cédula:", 7, con_puntos=True), documento("documento", 10)],
+    [
+        documento("CC", 8),
+        documento("cédula:", 7, con_puntos=True),
+        documento("documento", 10),
+    ],
 )
 def test_documentos_se_detectan(texto):
     hallazgos = bloquear_pii.buscar_hallazgos(texto)
@@ -131,7 +138,10 @@ def test_linea_del_hallazgo():
     ],
 )
 def test_textos_nuevos_por_herramienta(tool_name, tool_input):
-    evento = {"tool_name": tool_name, "tool_input": {"file_path": "x.txt", **tool_input}}
+    evento = {
+        "tool_name": tool_name,
+        "tool_input": {"file_path": "x.txt", **tool_input},
+    }
     assert bloquear_pii.textos_nuevos(evento) == ["A"]
 
 
@@ -140,12 +150,16 @@ def _correr_hook(entrada: str) -> subprocess.CompletedProcess:
         [sys.executable, str(SCRIPT)],
         input=entrada.encode("utf-8"),
         capture_output=True,
+        check=False,
     )
 
 
 def test_hook_bloquea_tarjeta_con_salida_2():
     numero = tarjeta_valida(16, " ")
-    evento = {"tool_name": "Write", "tool_input": {"file_path": "a.txt", "content": numero}}
+    evento = {
+        "tool_name": "Write",
+        "tool_input": {"file_path": "a.txt", "content": numero},
+    }
     r = _correr_hook(json.dumps(evento))
     assert r.returncode == 2
     error = r.stderr.decode("utf-8")
@@ -154,7 +168,10 @@ def test_hook_bloquea_tarjeta_con_salida_2():
 
 
 def test_hook_permite_texto_limpio():
-    evento = {"tool_name": "Edit", "tool_input": {"file_path": "a.txt", "new_string": "1250000"}}
+    evento = {
+        "tool_name": "Edit",
+        "tool_input": {"file_path": "a.txt", "new_string": "1250000"},
+    }
     r = _correr_hook(json.dumps(evento))
     assert r.returncode == 0
     assert r.stderr == b""
@@ -168,7 +185,11 @@ def test_hook_falla_cerrado_con_json_invalido():
 def _correr_diff(tmp_path: Path, contenido: str) -> subprocess.CompletedProcess:
     diff = tmp_path / "cambios.diff"
     diff.write_text(contenido, encoding="utf-8")
-    return subprocess.run([sys.executable, str(SCRIPT), "--diff", str(diff)], capture_output=True)
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), "--diff", str(diff)],
+        capture_output=True,
+        check=False,
+    )
 
 
 def test_diff_detecta_lineas_agregadas(tmp_path):

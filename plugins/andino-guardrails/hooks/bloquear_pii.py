@@ -50,19 +50,25 @@ def buscar_hallazgos(texto: str) -> list[dict]:
         digitos = re.sub(r"\D", "", m.group())
         if 13 <= len(digitos) <= 19 and luhn_valido(digitos):
             linea = texto.count("\n", 0, m.start()) + 1
-            hallazgos.append({"tipo": "tarjeta", "linea": linea, "muestra": _muestra(digitos)})
+            hallazgos.append(
+                {"tipo": "tarjeta", "linea": linea, "muestra": _muestra(digitos)}
+            )
     for m in PATRON_DOCUMENTO.finditer(texto):
         digitos = re.sub(r"\D", "", m.group(1))
         if 6 <= len(digitos) <= 10:
             linea = texto.count("\n", 0, m.start()) + 1
-            hallazgos.append({"tipo": "documento", "linea": linea, "muestra": _muestra(digitos)})
+            hallazgos.append(
+                {"tipo": "documento", "linea": linea, "muestra": _muestra(digitos)}
+            )
     return hallazgos
 
 
 def textos_nuevos(evento: dict) -> list[str]:
     """Extrae el texto que la herramienta va a escribir, sea cual sea su esquema."""
     entrada = evento.get("tool_input") or {}
-    textos = [entrada[c] for c in ("content", "new_string", "new_source") if entrada.get(c)]
+    textos = [
+        entrada[c] for c in ("content", "new_string", "new_source") if entrada.get(c)
+    ]
     for edicion in entrada.get("edits") or []:
         if edicion.get("new_string"):
             textos.append(edicion["new_string"])
@@ -81,7 +87,9 @@ def modo_hook() -> int:
     evento = json.loads(sys.stdin.buffer.read().decode("utf-8"))
     archivo = (evento.get("tool_input") or {}).get("file_path", "?")
     mensajes = [
-        _mensaje(archivo, h) for texto in textos_nuevos(evento) for h in buscar_hallazgos(texto)
+        _mensaje(archivo, h)
+        for texto in textos_nuevos(evento)
+        for h in buscar_hallazgos(texto)
     ]
     if mensajes:
         print("\n".join(mensajes), file=sys.stderr)
@@ -97,7 +105,9 @@ def modo_diff(ruta: str) -> int:
                 archivo = linea[4:].strip().removeprefix("b/")
             elif linea.startswith("+"):
                 for h in buscar_hallazgos(linea[1:]):
-                    print(f"{archivo} (línea {numero} del diff): {h['tipo']} {h['muestra']}")
+                    print(
+                        f"{archivo} (línea {numero} del diff): {h['tipo']} {h['muestra']}"
+                    )
                     encontrados += 1
     if encontrados:
         print(f"{encontrados} dato(s) con forma real en las líneas agregadas.")
@@ -111,9 +121,11 @@ def main() -> int:
         return modo_diff(sys.argv[2])
     try:
         return modo_hook()
-    except Exception as error:  # fallo cerrado: un error nunca deja pasar la escritura
-        print(f"bloquear_pii: error interno, se bloquea por seguridad: {type(error).__name__}",
-              file=sys.stderr)
+    except Exception as error:  # noqa: BLE001 - fallo cerrado intencional
+        print(
+            f"bloquear_pii: error interno, se bloquea por seguridad: {type(error).__name__}",
+            file=sys.stderr,
+        )
         return 2
 
 
