@@ -16,8 +16,10 @@ from datetime import date, timedelta
 from importlib import resources
 from pathlib import Path
 
-PATRON_DOCUMENTO = re.compile(r"^CC-FIC-\d{4}$")
-PATRON_ULTIMOS4 = re.compile(r"^\d{4}$")
+PATRON_DOCUMENTO = re.compile(r"CC-FIC-[0-9]{4}")
+PATRON_CUATRO_DIGITOS = re.compile(r"[0-9]{4}")
+PATRON_PAIS = re.compile(r"[A-Z]{2}")
+ESTADOS_TARJETA = {"activa", "bloqueada"}
 
 
 class DatosInvalidosError(Exception):
@@ -59,22 +61,28 @@ class Politica:
     umbral_disputa_automatica: int
 
 
+# Campos exactos de cada archivo y su tipo: texto no vacío o entero (nunca bool ni float).
 CAMPOS = {
-    "clientes.json": {"id", "nombre", "documento", "dato_verificacion"},
-    "tarjetas.json": {"id", "cliente_id", "ultimos4", "estado"},
+    "clientes.json": {
+        "id": str,
+        "nombre": str,
+        "documento": str,
+        "dato_verificacion": str,
+    },
+    "tarjetas.json": {"id": str, "cliente_id": str, "ultimos4": str, "estado": str},
     "transacciones.json": {
-        "id",
-        "tarjeta_id",
-        "dias_atras",
-        "monto",
-        "comercio",
-        "pais",
-        "estado",
+        "id": str,
+        "tarjeta_id": str,
+        "dias_atras": int,
+        "monto": int,
+        "comercio": str,
+        "pais": str,
+        "estado": str,
     },
     "politicas.json": {
-        "dias_maximos_disputa_exterior",
-        "dias_maximos_disputa_nacional",
-        "umbral_disputa_automatica",
+        "dias_maximos_disputa_exterior": int,
+        "dias_maximos_disputa_nacional": int,
+        "umbral_disputa_automatica": int,
     },
 }
 
@@ -88,18 +96,32 @@ def _leer(carpeta, archivo: str):
         raise DatosInvalidosError(f"{archivo}: JSON inválido ({e.msg})") from e
 
 
-def _campos(archivo: str, registro: dict) -> None:
+def _campos(archivo: str, registro, posicion: int | None = None) -> None:
+    donde = f"{archivo} posición {posicion}" if posicion is not None else archivo
+    if not isinstance(registro, dict):
+        raise DatosInvalidosError(f"{donde}: el registro no es un objeto")
+    if isinstance(registro.get("id"), str):
+        donde = f"{archivo} {registro['id']}"
     esperados = CAMPOS[archivo]
-    faltan, sobran = esperados - registro.keys(), registro.keys() - esperados
+    faltan = esperados.keys() - registro.keys()
+    sobran = registro.keys() - esperados.keys()
     if faltan or sobran:
         detalle = f"faltan {sorted(faltan)}" if faltan else f"sobran {sorted(sobran)}"
-        raise DatosInvalidosError(f"{archivo} {registro.get('id', '?')}: {detalle}")
+        raise DatosInvalidosError(f"{donde}: {detalle}")
+    for campo, tipo in esperados.items():
+        valor = registro[campo]
+        if tipo is int and type(valor) is not int:
+            raise DatosInvalidosError(f"{donde}: {campo} debe ser un entero")
+        if tipo is str and not (isinstance(valor, str) and valor.strip()):
+            raise DatosInvalidosError(f"{donde}: {campo} debe ser un texto no vacío")
 
 
-def _por_id(archivo: str, registros: list[dict]) -> dict[str, dict]:
+def _por_id(archivo: str, registros) -> dict[str, dict]:
+    if not isinstance(registros, list):
+        raise DatosInvalidosError(f"{archivo}: debe ser una lista de registros")
     resultado = {}
-    for registro in registros:
-        _campos(archivo, registro)
+    for posicion, registro in enumerate(registros):
+        _campos(archivo, registro, posicion)
         if registro["id"] in resultado:
             raise DatosInvalidosError(f"{archivo}: id duplicado {registro['id']}")
         resultado[registro["id"]] = registro
@@ -117,17 +139,27 @@ class Repositorio:
             "transacciones.json", _leer(origen, "transacciones.json")
         )
         politica = _leer(origen, "politicas.json")
+        if not isinstance(politica, dict):
+            raise DatosInvalidosError("politicas.json: debe ser un objeto")
         _campos("politicas.json", politica)
 
         for c in clientes.values():
-            if not PATRON_DOCUMENTO.match(c["documento"]):
+            if not PATRON_DOCUMENTO.fullmatch(c["documento"]):
                 raise DatosInvalidosError(
                     f"clientes.json {c['id']}: documento fuera del formato CC-FIC-NNNN"
                 )
+            if not PATRON_CUATRO_DIGITOS.fullmatch(c["dato_verificacion"]):
+                raise DatosInvalidosError(
+                    f"clientes.json {c['id']}: dato_verificacion debe tener 4 dígitos"
+                )
         for t in tarjetas.values():
-            if not PATRON_ULTIMOS4.match(t["ultimos4"]):
+            if not PATRON_CUATRO_DIGITOS.fullmatch(t["ultimos4"]):
                 raise DatosInvalidosError(
                     f"tarjetas.json {t['id']}: ultimos4 debe tener exactamente 4 dígitos"
+                )
+            if t["estado"] not in ESTADOS_TARJETA:
+                raise DatosInvalidosError(
+                    f"tarjetas.json {t['id']}: estado debe ser activa o bloqueada"
                 )
             if t["cliente_id"] not in clientes:
                 raise DatosInvalidosError(
@@ -137,6 +169,10 @@ class Repositorio:
             if x["tarjeta_id"] not in tarjetas:
                 raise DatosInvalidosError(
                     f"transacciones.json {x['id']}: tarjeta inexistente {x['tarjeta_id']}"
+                )
+            if not PATRON_PAIS.fullmatch(x["pais"]):
+                raise DatosInvalidosError(
+                    f"transacciones.json {x['id']}: pais debe ser un código de 2 letras"
                 )
             if x["monto"] <= 0:
                 raise DatosInvalidosError(

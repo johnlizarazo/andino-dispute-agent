@@ -151,8 +151,8 @@ reiniciar la app** y, si lo pide, aprobar el nuevo servidor del proyecto.
 
 - [X] T027 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T028 Marcar T001 a T028 en `specs/004-datos-errores-fallas/tasks.md` y hacer commit. T029 y T030 ocurren después del último commit y se marcan en la rama del issue siguiente
-- [ ] T029 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO` (el principio III ahora tiene datos reales que auditar), PR con `Closes #4`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T030 Después del merge, hecho por el desarrollador: verificar que el #4 queda cerrado y en *Done*
+- [X] T029 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO` (el principio III ahora tiene datos reales que auditar), PR con `Closes #4`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T030 Después del merge, hecho por el desarrollador: verificar que el #4 queda cerrado y en *Done*
 
 ---
 

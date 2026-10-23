@@ -7,10 +7,14 @@ de probabilidades, para que la demo y los tests sean reproducibles.
 
 import functools
 import os
+import re
 
 from core_bancario_mcp.errores import Codigo, TipoError, error
 
 VARIABLE = "CORE_BANCARIO_FALLAS"
+# Solo ASCII y sin signos: "٣" o "+1" pasarían isdigit()/int() y harían ambigua la config.
+PATRON_OPERACION = re.compile(r"[a-z0-9_]+")
+PATRON_VECES = re.compile(r"[0-9]+")
 MENSAJE = (
     "El core bancario no respondió (falla transitoria simulada). Puedes reintentar."
 )
@@ -29,14 +33,22 @@ class InyectorFallas:
                 continue
             operacion, separador, veces = fragmento.partition(":")
             operacion, veces = operacion.strip(), veces.strip()
-            if not separador or not operacion or not veces.lstrip("-").isdigit():
+            if (
+                not separador
+                or not PATRON_OPERACION.fullmatch(operacion)
+                or not PATRON_VECES.fullmatch(veces)
+            ):
                 raise ConfiguracionFallasError(
                     f"{VARIABLE}: fragmento inválido '{fragmento}' "
-                    "(formato esperado operacion:N)"
+                    "(formato esperado operacion:N, con operacion en [a-z0-9_] y N en [0-9])"
                 )
             if int(veces) < 1:
                 raise ConfiguracionFallasError(
                     f"{VARIABLE}: '{fragmento}' debe fallar al menos 1 vez"
+                )
+            if operacion in self._restantes:
+                raise ConfiguracionFallasError(
+                    f"{VARIABLE}: operación repetida '{operacion}'"
                 )
             self._restantes[operacion] = int(veces)
 
