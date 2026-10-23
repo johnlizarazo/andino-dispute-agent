@@ -96,14 +96,14 @@ fallas y servidor, y va primero.
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_fallas.py`.
 
-- [ ] T014 [US3] Escribir `src/core_bancario_mcp/test_fallas.py` **antes** que el módulo, con los tests de [contracts/fallas.md](contracts/fallas.md):
+- [X] T014 [US3] Escribir `src/core_bancario_mcp/test_fallas.py` **antes** que el módulo, con los tests de [contracts/fallas.md](contracts/fallas.md):
   - `"op:2"` devuelve `True`, `True` y `False`.
   - Sin configuración, nunca falla.
   - Dos operaciones son independientes.
   - Las configuraciones inválidas lanzan la excepción.
   - El decorador devuelve el error transitorio sin ejecutar la función y después la ejecuta.
-- [ ] T015 [US3] Implementar `src/core_bancario_mcp/fallas.py` según [contracts/fallas.md](contracts/fallas.md): `InyectorFallas`, `ConfiguracionFallasError`, `desde_entorno` y el decorador `con_fallas`
-- [ ] T016 [US3] Dejar verdes los tests y hacer commit `feat(#4): inyección de fallas transitorias`
+- [X] T015 [US3] Implementar `src/core_bancario_mcp/fallas.py` según [contracts/fallas.md](contracts/fallas.md): `InyectorFallas`, `ConfiguracionFallasError`, `desde_entorno` y el decorador `con_fallas`
+- [X] T016 [US3] Dejar verdes los tests y hacer commit `feat(#4): inyección de fallas transitorias`
 
 ---
 
