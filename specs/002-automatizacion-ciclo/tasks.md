@@ -80,8 +80,8 @@ después del merge de este ticket (T020).
 **Independent Test**: [quickstart.md §5](quickstart.md), paso 2 (comentario con ajustes), y
 lectura de `CLAUDE.md`.
 
-- [ ] T008 [US4] Actualizar la sección "Flujo por ticket" de `CLAUDE.md`. Debe nombrar `/siguiente-ticket` y `/abrir-pr`, mostrar la secuencia completa specify → (clarify) → plan → tasks → analyze → implement (→ converge) y los tres puntos de control, y decir que el merge es la aprobación final. Mantenerlo en "menos de 40 líneas" y sin copiar la constitución
-- [ ] T009 [US4] Hacer commit `docs(#2): definición de hecho y comandos del ciclo en CLAUDE.md`
+- [X] T008 [US4] Actualizar la sección "Flujo por ticket" de `CLAUDE.md`. Debe nombrar `/siguiente-ticket` y `/abrir-pr`, mostrar la secuencia completa specify → (clarify) → plan → tasks → analyze → implement (→ converge) y los tres puntos de control, y decir que el merge es la aprobación final. Mantenerlo en "menos de 40 líneas" y sin copiar la constitución
+- [X] T009 [US4] Hacer commit `docs(#2): definición de hecho y comandos del ciclo en CLAUDE.md`
 
 ---
 
