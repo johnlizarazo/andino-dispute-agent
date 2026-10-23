@@ -14,5 +14,12 @@ paths:
 - La descripción de cada herramienta dice para qué sirve y cuándo **no** usarla. Para
   `buscar_cliente`: no verifica identidad, y con varias coincidencias se pide otro
   identificador; nunca se elige.
+- Cada módulo de herramientas expone `registrar(servidor, contexto)` y recibe el estado
+  (repositorio, inyector de fallas, intentos) por `core_bancario_mcp.contexto.Contexto`;
+  nunca como atributos agregados a `FastMCP`. La lógica va en funciones puras sobre el
+  contexto, que es lo que prueban los tests.
+- Los parámetros se declaran con el tipo `Texto` de `identificacion.py` (esquema `string`,
+  validación en la herramienta) y valor por defecto `None`, para que ausencias, formatos y
+  tipos JSON incorrectos se respondan con el contrato y no con un error de FastMCP.
 - Nombres de herramientas en español: `buscar_cliente`, `verificar_identidad`,
   `consultar_transacciones`, `iniciar_disputa`, `bloquear_tarjeta`, `escalar_a_analista`.
