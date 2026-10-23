@@ -121,15 +121,15 @@ imports sin uso entre ediciones: agregar el import en la misma edición que su u
 reiniciar la app.**
 
 - [X] T015 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T016 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) (8 pasos) con las herramientas de `core-bancario`, anotando cómo envía Claude Code la lista de transacciones
+- [X] T016 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) (8 pasos) con las herramientas de `core-bancario`, anotando cómo envía Claude Code la lista de transacciones
 - [X] T017 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos ([quickstart.md §3](quickstart.md))
 
 ---
 
 ## Phase 8: Cierre con `/abrir-pr`
 
-- [ ] T018 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T019 Marcar T001 a T019 en `specs/007-bloqueo-escalamiento/tasks.md` y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
+- [X] T018 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T019 Marcar T001 a T019 en `specs/007-bloqueo-escalamiento/tasks.md` y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
 - [ ] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #7`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T021 Después del merge, hecho por el desarrollador: verificar que el #7 queda cerrado y en *Done*
 
