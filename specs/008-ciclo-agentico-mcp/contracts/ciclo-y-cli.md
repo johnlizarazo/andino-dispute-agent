@@ -9,7 +9,7 @@ Fundamento en [research.md R2, R5 y R6](../research.md).
 class ResultadoTurno:
     estado: str; texto: str; herramientas: tuple[str, ...]; detalle: str | None
 
-def clasificar(resultado: ResultMessage) -> str: ...
+def clasificar(resultado: ResultMessage) -> tuple[str, str | None]: ...  # (estado, detalle técnico)
 async def procesar_turno(mensajes: AsyncIterable[Message]) -> ResultadoTurno: ...
 def estado_core(respuesta_mcp_status: dict) -> str: ...  # "connected", "pending", ..., "ausente"
 ```
@@ -33,7 +33,7 @@ Tests (`test_ciclo.py`, mensajes construidos con las clases del SDK):
 ## `cli.py` y `__main__.py`
 
 ```python
-async def conversar(cliente, entrada, salida) -> int: ...   # bucle turno a turno
+async def conversar(cliente, leer, escribir) -> int: ...  # leer() -> línea; escribir(texto)
 def main() -> int: ...                                      # python -m agente_disputas
 ```
 
@@ -52,6 +52,8 @@ Tests (`test_cli.py`, con un cliente falso que entrega mensajes preparados):
   sigue.
 - Sin `ANTHROPIC_API_KEY`, `main` devuelve 1 y el mensaje nombra la variable.
 - `KeyboardInterrupt` en la entrada → `conversar` termina con 0 y una despedida (ajuste L2).
+- `_esperar_core` espera mientras el core esté `pending` y devuelve el estado final; con el
+  core no conectado, `_ejecutar` muestra "el core bancario no arrancó" y devuelve 1.
 
 ## Escenario `e2e` (`tests/escenarios/test_conversacion_e2e.py`)
 

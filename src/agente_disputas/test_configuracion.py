@@ -86,7 +86,6 @@ def test_credencial_presente_no_lanza():
 
 
 def test_mensaje_de_error_nunca_incluye_un_valor():
-    try:
-        validar_credencial({"ANTHROPIC_API_KEY": ""})
-    except CredencialFaltanteError as e:
-        assert CLAVE_FICTICIA not in str(e)
+    with pytest.raises(CredencialFaltanteError) as error:
+        validar_credencial({"ANTHROPIC_API_KEY": "   ", "OTRA": CLAVE_FICTICIA})
+    assert CLAVE_FICTICIA not in str(error.value)

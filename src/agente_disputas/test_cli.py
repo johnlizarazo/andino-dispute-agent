@@ -119,3 +119,55 @@ def test_main_sin_credencial_nombra_la_variable(monkeypatch, capsys):
     salida = capsys.readouterr()
     assert "ANTHROPIC_API_KEY" in salida.out + salida.err
     assert "Traceback" not in salida.out + salida.err
+
+
+# --- arranque: espera del core ---
+
+
+class ClienteConEstados:
+    """Imita ``get_mcp_status`` y el uso como contexto asíncrono de ``ClaudeSDKClient``."""
+
+    def __init__(self, *estados: str, **_):
+        self._estados = list(estados)
+
+    async def get_mcp_status(self) -> dict:
+        estado = self._estados.pop(0) if len(self._estados) > 1 else self._estados[0]
+        return {"mcpServers": [{"name": "core-bancario", "status": estado}]}
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *_):
+        return False
+
+
+@pytest.fixture
+def sin_espera(monkeypatch):
+    async def no_esperar(_segundos):
+        return None
+
+    monkeypatch.setattr(cli.asyncio, "sleep", no_esperar)
+
+
+def test_espera_mientras_el_core_esta_pendiente(sin_espera):
+    cliente = ClienteConEstados("pending", "pending", "connected")
+    assert asyncio.run(cli._esperar_core(cliente)) == "connected"
+
+
+def test_core_que_falla_se_informa_sin_esperar_mas(sin_espera):
+    cliente = ClienteConEstados("failed")
+    assert asyncio.run(cli._esperar_core(cliente)) == "failed"
+
+
+def test_core_que_nunca_arranca_agota_la_espera(sin_espera):
+    cliente = ClienteConEstados("pending")
+    assert asyncio.run(cli._esperar_core(cliente)) == "pending"
+
+
+def test_core_no_conectado_termina_con_uno(monkeypatch, sin_espera, capsys):
+    monkeypatch.setattr(cli, "ClaudeSDKClient", lambda **_: ClienteConEstados("failed"))
+    codigo = asyncio.run(cli._ejecutar({"ANTHROPIC_API_KEY": "clave-de-prueba"}))
+    salida = capsys.readouterr()
+    assert codigo == 1
+    assert "core bancario no arrancó" in salida.err
+    assert "clave-de-prueba" not in salida.out + salida.err
