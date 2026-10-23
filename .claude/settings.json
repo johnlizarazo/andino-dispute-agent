@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git diff *)",
       "Bash(git log *)",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "Bash(uv run pytest *)"
     ],
     "deny": [
       "Read(.env)",
@@ -21,5 +22,13 @@
   },
   "env": {
     "PYTHONUTF8": "1"
+  },
+  "extraKnownMarketplaces": {
+    "banco-andino": {
+      "source": { "source": "directory", "path": "./" }
+    }
+  },
+  "enabledPlugins": {
+    "andino-guardrails@banco-andino": true
   }
 }

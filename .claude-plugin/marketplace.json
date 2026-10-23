@@ -1,0 +1,12 @@
+{
+  "name": "banco-andino",
+  "description": "Plugins compartidos de los equipos de Banco Andino (ficticio).",
+  "owner": { "name": "Equipo de disputas, Banco Andino (ficticio)" },
+  "plugins": [
+    {
+      "name": "andino-guardrails",
+      "source": "./plugins/andino-guardrails",
+      "description": "Guardrails de desarrollo: datos ficticios, spec-first, formato y cumplimiento."
+    }
+  ]
+}

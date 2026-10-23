@@ -62,3 +62,23 @@ Al abrir el repositorio con Claude Code se cargan automáticamente:
 
 Tus preferencias personales van en `CLAUDE.local.md` o en `.claude/settings.local.json`;
 ambos están en `.gitignore`.
+
+## Guardrails
+
+El repositorio consume su propio plugin
+[`andino-guardrails`](plugins/andino-guardrails/README.md), declarado en
+`.claude/settings.json` y publicado en el marketplace `banco-andino`
+(`.claude-plugin/marketplace.json`). Se activa al aceptar la confianza de la carpeta.
+
+- **Datos con forma real**: Claude Code no puede escribir números con forma de tarjeta o
+  documento real.
+- **Spec-first**: no puede escribir bajo `src/` sin `spec.md`, `plan.md` y `tasks.md` del
+  ticket.
+- **Formato**: cada `.py` editado pasa por `ruff format` y `ruff check --fix`.
+- **Cumplimiento**: `/abrir-pr` ejecuta, además de la revisión de código, la revisión de
+  cumplimiento de la constitución (`/andino-guardrails:revisar-cumplimiento`).
+- **Convenciones por ruta**: [`.claude/rules/`](.claude/rules/) carga la convención de tests
+  y la de herramientas MCP solo cuando se trabaja en esos archivos.
+- **CI**: el workflow [`guardrails`](.github/workflows/guardrails.yml) repite el chequeo de
+  datos sobre las líneas agregadas de cada PR y corre `uv run pytest`, para cubrir también
+  los commits hechos fuera de Claude Code.

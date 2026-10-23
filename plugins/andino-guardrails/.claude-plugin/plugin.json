@@ -1,0 +1,6 @@
+{
+  "name": "andino-guardrails",
+  "description": "Guardrails de desarrollo para equipos de Banco Andino: bloqueo de datos con forma real, spec-first, formato automático y auditoría de cumplimiento.",
+  "author": { "name": "Equipo de disputas, Banco Andino (ficticio)" },
+  "keywords": ["guardrails", "pii", "spec-kit", "cumplimiento"]
+}
