@@ -13,10 +13,20 @@ from core_bancario_mcp.fallas import VARIABLE
 from core_bancario_mcp.servidor import crear_servidor
 
 HERRAMIENTAS = [
+    "bloquear_tarjeta",
     "buscar_cliente",
     "consultar_transacciones",
+    "escalar_a_analista",
     "iniciar_disputa",
     "verificar_identidad",
+]
+LISTA_DE_TEXTOS = {"type": "array", "items": {"type": "string"}}
+CAUSAS = [
+    "persona_solicitada",
+    "umbral",
+    "fuera_de_politica",
+    "intentos_agotados",
+    "otra",
 ]
 
 
@@ -70,12 +80,32 @@ def test_descripcion_de_disputa_dice_que_el_monto_es_del_core(herramientas):
     assert "no reintentes" in descripcion.lower()
 
 
+def test_descripcion_de_bloquear_dice_inmediato_y_sin_aprobacion(herramientas):
+    descripcion = herramientas["bloquear_tarjeta"].description.lower()
+    assert "inmediato" in descripcion
+    assert "no requiere" in descripcion
+    assert "analista" in descripcion
+    assert "identidad verificada" in descripcion
+
+
+def test_descripcion_de_escalar_dice_cuando_y_como(herramientas):
+    descripcion = herramientas["escalar_a_analista"].description
+    assert "no requiere identidad verificada" in descripcion.lower()
+    assert "persona_solicitada" in descripcion
+    assert "el core completa los montos" in descripcion.lower()
+    assert all(causa in descripcion for causa in CAUSAS)
+
+
 def test_parametros_se_publican_como_texto(herramientas):
     assert herramientas
-    for herramienta in herramientas.values():
+    for nombre, herramienta in herramientas.items():
         propiedades = herramienta.inputSchema["properties"]
         assert propiedades
-        assert all(p["type"] == "string" for p in propiedades.values())
+        for parametro, esquema in propiedades.items():
+            if (nombre, parametro) == ("escalar_a_analista", "transacciones"):
+                assert {k: esquema[k] for k in ("type", "items")} == LISTA_DE_TEXTOS
+            else:
+                assert esquema["type"] == "string", (nombre, parametro)
 
 
 def test_call_tool_responde_con_el_contrato():
@@ -106,6 +136,29 @@ def test_tipo_json_incorrecto_en_disputa_se_responde_con_el_contrato():
     )
     assert respuesta["ok"] is False
     assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
+
+
+def test_tipo_json_incorrecto_en_bloqueo_y_escalamiento_respeta_el_contrato():
+    servidor = crear_servidor()
+    bloqueo = _llamar(
+        servidor,
+        "bloquear_tarjeta",
+        {"cliente_id": "CLI-001", "ultimos4": 4821, "motivo": "x"},
+    )
+    escalamiento = _llamar(
+        servidor,
+        "escalar_a_analista",
+        {
+            "causa": "otra",
+            "cliente_id": "CLI-001",
+            "transacciones": 5,
+            "acciones_realizadas": "x",
+            "accion_recomendada": "y",
+        },
+    )
+    for respuesta in (bloqueo, escalamiento):
+        assert respuesta["ok"] is False
+        assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
 
 
 def test_servidor_no_cuelga_atributos_al_vuelo():

@@ -249,3 +249,9 @@ def test_tarjetas_de_solo_devuelve_las_del_cliente():
     assert [t.id for t in repo.tarjetas_de("CLI-001", "4821")] == ["TAR-001"]
     assert repo.tarjetas_de("CLI-002", "4821") == []
     assert repo.tarjetas_de("CLI-999", "4821") == []
+
+
+@pytest.mark.parametrize(("pais", "limite"), [("CO", 120), ("US", 90)])
+def test_limite_de_dias_segun_el_pais(pais, limite):
+    politica = Repositorio(hoy=HOY).politica
+    assert politica.limite_dias(_transaccion(1, pais)) == limite

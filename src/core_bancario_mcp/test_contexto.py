@@ -2,7 +2,14 @@ from datetime import date
 
 import pytest
 
-from core_bancario_mcp.contexto import Contexto, IntentosVerificacion, RegistroDisputas
+from core_bancario_mcp.contexto import (
+    Contexto,
+    DetalleTransaccion,
+    IntentosVerificacion,
+    RegistroBloqueos,
+    RegistroDisputas,
+    RegistroEscalamientos,
+)
 from core_bancario_mcp.fallas import InyectorFallas
 from core_bancario_mcp.repositorio import Repositorio
 
@@ -98,3 +105,72 @@ def test_cada_contexto_tiene_su_propio_registro():
     otro = Contexto(repositorio, InyectorFallas(None))
     uno.disputas.abrir(repositorio.obtener_transaccion("TRX-001"), "x")
     assert otro.disputas.caso_de("TRX-001") is None
+
+
+def test_numero_de_caso_no_depende_de_cuantos_casos_quedan():
+    disputas = RegistroDisputas()
+    disputas.abrir(_transaccion("TRX-001"), "x")
+    disputas.abrir(_transaccion("TRX-003"), "x")
+    disputas._casos.clear()  # simula casos cerrados en el futuro
+    assert disputas.abrir(_transaccion("TRX-004"), "x").id == "CASO-0003"
+
+
+# --- bloqueos y escalamientos (issue #7) ---
+
+
+def _tarjeta(tarjeta_id: str):
+    return Repositorio(hoy=date(2026, 10, 23)).tarjetas[tarjeta_id]
+
+
+def test_estado_inicial_de_la_tarjeta_se_respeta():
+    bloqueos = RegistroBloqueos()
+    assert bloqueos.estado_de(_tarjeta("TAR-004")) == "bloqueada"
+    assert bloqueos.estado_de(_tarjeta("TAR-001")) == "activa"
+
+
+def test_bloquear_informa_si_ya_estaba_bloqueada():
+    bloqueos = RegistroBloqueos()
+    assert bloqueos.bloquear(_tarjeta("TAR-001"), "Sospecha de fraude") is False
+    assert bloqueos.estado_de(_tarjeta("TAR-001")) == "bloqueada"
+    assert bloqueos.bloquear(_tarjeta("TAR-001"), "Otra vez") is True
+    assert bloqueos.bloquear(_tarjeta("TAR-004"), "Ya venía bloqueada") is True
+
+
+def _detalle(transaccion_id: str, monto: int) -> DetalleTransaccion:
+    return DetalleTransaccion(
+        transaccion_id=transaccion_id,
+        fecha="2026-10-22",
+        monto=monto,
+        comercio="Comercio Ficticio",
+        caso_disputa=None,
+    )
+
+
+def test_escalamientos_secuenciales_con_total_y_estado():
+    escalamientos = RegistroEscalamientos()
+    primero = escalamientos.registrar(
+        "umbral",
+        "CLI-001",
+        "Nombre Ficticio",
+        (_detalle("TRX-001", 180000), _detalle("TRX-002", 1250000)),
+        "Consulté los cobros",
+        "Revisar la disputa",
+    )
+    segundo = escalamientos.registrar(
+        "persona_solicitada", None, None, (), "Ninguna", "Contactar al cliente"
+    )
+    assert (primero.id, segundo.id) == ("ESC-0001", "ESC-0002")
+    assert primero.total == 1430000
+    assert segundo.total == 0
+    assert primero.estado == segundo.estado == "pendiente_analista"
+    assert escalamientos.todos() == [primero, segundo]
+
+
+def test_cada_contexto_tiene_sus_propios_bloqueos_y_escalamientos():
+    repositorio = Repositorio(hoy=date(2026, 10, 23))
+    uno = Contexto(repositorio, InyectorFallas(None))
+    otro = Contexto(repositorio, InyectorFallas(None))
+    uno.bloqueos.bloquear(repositorio.tarjetas["TAR-001"], "x")
+    uno.escalamientos.registrar("otra", "CLI-001", "N", (), "a", "b")
+    assert otro.bloqueos.estado_de(repositorio.tarjetas["TAR-001"]) == "activa"
+    assert otro.escalamientos.todos() == []

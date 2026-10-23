@@ -24,6 +24,10 @@ LARGO_MAXIMO_NOMBRE = 100
 # herramienta: así un número o una lista se responden con el contrato y no con un error de
 # validación de FastMCP fuera de él.
 Texto = Annotated[object, WithJsonSchema({"type": "string"})]
+# Igual para listas: el esquema dice "lista de textos" y la herramienta valida el valor.
+ListaTexto = Annotated[
+    object, WithJsonSchema({"type": "array", "items": {"type": "string"}})
+]
 
 DESCRIPCION_BUSCAR = (
     "Busca clientes por UN solo criterio: documento (formato CC-FIC-NNNN), nombre o "

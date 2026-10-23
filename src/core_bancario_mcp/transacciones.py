@@ -43,6 +43,15 @@ def _invalido(mensaje: str) -> dict:
     return error(TipoError.VALIDACION, Codigo.PARAMETRO_INVALIDO, mensaje)
 
 
+def tarjeta_no_encontrada(ultimos4: str) -> dict:
+    """Mismo error si el cliente no existe o la tarjeta es de otra persona."""
+    return error(
+        TipoError.VALIDACION,
+        Codigo.NO_ENCONTRADO,
+        f"No hay una tarjeta terminada en {ultimos4} para ese cliente.",
+    )
+
+
 def _fecha(campo: str, valor: str) -> date:
     """Fecha AAAA-MM-DD; ``ValueError`` con un mensaje para el agente si no lo es."""
     if not PATRON_FECHA.fullmatch(valor):
@@ -71,6 +80,9 @@ def consultar_transacciones(
             return _invalido(f"{campo} debe ser texto")
     cliente_id = (cliente_id or "").strip()
     ultimos4 = (ultimos4 or "").strip()
+    # Una fecha vacía o de solo espacios se trata como omitida.
+    fecha_desde = (fecha_desde or "").strip()
+    fecha_hasta = (fecha_hasta or "").strip()
     if not cliente_id:
         return _invalido("cliente_id es obligatorio")
     if not PATRON_CUATRO_DIGITOS.fullmatch(ultimos4):
@@ -79,9 +91,9 @@ def consultar_transacciones(
     repositorio = contexto.repositorio
     hoy = repositorio.hoy
     try:
-        hasta = _fecha("fecha_hasta", fecha_hasta.strip()) if fecha_hasta else hoy
+        hasta = _fecha("fecha_hasta", fecha_hasta) if fecha_hasta else hoy
         desde = (
-            _fecha("fecha_desde", fecha_desde.strip())
+            _fecha("fecha_desde", fecha_desde)
             if fecha_desde
             else hasta - timedelta(days=DIAS_POR_OMISION - 1)
         )
@@ -98,12 +110,7 @@ def consultar_transacciones(
 
     tarjetas = {t.id for t in repositorio.tarjetas_de(cliente_id, ultimos4)}
     if not tarjetas:
-        # Mismo mensaje si el cliente no existe o la tarjeta es de otra persona.
-        return error(
-            TipoError.VALIDACION,
-            Codigo.NO_ENCONTRADO,
-            f"No hay una tarjeta terminada en {ultimos4} para ese cliente.",
-        )
+        return tarjeta_no_encontrada(ultimos4)
     cobros = [
         t
         for t in repositorio.transacciones.values()
@@ -158,13 +165,8 @@ def iniciar_disputa(contexto: Contexto, transaccion_id=None, motivo=None) -> dic
     politica = repositorio.politica
     if not politica.cubre(transaccion, repositorio.hoy):
         antiguedad = (repositorio.hoy - transaccion.fecha).days
-        nacional = transaccion.pais == "CO"
-        limite = (
-            politica.dias_maximos_disputa_nacional
-            if nacional
-            else politica.dias_maximos_disputa_exterior
-        )
-        origen = "nacionales" if nacional else "en el exterior"
+        limite = politica.limite_dias(transaccion)
+        origen = "nacionales" if transaccion.pais == "CO" else "en el exterior"
         return error(
             TipoError.NEGOCIO,
             Codigo.FUERA_DE_POLITICA,

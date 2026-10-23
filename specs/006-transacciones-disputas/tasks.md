@@ -138,8 +138,8 @@ reiniciar la app.**
 
 - [X] T022 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T023 Marcar T001 a T023 en `specs/006-transacciones-disputas/tasks.md` y hacer commit. T024 y T025 ocurren después del último commit y se marcan en la rama del issue siguiente
-- [ ] T024 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #6`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T025 Después del merge, hecho por el desarrollador: verificar que el #6 queda cerrado y en *Done*
+- [X] T024 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #6`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T025 Después del merge, hecho por el desarrollador: verificar que el #6 queda cerrado y en *Done*
 
 ---
 
