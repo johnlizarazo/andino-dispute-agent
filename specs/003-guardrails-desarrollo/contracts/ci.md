@@ -1,0 +1,35 @@
+# Contrato: workflow de GitHub
+
+Fundamento en [research.md R6](../research.md). Archivo: `.github/workflows/guardrails.yml`.
+
+```yaml
+name: guardrails
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - name: Datos con forma real en el diff
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          git diff --unified=0 "$BASE"...HEAD > cambios.diff
+          uv run --no-project python plugins/andino-guardrails/hooks/bloquear_pii.py --diff cambios.diff
+      - name: Tests deterministas
+        run: uv run pytest
+```
+
+## Reglas
+
+- **Sin secretos:** `permissions: contents: read`.
+- **Mismo script que el hook:** una sola regla de detección para todo el proyecto.
+- **El job falla** si hay hallazgos o si fallan los tests.
+- **Versiones de las actions:** se fijan en la implementación con las versiones vigentes.
