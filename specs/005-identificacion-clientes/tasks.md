@@ -121,7 +121,7 @@ US2 → US3, luego verificación en sesión nueva y cierre. Los hooks del plugin
 reiniciar la app.**
 
 - [X] T015 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T016 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) con las herramientas de `core-bancario` (7 pasos) y comprobar cada resultado esperado
+- [X] T016 En una sesión nueva, ejecutar la tabla de [quickstart.md §2](quickstart.md) con las herramientas de `core-bancario` (7 pasos) y comprobar cada resultado esperado
 - [X] T017 Ejecutar [quickstart.md §3](quickstart.md) (operación repetida en `CORE_BANCARIO_FALLAS`, variante Bash o PowerShell): mensaje claro y código 1, sin traza
 - [X] T018 Pasar `bloquear_pii.py --diff` sobre `git diff --unified=0 main...HEAD` sin hallazgos
 
@@ -129,8 +129,8 @@ reiniciar la app.**
 
 ## Phase 8: Cierre con `/abrir-pr`
 
-- [ ] T019 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T020 Marcar T001 a T020 en `specs/005-identificacion-clientes/tasks.md` y hacer commit. T021 y T022 ocurren después del último commit y se marcan en la rama del issue siguiente
+- [X] T019 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T020 Marcar T001 a T020 en `specs/005-identificacion-clientes/tasks.md` y hacer commit. T021 y T022 ocurren después del último commit y se marcan en la rama del issue siguiente
 - [ ] T021 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #5`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T022 Después del merge, hecho por el desarrollador: verificar que el #5 queda cerrado y en *Done*
 
