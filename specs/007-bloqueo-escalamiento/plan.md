@@ -45,7 +45,7 @@ Decisiones en [research.md](research.md).
 - La respuesta de `escalar_a_analista` no incluye datos de productos ni el nombre del cliente;
   el detalle queda registrado para el analista (ajuste C1).
 
-**Scale/Scope**: 1 módulo nuevo con su test; cambios en `contexto.py`, `errores.py`,
+**Scale/Scope**: 1 módulo nuevo con su test; cambios en `contexto.py`,
 `repositorio.py`, `transacciones.py`, `identificacion.py` (tipo `ListaTexto`), `servidor.py`,
 la rule de MCP y sus tests
 
@@ -89,7 +89,6 @@ src/core_bancario_mcp/
 ├── test_contexto.py             # mod
 ├── repositorio.py               # mod: Politica.limite_dias
 ├── test_repositorio.py          # mod
-├── errores.py                   # sin cambios (usa PARAMETRO_INVALIDO y NO_ENCONTRADO)
 ├── identificacion.py            # mod: tipo ListaTexto junto a Texto
 ├── transacciones.py             # mod: fechas de solo espacios = omitidas; usa limite_dias
 ├── test_transacciones.py        # mod
