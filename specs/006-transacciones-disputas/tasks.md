@@ -87,12 +87,12 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_transacciones.py -k disputa`.
 
-- [ ] T012 [US2] Agregar a `src/core_bancario_mcp/test_transacciones.py`, **antes** de implementar, y verlos fallar:
+- [X] T012 [US2] Agregar a `src/core_bancario_mcp/test_transacciones.py`, **antes** de implementar, y verlos fallar:
   - TRX-001 con un motivo → `{"caso_id": "CASO-0001", "transaccion_id": "TRX-001", "monto": 180000, "estado": "abierta"}`; otra disputa válida después → `CASO-0002`.
   - TRX-004 ($500.000) → se abre; TRX-007 (tarjeta bloqueada) → se abre.
   - TRX-001 dos veces → negocio `DISPUTA_EXISTENTE` no reintentable con `CASO-0001` en el mensaje.
   - `TRX-999` → validación `NO_ENCONTRADO`; motivo vacío, de solo espacios, de 501 caracteres o numérico, y `transaccion_id` ausente → validación `PARAMETRO_INVALIDO`.
-- [ ] T013 [US2] Agregar a `Codigo` en `src/core_bancario_mcp/errores.py` `DISPUTA_EXISTENTE`, `FUERA_DE_POLITICA` y `REQUIERE_ANALISTA`, e implementar `iniciar_disputa(contexto, transaccion_id=None, motivo=None)` en `src/core_bancario_mcp/transacciones.py` con los pasos 2 a 4 y 7 del orden de [research.md R3](research.md) (motivo "texto no vacío, hasta 500 caracteres", recortado). El monto del caso sale de `contexto.repositorio.obtener_transaccion(...)`. Dejar verdes los tests y hacer commit `feat(#6): iniciar_disputa`
+- [X] T013 [US2] Agregar a `Codigo` en `src/core_bancario_mcp/errores.py` `DISPUTA_EXISTENTE`, `FUERA_DE_POLITICA` y `REQUIERE_ANALISTA`, e implementar `iniciar_disputa(contexto, transaccion_id=None, motivo=None)` en `src/core_bancario_mcp/transacciones.py` con los pasos 2 a 4 y 7 del orden de [research.md R3](research.md) (motivo "texto no vacío, hasta 500 caracteres", recortado). El monto del caso sale de `contexto.repositorio.obtener_transaccion(...)`. Dejar verdes los tests y hacer commit `feat(#6): iniciar_disputa`
 
 ---
 

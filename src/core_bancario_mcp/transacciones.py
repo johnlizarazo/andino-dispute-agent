@@ -16,6 +16,7 @@ from core_bancario_mcp.repositorio import PATRON_CUATRO_DIGITOS
 PATRON_FECHA = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 DIAS_POR_OMISION = 30
 DIAS_MAXIMOS_RANGO = 365
+LARGO_MAXIMO_MOTIVO = 500
 
 
 def _invalido(mensaje: str) -> dict:
@@ -104,4 +105,40 @@ def consultar_transacciones(
             }
             for t in cobros
         ]
+    )
+
+
+def iniciar_disputa(contexto: Contexto, transaccion_id=None, motivo=None) -> dict:
+    for campo, valor in (("transaccion_id", transaccion_id), ("motivo", motivo)):
+        if not isinstance(valor, str) or not valor.strip():
+            return _invalido(f"{campo} es obligatorio y debe ser texto")
+    transaccion_id, motivo = transaccion_id.strip(), motivo.strip()
+    if len(motivo) > LARGO_MAXIMO_MOTIVO:
+        return _invalido(f"motivo no puede superar {LARGO_MAXIMO_MOTIVO} caracteres")
+
+    transaccion = contexto.repositorio.obtener_transaccion(transaccion_id)
+    if transaccion is None:
+        return error(
+            TipoError.VALIDACION,
+            Codigo.NO_ENCONTRADO,
+            f"No existe la transacción {transaccion_id}. "
+            "Ubícala antes con consultar_transacciones.",
+        )
+    existente = contexto.disputas.caso_de(transaccion.id)
+    if existente is not None:
+        return error(
+            TipoError.NEGOCIO,
+            Codigo.DISPUTA_EXISTENTE,
+            f"La transacción ya tiene la disputa {existente.id} abierta. "
+            "Informa ese caso al cliente.",
+        )
+
+    caso = contexto.disputas.abrir(transaccion, motivo)
+    return exito(
+        {
+            "caso_id": caso.id,
+            "transaccion_id": caso.transaccion_id,
+            "monto": caso.monto,
+            "estado": caso.estado,
+        }
     )

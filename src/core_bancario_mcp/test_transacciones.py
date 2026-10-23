@@ -8,7 +8,7 @@ import pytest
 from core_bancario_mcp.contexto import Contexto
 from core_bancario_mcp.fallas import InyectorFallas
 from core_bancario_mcp.repositorio import Repositorio
-from core_bancario_mcp.transacciones import consultar_transacciones
+from core_bancario_mcp.transacciones import consultar_transacciones, iniciar_disputa
 
 DATOS = Path(__file__).with_name("datos")
 HOY = date(2026, 10, 23)
@@ -151,3 +151,59 @@ def test_cobro_con_disputa_muestra_su_caso(contexto):
     casos = {c["transaccion_id"]: c["caso_disputa"] for c in respuesta["datos"]}
     assert casos["TRX-001"] == caso.id
     assert casos["TRX-002"] is None
+
+
+# --- iniciar_disputa: caso feliz y validaciones ---
+
+MOTIVO = "El cliente no reconoce el cobro"
+
+
+def test_disputa_abre_caso_con_el_monto_del_core(contexto):
+    assert iniciar_disputa(contexto, "TRX-001", MOTIVO) == {
+        "ok": True,
+        "datos": {
+            "caso_id": "CASO-0001",
+            "transaccion_id": "TRX-001",
+            "monto": 180000,
+            "estado": "abierta",
+        },
+    }
+    segunda = iniciar_disputa(contexto, "TRX-003", MOTIVO)
+    assert segunda["datos"]["caso_id"] == "CASO-0002"
+
+
+@pytest.mark.parametrize("transaccion_id", ["TRX-004", "TRX-007"])
+def test_disputa_en_el_umbral_y_en_tarjeta_bloqueada_se_abre(contexto, transaccion_id):
+    respuesta = iniciar_disputa(contexto, transaccion_id, MOTIVO)
+    assert respuesta["ok"] is True
+    assert respuesta["datos"]["transaccion_id"] == transaccion_id
+
+
+def test_disputa_repetida_informa_el_caso_existente(contexto):
+    iniciar_disputa(contexto, "TRX-001", MOTIVO)
+    respuesta = iniciar_disputa(contexto, "TRX-001", MOTIVO)
+    assert _error(respuesta, "negocio", "DISPUTA_EXISTENTE")
+    assert "CASO-0001" in respuesta["error"]["mensaje"]
+
+
+def test_disputa_de_transaccion_inexistente_es_validacion(contexto):
+    respuesta = iniciar_disputa(contexto, "TRX-999", MOTIVO)
+    assert _error(respuesta, "validacion", "NO_ENCONTRADO")
+
+
+@pytest.mark.parametrize(
+    "argumentos",
+    [
+        {"motivo": MOTIVO},
+        {"transaccion_id": "TRX-001"},
+        {"transaccion_id": "TRX-001", "motivo": ""},
+        {"transaccion_id": "TRX-001", "motivo": "   "},
+        {"transaccion_id": "TRX-001", "motivo": "x" * 501},
+        {"transaccion_id": "TRX-001", "motivo": 123},
+        {"transaccion_id": 1, "motivo": MOTIVO},
+    ],
+)
+def test_disputa_con_parametros_invalidos_es_validacion(contexto, argumentos):
+    respuesta = iniciar_disputa(contexto, **argumentos)
+    assert _error(respuesta, "validacion", "PARAMETRO_INVALIDO")
+    assert contexto.disputas.caso_de("TRX-001") is None
