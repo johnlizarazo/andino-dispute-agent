@@ -1,5 +1,5 @@
 ---
-description: Revisa la rama del ticket con revisor-codigo y, si no hay bloqueantes, publica la rama, crea el PR con Closes #N, mueve el issue a In Review y comenta el avance.
+description: Revisa la rama del ticket con revisor-codigo y revisar-cumplimiento y, si no hay bloqueantes, publica la rama, crea el PR con Closes #N, mueve el issue a In Review y comenta el avance.
 argument-hint: "[notas opcionales para el comentario]"
 disable-model-invocation: true
 allowed-tools:
@@ -33,6 +33,12 @@ Delega en el subagente `revisor-codigo` con este mensaje: la rama, la base `main
 carpeta `specs/<rama>/`. No le pases nada de esta conversación. Si su respuesta empieza con
 `VEREDICTO: BLOQUEADO`, muestra los bloqueantes y **detente sin publicar nada**.
 
+## 2b. Revisión de cumplimiento
+
+Invoca la skill `andino-guardrails:revisar-cumplimiento` (sin argumentos: audita toda la
+rama). Si su respuesta empieza con `VEREDICTO: BLOQUEADO`, muestra los bloqueantes y
+**detente sin publicar nada**.
+
 ## 3. Publicar la rama
 
 `git push -u origin <rama>` (pide confirmación).
@@ -43,8 +49,9 @@ Con `list_pull_requests` (`head: johnlizarazo:<rama>`, estado abierto), busca un
 Si lo hay, reutilízalo. Si no, créalo contra `main` (pide confirmación) con:
 
 - **Título**: el del issue.
-- **Cuerpo**: `Closes #N`, qué entrega, cómo se verificó, el resultado de la revisión
-  (veredicto y no bloqueantes) y los límites conocidos. Termina con
+- **Cuerpo**: `Closes #N`, qué entrega, cómo se verificó, el resultado de las dos
+  revisiones (veredicto de código con sus no bloqueantes, y veredicto de cumplimiento con
+  sus NO APLICA) y los límites conocidos. Termina con
   `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 
 ## 5. Estado
@@ -70,7 +77,8 @@ Lee los comentarios del issue (`issue_read`, `get_comments`). Si ninguno empieza
 analyze, tomados de esta conversación y de los commits de la rama; o "Sin ajustes">
 
 ### Revisión independiente
-<veredicto de revisor-codigo y conteo de no bloqueantes>
+<veredicto de revisor-codigo y conteo de no bloqueantes; veredicto de
+revisar-cumplimiento, reglas en NO APLICA y resumen de tests>
 
 ### Qué quedó pendiente
 <lista, o "Nada">

@@ -121,13 +121,13 @@ desactiva el hook para esquivarlo.
 
 **Independent Test**: [quickstart.md §5](quickstart.md).
 
-- [ ] T017 [P] [US4] Crear `plugins/andino-guardrails/agents/auditor-cumplimiento.md` según [contracts/cumplimiento.md](contracts/cumplimiento.md): `tools: Read, Grep, Glob, Bash`, sin `permissionMode`, y los 7 puntos del cuerpo, incluidos "NO APLICA" y el formato de veredicto del [data-model](data-model.md#veredicto-de-cumplimiento)
-- [ ] T018 [P] [US4] Crear `plugins/andino-guardrails/skills/revisar-cumplimiento/SKILL.md` según [contracts/cumplimiento.md](contracts/cumplimiento.md): `context: fork`, `agent: andino-guardrails:auditor-cumplimiento`, `background: false`, `allowed-tools` y `argument-hint`, con un cuerpo autocontenido
-- [ ] T019 [US4] En `.claude/commands/abrir-pr.md`:
+- [X] T017 [P] [US4] Crear `plugins/andino-guardrails/agents/auditor-cumplimiento.md` según [contracts/cumplimiento.md](contracts/cumplimiento.md): `tools: Read, Grep, Glob, Bash`, sin `permissionMode`, y los 7 puntos del cuerpo, incluidos "NO APLICA" y el formato de veredicto del [data-model](data-model.md#veredicto-de-cumplimiento)
+- [X] T018 [P] [US4] Crear `plugins/andino-guardrails/skills/revisar-cumplimiento/SKILL.md` según [contracts/cumplimiento.md](contracts/cumplimiento.md): `context: fork`, `agent: andino-guardrails:auditor-cumplimiento`, `background: false`, `allowed-tools` y `argument-hint`, con un cuerpo autocontenido
+- [X] T019 [US4] En `.claude/commands/abrir-pr.md`:
   - Agregar el paso **2b**: invocar `andino-guardrails:revisar-cumplimiento` y detenerse sin publicar si el veredicto es `BLOQUEADO`.
   - Agregar el veredicto de cumplimiento a la sección "Revisión independiente" de la plantilla del comentario.
   - Agregar el veredicto de cumplimiento al cuerpo del PR.
-- [ ] T020 [US4] Hacer commit `feat(#3): auditor-cumplimiento, skill revisar-cumplimiento y paso de cumplimiento en /abrir-pr`
+- [X] T020 [US4] Hacer commit `feat(#3): auditor-cumplimiento, skill revisar-cumplimiento y paso de cumplimiento en /abrir-pr`
 
 ---
 
