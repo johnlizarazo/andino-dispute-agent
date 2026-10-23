@@ -55,7 +55,7 @@ Orden: fecha descendente y, a igual fecha, `transaccion_id` ascendente.
 |---|---|---|
 | `cliente_id` | texto no vacío | validación `PARAMETRO_INVALIDO` |
 | `ultimos4` | `^[0-9]{4}$` | validación `PARAMETRO_INVALIDO` |
-| `fecha_desde`, `fecha_hasta` | opcionales; `^[0-9]{4}-[0-9]{2}-[0-9]{2}$` y fecha real | validación `PARAMETRO_INVALIDO` |
+| `fecha_desde`, `fecha_hasta` | opcionales (por omisión, hasta = hoy y desde = hasta − 29 días); `^[0-9]{4}-[0-9]{2}-[0-9]{2}$` y fecha real | validación `PARAMETRO_INVALIDO` |
 | rango | desde ≤ hasta ≤ hoy, como máximo 365 días | validación `PARAMETRO_INVALIDO` |
 | tarjeta del cliente | `tarjetas_de` no vacío | validación `NO_ENCONTRADO` |
 | `transaccion_id` | texto no vacío; existe | validación `PARAMETRO_INVALIDO` / `NO_ENCONTRADO` |

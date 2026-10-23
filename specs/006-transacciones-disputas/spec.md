@@ -153,7 +153,8 @@ arrastrarlos a los siguientes tickets.
 ### Edge Cases
 
 - **Rango de un solo día**: válido (fecha inicial igual a la final).
-- **Rango sin fechas**: por omisión, los últimos 30 días hasta hoy.
+- **Rango sin fechas**: por omisión, los últimos 30 días contando hoy (hoy y los 29
+  anteriores).
 - **Rango demasiado largo** (más de 365 días): error de validación, para no listar todo el
   historial.
 - **Transacción inexistente**: error de validación no reintentable.
@@ -173,7 +174,7 @@ arrastrarlos a los siguientes tickets.
 - **FR-001**: `consultar_transacciones` MUST identificar la tarjeta por el identificador del
   cliente y los últimos 4 dígitos, y solo listar tarjetas de ese cliente.
 - **FR-002**: MUST aceptar un rango de fechas (formato año-mes-día) opcional; sin rango,
-  usa los últimos 30 días hasta hoy.
+  usa los últimos 30 días contando hoy (hoy y los 29 anteriores).
 - **FR-003**: Fechas mal formadas, fecha inicial posterior a la final, fecha final futura o
   rangos de más de 365 días MUST devolver un error de validación no reintentable.
 - **FR-004**: MUST devolver una lista (vacía si no hay cobros) con identificador, fecha,
@@ -234,6 +235,10 @@ arrastrarlos a los siguientes tickets.
 
 ## Assumptions
 
+- **Varias tarjetas con los mismos últimos 4 del mismo cliente**: se listan los cobros de
+  todas (hoy no ocurre en los datos ficticios).
+- **Una disputa abierta por transacción** (FR-008): regla nueva garantizada por el servidor,
+  imposible por diseño (el core no abre un segundo caso); no depende de instrucciones.
 - **Producto = tarjeta**: es el único producto de los datos ficticios. Se identifica por
   cliente y últimos 4 porque es lo que el agente conoce de la conversación; los últimos 4
   solos pueden repetirse entre clientes.

@@ -8,7 +8,7 @@ Fundamento en [research.md R2 y R4](../research.md).
 |---|---|---|
 | `cliente_id` | sí | id devuelto por `buscar_cliente` |
 | `ultimos4` | sí | 4 dígitos |
-| `fecha_desde` | no | `AAAA-MM-DD`; por omisión, `fecha_hasta` − 30 días |
+| `fecha_desde` | no | `AAAA-MM-DD`; por omisión, `fecha_hasta` − 29 días (30 días con ambos extremos) |
 | `fecha_hasta` | no | `AAAA-MM-DD`; por omisión, hoy |
 
 ## Respuestas (en este orden de evaluación)
@@ -31,8 +31,9 @@ cobro con `caso_disputa` ya tiene una disputa abierta.
 ## Tests (`test_transacciones.py`, "hoy" fijo)
 
 - Tarjeta 4821 de CLI-001, rango ayer–ayer → TRX-001 y TRX-002 (para 3 "hoy" distintos).
-- Sin rango → los cobros de los últimos 30 días, ordenados de más reciente a más antiguo.
+- Sin rango → los cobros de hoy y los 29 días anteriores (un cobro de hace 29 días entra y uno de hace 30 no, con datos en `tmp_path`), ordenados de más reciente a más antiguo.
 - Rango sin cobros → `exito([])`.
+- Tarjeta bloqueada (CLI-004, `9012`) → sus cobros se listan (TRX-007).
 - Solo `fecha_desde` o solo `fecha_hasta` → se completa la otra.
 - `20261023`, `2026-W43-5`, `2026-02-30`, desde > hasta, hasta = mañana, 366 días, fecha
   numérica → validación `PARAMETRO_INVALIDO`.

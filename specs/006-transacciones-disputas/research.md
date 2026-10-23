@@ -24,7 +24,8 @@ Verificado en el entorno del proyecto (Python 3.14, `mcp` 1.30.0).
   - Formato: patrón `[0-9]{4}-[0-9]{2}-[0-9]{2}` con `fullmatch` y luego
     `date.fromisoformat`. Verificado: `fromisoformat` en 3.14 acepta también `20261023` y
     `2026-W43-5`, que no deben pasar; `2026-02-30` lo rechaza (fecha imposible → validación).
-  - Omisión: `fecha_hasta = hoy`; `fecha_desde = fecha_hasta − 30 días`. Se completan por
+  - Omisión: `fecha_hasta = hoy`; `fecha_desde = fecha_hasta − 29 días` (30 días
+    contando ambos extremos; ajuste A1 del análisis). Se completan por
     separado (se puede dar solo una).
   - Validación: desde ≤ hasta; hasta ≤ hoy; `(hasta − desde).days ≤ 365`.
   - Antigüedad del cobro: `(hoy − fecha).days`.
