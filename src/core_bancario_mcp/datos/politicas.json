@@ -1,0 +1,5 @@
+{
+  "dias_maximos_disputa_exterior": 90,
+  "dias_maximos_disputa_nacional": 120,
+  "umbral_disputa_automatica": 500000
+}

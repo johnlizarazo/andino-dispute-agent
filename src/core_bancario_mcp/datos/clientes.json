@@ -1,0 +1,6 @@
+[
+  {"id": "CLI-001", "nombre": "Laura Méndez Ríos", "documento": "CC-FIC-0001", "dato_verificacion": "1987"},
+  {"id": "CLI-002", "nombre": "Carlos Andrés Pérez", "documento": "CC-FIC-0002", "dato_verificacion": "1975"},
+  {"id": "CLI-003", "nombre": "Carlos Andrés Pérez", "documento": "CC-FIC-0003", "dato_verificacion": "1992"},
+  {"id": "CLI-004", "nombre": "Marta Lucía Gómez", "documento": "CC-FIC-0004", "dato_verificacion": "1980"}
+]

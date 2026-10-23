@@ -60,19 +60,19 @@ fallas y servidor, y va primero.
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_repositorio.py` y
 [quickstart.md §2](quickstart.md).
 
-- [ ] T005 [P] [US2] Crear `src/core_bancario_mcp/datos/clientes.json` con exactamente los 4 clientes de [contracts/datos.md](contracts/datos.md); documentos "`^CC-FIC-\d{4}$`"
-- [ ] T006 [P] [US2] Crear `src/core_bancario_mcp/datos/tarjetas.json` con exactamente las 5 tarjetas del contrato; "`ultimos4` exactamente 4 dígitos", con `estado` en `activa` o `bloqueada`
-- [ ] T007 [P] [US2] Crear `src/core_bancario_mcp/datos/transacciones.json` con exactamente las 7 transacciones del contrato: `dias_atras` entero ≥ 0, `monto` entero > 0, `pais` de 2 letras y `estado: "aplicada"`
-- [ ] T008 [P] [US2] Crear `src/core_bancario_mcp/datos/politicas.json` exactamente como en el contrato
-- [ ] T009 [US2] Escribir `src/core_bancario_mcp/test_repositorio.py` **antes** que el módulo, con los tests de [contracts/repositorio.md](contracts/repositorio.md):
+- [X] T005 [P] [US2] Crear `src/core_bancario_mcp/datos/clientes.json` con exactamente los 4 clientes de [contracts/datos.md](contracts/datos.md); documentos "`^CC-FIC-\d{4}$`"
+- [X] T006 [P] [US2] Crear `src/core_bancario_mcp/datos/tarjetas.json` con exactamente las 5 tarjetas del contrato; "`ultimos4` exactamente 4 dígitos", con `estado` en `activa` o `bloqueada`
+- [X] T007 [P] [US2] Crear `src/core_bancario_mcp/datos/transacciones.json` con exactamente las 7 transacciones del contrato: `dias_atras` entero ≥ 0, `monto` entero > 0, `pais` de 2 letras y `estado: "aplicada"`
+- [X] T008 [P] [US2] Crear `src/core_bancario_mcp/datos/politicas.json` exactamente como en el contrato
+- [X] T009 [US2] Escribir `src/core_bancario_mcp/test_repositorio.py` **antes** que el módulo, con los tests de [contracts/repositorio.md](contracts/repositorio.md):
   - Fechas con `hoy = 2027-01-01` y con `hoy = 2026-03-01`.
   - La tarjeta `4821` con sus dos cobros de ayer.
   - Los homónimos.
   - El cobro en el exterior con más de 90 días.
   - El cobro de 500000 y la tarjeta bloqueada.
   - Un test por cada regla de validación, con JSON mal formados escritos en `tmp_path`.
-- [ ] T010 [US2] Implementar `src/core_bancario_mcp/repositorio.py` según [contracts/repositorio.md](contracts/repositorio.md): dataclasses inmutables, `DatosInvalidosError`, carga con `importlib.resources` o la `carpeta` indicada, validación completa y fechas con `hoy` inyectable. **No** implementar todavía `obtener_transaccion`: es de T013, para que su test (T012) falle primero
-- [ ] T011 [US2] Dejar verdes los tests y hacer commit `feat(#4): datos ficticios y repositorio del core`
+- [X] T010 [US2] Implementar `src/core_bancario_mcp/repositorio.py` según [contracts/repositorio.md](contracts/repositorio.md): dataclasses inmutables, `DatosInvalidosError`, carga con `importlib.resources` o la `carpeta` indicada, validación completa y fechas con `hoy` inyectable. **No** implementar todavía `obtener_transaccion`: es de T013, para que su test (T012) falle primero
+- [X] T011 [US2] Dejar verdes los tests y hacer commit `feat(#4): datos ficticios y repositorio del core`
 
 ---
 

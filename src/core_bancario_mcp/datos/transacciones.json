@@ -1,0 +1,9 @@
+[
+  {"id": "TRX-001", "tarjeta_id": "TAR-001", "dias_atras": 1, "monto": 180000, "comercio": "Tienda Ficticia Uno", "pais": "CO", "estado": "aplicada"},
+  {"id": "TRX-002", "tarjeta_id": "TAR-001", "dias_atras": 1, "monto": 1250000, "comercio": "Electro Ficticio", "pais": "CO", "estado": "aplicada"},
+  {"id": "TRX-003", "tarjeta_id": "TAR-001", "dias_atras": 10, "monto": 45000, "comercio": "Café Imaginario", "pais": "CO", "estado": "aplicada"},
+  {"id": "TRX-004", "tarjeta_id": "TAR-002", "dias_atras": 5, "monto": 500000, "comercio": "Viajes Inventados", "pais": "CO", "estado": "aplicada"},
+  {"id": "TRX-005", "tarjeta_id": "TAR-003", "dias_atras": 3, "monto": 75000, "comercio": "Librería Ficticia", "pais": "CO", "estado": "aplicada"},
+  {"id": "TRX-006", "tarjeta_id": "TAR-005", "dias_atras": 120, "monto": 320000, "comercio": "Tienda Exterior Ficticia", "pais": "US", "estado": "aplicada"},
+  {"id": "TRX-007", "tarjeta_id": "TAR-004", "dias_atras": 15, "monto": 90000, "comercio": "Farmacia Inventada", "pais": "CO", "estado": "aplicada"}
+]
