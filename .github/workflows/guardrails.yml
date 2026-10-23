@@ -1,0 +1,31 @@
+name: guardrails
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v10
+
+      - name: Datos con forma real en las líneas agregadas
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$(git rev-parse HEAD~1)"
+          fi
+          git diff --unified=0 "$BASE"...HEAD > "$RUNNER_TEMP/cambios.diff"
+          uv run --no-project python plugins/andino-guardrails/hooks/bloquear_pii.py --diff "$RUNNER_TEMP/cambios.diff"
+
+      - name: Tests deterministas
+        run: uv run pytest

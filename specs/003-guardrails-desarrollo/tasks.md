@@ -145,9 +145,9 @@ desactiva el hook para esquivarlo.
 
 ## Phase 9: CI y documentación
 
-- [ ] T024 [P] Crear `.github/workflows/guardrails.yml` según [contracts/ci.md](contracts/ci.md), con las versiones vigentes de `actions/checkout` y `astral-sh/setup-uv` (consultadas con `gh api repos/<action>/releases/latest`)
-- [ ] T025 [P] Agregar al `README.md` una sección "Guardrails" que diga qué bloquea el plugin, dónde viven las rules y que el CI repite el chequeo de datos sobre el diff
-- [ ] T026 Hacer la prueba negativa local de [quickstart.md §7](quickstart.md), paso 2: generar un diff temporal con una tarjeta válida en una línea `+` y comprobar que `bloquear_pii.py --diff` sale con 1. Borrar el archivo temporal y hacer commit `ci(#3): workflow guardrails y README`
+- [X] T024 [P] Crear `.github/workflows/guardrails.yml` según [contracts/ci.md](contracts/ci.md), con las versiones vigentes de `actions/checkout` y `astral-sh/setup-uv` (consultadas con `gh api repos/<action>/releases/latest`)
+- [X] T025 [P] Agregar al `README.md` una sección "Guardrails" que diga qué bloquea el plugin, dónde viven las rules y que el CI repite el chequeo de datos sobre el diff
+- [X] T026 Hacer la prueba negativa local de [quickstart.md §7](quickstart.md), paso 2: generar un diff temporal con una tarjeta válida en una línea `+` y comprobar que `bloquear_pii.py --diff` sale con 1. Borrar el archivo temporal y hacer commit `ci(#3): workflow guardrails y README`
 
 ---
 
