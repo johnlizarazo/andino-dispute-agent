@@ -175,13 +175,13 @@ app y aceptar la confianza de la carpeta** antes de T027.
 
 - [X] T034 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T035 Marcar T001 a T035 en `specs/003-guardrails-desarrollo/tasks.md` y hacer commit. Las tareas T036 en adelante ocurren después del último commit de la rama y se marcan en la rama del issue siguiente
-- [ ] T036 El desarrollador ejecuta `/abrir-pr`, que ahora incluye cumplimiento, y aprueba el push y el PR. Esperado:
+- [X] T036 El desarrollador ejecuta `/abrir-pr`, que ahora incluye cumplimiento, y aprueba el push y el PR. Esperado:
   - Revisión de código `APROBADO`.
   - Cumplimiento `APROBADO`.
   - PR con `Closes #3`.
   - El job `guardrails` del PR pasa.
   - Issue en *In Review* y comentario de avance con los dos veredictos.
-- [ ] T037 Después del merge, hecho por el desarrollador: verificar que el issue #3 queda cerrado y en *Done* sin intervención
+- [X] T037 Después del merge, hecho por el desarrollador: verificar que el issue #3 queda cerrado y en *Done* sin intervención
 
 ---
 
