@@ -12,7 +12,12 @@ from mcp.client.stdio import stdio_client
 from core_bancario_mcp.fallas import VARIABLE
 from core_bancario_mcp.servidor import crear_servidor
 
-HERRAMIENTAS = ["buscar_cliente", "verificar_identidad"]
+HERRAMIENTAS = [
+    "buscar_cliente",
+    "consultar_transacciones",
+    "iniciar_disputa",
+    "verificar_identidad",
+]
 
 
 def _entorno(**extra: str) -> dict[str, str]:
@@ -31,7 +36,7 @@ def _llamar(servidor, nombre: str, argumentos: dict) -> dict:
     return json.loads(contenido.text)
 
 
-def test_servidor_publica_exactamente_las_herramientas_de_identificacion(herramientas):
+def test_servidor_publica_exactamente_sus_herramientas(herramientas):
     assert crear_servidor().name == "core-bancario"
     assert sorted(herramientas) == HERRAMIENTAS
 
@@ -51,6 +56,20 @@ def test_descripcion_de_verificar_dice_cuando_usarla(herramientas):
     assert "inventado" in descripcion
 
 
+def test_descripcion_de_consultar_exige_identidad_del_titular(herramientas):
+    descripcion = herramientas["consultar_transacciones"].description.lower()
+    assert "identidad verificada" in descripcion
+    assert "titular" in descripcion
+
+
+def test_descripcion_de_disputa_dice_que_el_monto_es_del_core(herramientas):
+    descripcion = herramientas["iniciar_disputa"].description
+    assert "monto lo toma el core" in descripcion.lower()
+    assert "FUERA_DE_POLITICA" in descripcion
+    assert "REQUIERE_ANALISTA" in descripcion
+    assert "no reintentes" in descripcion.lower()
+
+
 def test_parametros_se_publican_como_texto(herramientas):
     assert herramientas
     for herramienta in herramientas.values():
@@ -67,6 +86,24 @@ def test_call_tool_responde_con_el_contrato():
 
 def test_tipo_json_incorrecto_se_responde_con_el_contrato():
     respuesta = _llamar(crear_servidor(), "buscar_cliente", {"ultimos4": 4821})
+    assert respuesta["ok"] is False
+    assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
+
+
+def test_tipo_json_incorrecto_en_verificar_se_responde_con_el_contrato():
+    respuesta = _llamar(
+        crear_servidor(),
+        "verificar_identidad",
+        {"cliente_id": "CLI-001", "dato_verificacion": 1987},
+    )
+    assert respuesta["ok"] is False
+    assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
+
+
+def test_tipo_json_incorrecto_en_disputa_se_responde_con_el_contrato():
+    respuesta = _llamar(
+        crear_servidor(), "iniciar_disputa", {"transaccion_id": 1, "motivo": "x"}
+    )
     assert respuesta["ok"] is False
     assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
 

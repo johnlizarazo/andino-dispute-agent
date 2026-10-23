@@ -187,6 +187,19 @@ def test_verificar_parametros_invalidos_son_validacion(contexto, argumentos):
     assert _es_validacion(verificar_identidad(contexto, **argumentos))
 
 
+def test_verificar_recorta_espacios_de_los_extremos(contexto):
+    dato = f"  {_dato(contexto, 'CLI-001')} "
+    respuesta = verificar_identidad(contexto, " CLI-001 ", dato)
+    assert respuesta["ok"] is True
+    assert respuesta["datos"]["cliente_id"] == "CLI-001"
+
+
+def test_dato_distinto_tras_recortar_sigue_fallando(contexto):
+    dato = f" {_incorrecto(contexto, 'CLI-001')} "
+    respuesta = verificar_identidad(contexto, "CLI-001", dato)
+    assert _error(respuesta, "permiso", "VERIFICACION_FALLIDA")
+
+
 def test_tres_fallos_bloquean_aunque_el_cuarto_dato_sea_correcto(contexto):
     for _ in range(3):
         respuesta = verificar_identidad(

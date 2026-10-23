@@ -91,6 +91,8 @@ API verificada contra `mcp` 1.30.0 instalado (`FastMCP.tool`, `add_tool`, `list_
   (ajuste I1). `hmac.compare_digest(dato_verificacion, cliente.dato_verificacion)` sin
   normalizar (coincidencia exacta). El mensaje de error no incluye el dato esperado ni pistas.
 - **Rationale**: una línea, tiempo constante; evita filtrar por tiempos aunque sea una demo.
+- **Ajuste del #6**: se recortan los espacios de los extremos de `cliente_id` y
+  `dato_verificacion`, como en `buscar_cliente`; la comparación sigue exacta tras recortar.
 
 ## R7. Endurecimiento de datos y fallas (FR-014, FR-015)
 

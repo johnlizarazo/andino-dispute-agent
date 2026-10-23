@@ -111,6 +111,8 @@ def verificar_identidad(
     ):
         if not isinstance(valor, str) or not valor.strip():
             return _invalido(f"{campo} es obligatorio y debe ser texto")
+    # Se recortan los extremos, como en buscar_cliente; la comparación sigue exacta.
+    cliente_id, dato_verificacion = cliente_id.strip(), dato_verificacion.strip()
     cliente = contexto.repositorio.clientes.get(cliente_id)
     if cliente is None:
         return error(
