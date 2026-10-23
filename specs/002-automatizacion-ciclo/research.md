@@ -66,11 +66,17 @@ issue #1 y lo observado en el Project durante el cierre del PR #15.
     revisor no puede ejecutar nada más.
   - Las tres reglas `allow` son de solo lectura e inofensivas para el resto del equipo.
   - Es declarativo: no agrega código.
-- **Riesgo y verificación**: la documentación no detalla cómo trata `dontAsk` a Read, Grep
-  y Glob. La verificación (quickstart §3) pide al revisor un comando no permitido
-  (`git status`) y uno permitido (`git diff`).
-- **Fallback documentado**: si `dontAsk` no se comporta así, se usa un hook `PreToolUse`
-  en el frontmatter del subagente que solo deja pasar `git diff`, `git log` y `git show`.
+- **Resultado de la verificación (T012)**: la suposición "todo comando fuera de `allow` se
+  niega" resultó **falsa** en parte.
+  - En modo `dontAsk` se niegan todas las acciones con efectos: `git branch`, `touch`,
+    `Write` y `git push`.
+  - Pasan los comandos que Claude Code aprueba de fábrica por ser de solo lectura
+    (`git status`, `echo`), además de Read, Grep, Glob y los de `allow`.
+  - La garantía determinista real es "el revisor no puede modificar nada". El límite
+    exacto a `diff`, `log` y `show` lo ponen sus instrucciones, y el revisor las respetó
+    incluso ante una petición del coordinador.
+- **Fallback descartado**: el hook `PreToolUse` previsto solo agregaría código para negar
+  comandos de solo lectura, que no causan daño. Se descarta por el principio VII.
 - **Alternatives considered**:
   - Sin Bash, con el diff pegado en el mensaje de delegación: es más simple, pero el
     revisor no puede inspeccionar el historial por su cuenta, y el issue pide `git diff` y

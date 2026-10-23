@@ -137,7 +137,7 @@ abierto.
 
 | Riesgo | Mitigación |
 |---|---|
-| `dontAsk` niega también Read, Grep o Glob, o deja pasar otros comandos | Verificación explícita (quickstart §3); fallback con hook `PreToolUse` en el frontmatter (R3). |
+| `dontAsk` niega también Read, Grep o Glob, o deja pasar otros comandos | Verificado en T012: no niega lecturas, deja pasar comandos de solo lectura y niega todo lo que modifica. El fallback con hook se descartó (R3). |
 | Las instrucciones de la skill no se siguen al pie de la letra | Instrucciones numeradas, criterios de parada explícitos y prueba real con el issue #3. |
 | `/abrir-pr` toma un número de issue equivocado | Lo deduce de `spec.md` (`Issue: #N`) y lo confirma con el título del issue antes de publicar (FR-011). |
 | La regla "Pull request linked to issue" sigue activa | La verificación del cierre de este ticket comprueba el estado tras crear el PR. |

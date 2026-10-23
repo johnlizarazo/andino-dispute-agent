@@ -91,7 +91,7 @@ lectura de `CLAUDE.md`.
 
 **Independent Test**: [quickstart.md §2](quickstart.md) y el merge de este ticket (T019).
 
-- [ ] T010 [US3] **El desarrollador** desactiva la regla "Pull request linked to issue" en el Project (⋯ → Workflows) y confirma que "Item closed" sigue activa. El asistente lo verifica por GraphQL (`workflows { name enabled }`) y anota el resultado para el comentario de cierre
+- [X] T010 [US3] **El desarrollador** desactiva la regla "Pull request linked to issue" en el Project (⋯ → Workflows) y confirma que "Item closed" sigue activa. El asistente lo verifica por GraphQL (`workflows { name enabled }`) y anota el resultado para el comentario de cierre
 
 ---
 
@@ -100,9 +100,9 @@ lectura de `CLAUDE.md`.
 **Purpose**: las piezas de `.claude/` se cargan al iniciar la sesión. **Requiere reiniciar
 Claude Code** antes de T011.
 
-- [ ] T011 [US2] Verificar que `/siguiente-ticket` y `/abrir-pr` aparecen en `/` y que `revisor-codigo` está disponible ([quickstart.md §1](quickstart.md))
-- [ ] T012 [US2] Delegar en `revisor-codigo` y comprobar que niega `git status`, permite `git diff main..HEAD --stat` y permite leer `specs/002-automatizacion-ciclo/spec.md` ([quickstart.md §3](quickstart.md)). Si falla, aplicar el fallback (un hook `PreToolUse` en el frontmatter que solo deje pasar `git diff`, `git log` y `git show`), actualizar [contracts/revisor-codigo.md](contracts/revisor-codigo.md) y repetir
-- [ ] T013 [US2] Prueba de bloqueo ([quickstart.md §4](quickstart.md)):
+- [X] T011 [US2] Verificar que `/siguiente-ticket` y `/abrir-pr` aparecen en `/` y que `revisor-codigo` está disponible ([quickstart.md §1](quickstart.md))
+- [X] T012 [US2] Delegar en `revisor-codigo` y comprobar que niega `git status`, permite `git diff main..HEAD --stat` y permite leer `specs/002-automatizacion-ciclo/spec.md` ([quickstart.md §3](quickstart.md)). Si falla, aplicar el fallback (un hook `PreToolUse` en el frontmatter que solo deje pasar `git diff`, `git log` y `git show`), actualizar [contracts/revisor-codigo.md](contracts/revisor-codigo.md) y repetir
+- [X] T013 [US2] Prueba de bloqueo ([quickstart.md §4](quickstart.md)):
   - Crear la rama local `999-prueba-revisor` desde `002-automatizacion-ciclo`, con `specs/999-prueba-revisor/spec.md` cuyo título sea exactamente el del issue #2 (`# Feature Specification: Automatización del ciclo en GitHub`), con `Issue: #2` y el requisito "el archivo `demo.txt` MUST decir 'hola'". Agregar un `demo.txt` que diga otra cosa y hacer commit. El título exacto es necesario para que `/abrir-pr` pase sus precondiciones y llegue al revisor.
   - Ejecutar `/abrir-pr`: debe terminar en `BLOQUEADO` sin pedir confirmación de push ni de PR. Si pidiera alguna, el desarrollador la **rechaza** y se registra como falla.
   - Volver a `002-automatizacion-ciclo` y borrar la rama local `999-prueba-revisor` con `git branch -D`.
@@ -111,8 +111,8 @@ Claude Code** antes de T011.
 
 ## Phase 8: Cierre del ticket con `/abrir-pr` (FR-016)
 
-- [ ] T014 Verificar que `uv run pytest` sigue en verde y que no quedan cambios sin commitear
-- [ ] T015 Marcar T001 a T015 en `specs/002-automatizacion-ciclo/tasks.md` y hacer commit, para que el árbol quede limpio antes de `/abrir-pr`. T016 y T017 ocurren después del último commit de la rama y se marcan con la fase 9, en la rama del issue #3
+- [X] T014 Verificar que `uv run pytest` sigue en verde y que no quedan cambios sin commitear
+- [X] T015 Marcar T001 a T015 en `specs/002-automatizacion-ciclo/tasks.md` y hacer commit, para que el árbol quede limpio antes de `/abrir-pr`. T016 y T017 ocurren después del último commit de la rama y se marcan con la fase 9, en la rama del issue #3
 - [ ] T016 Ejecutar `/abrir-pr` en `002-automatizacion-ciclo`; el desarrollador aprueba el push y la creación del PR. Esperado: veredicto `APROBADO`, PR con `Closes #2`, issue en *In Review* y comentario "**PR abierto**" con los ajustes de los puntos de control y el resultado de T010
 - [ ] T017 Ejecutar `/abrir-pr` otra vez y comprobar que no duplica el PR ni el comentario ni cambia el estado (FR-012)
 

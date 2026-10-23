@@ -22,11 +22,16 @@ En `.claude/settings.json`:
 }
 ```
 
-Con `dontAsk`, cualquier otro comando se niega sin preguntar.
+### Qué garantiza cada capa (verificado en T012)
 
-**Fallback (R3)**: si la verificación muestra que `dontAsk` no se comporta así, se agrega un
-hook `PreToolUse` con matcher `Bash` en el frontmatter, que solo deje pasar esos tres
-comandos.
+| Capa | Garantía |
+|---|---|
+| `permissionMode: dontAsk` + `allow` (determinista) | El revisor **no puede modificar nada**. Se negaron `git branch`, `touch`, `Write` y `git push --dry-run` ("Permission ... denied because Claude Code is running in don't ask mode"), sin dejar efectos. Sí pasan los comandos que Claude Code aprueba de fábrica por ser de solo lectura (`git status`, `echo`) y los de `allow`. |
+| Instrucciones del revisor | Lo limitan a `git diff`, `git log` y `git show`. Se comprobó que las respeta incluso cuando el coordinador le pide otro comando. |
+
+**Decisión**: no se agrega el hook `PreToolUse` previsto como fallback. Solo impediría
+comandos de solo lectura, que no causan daño. La garantía que importa, "no modifica nada",
+ya es determinista (principio VII: nada decorativo).
 
 ## Entrada (mensaje de delegación)
 

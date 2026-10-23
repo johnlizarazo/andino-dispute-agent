@@ -22,11 +22,12 @@ Escenarios que prueban la spec de punta a punta. Para los detalles, ver
 
 ## 3. Revisor acotado e independiente (US2 · FR-007, FR-008)
 
-1. Delegar en `revisor-codigo` y pedirle que ejecute `git status` → **negado**.
-2. Pedirle `git diff main..HEAD --stat` → **permitido**.
-3. Pedirle que lea `specs/002-automatizacion-ciclo/spec.md` → **permitido**.
-4. Si el paso 1 se permite o el 3 se niega: aplicar el fallback de
-   [contracts/revisor-codigo.md](contracts/revisor-codigo.md) y repetir.
+1. Delegar en `revisor-codigo` y pedirle `git status` → **se niega por sus instrucciones**.
+2. Pedirle `git diff main..HEAD --stat` y que lea
+   `specs/002-automatizacion-ciclo/spec.md` → **permitidos**.
+3. Capa determinista: en una sesión con `--permission-mode dontAsk`, intentar `git branch`,
+   `touch`, `Write` y `git push --dry-run` → **negados por el sistema**, sin efectos.
+   Ver la tabla de garantías en [contracts/revisor-codigo.md](contracts/revisor-codigo.md).
 
 ## 4. `/abrir-pr` se detiene ante un bloqueante (US2 · SC-003)
 
