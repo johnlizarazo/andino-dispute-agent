@@ -128,11 +128,11 @@ fallas y servidor, y va primero.
 
 **Goal**: FR-021 a FR-023.
 
-- [ ] T021 [P] [US6] En `.claude/rules/herramientas-mcp.md`, mantener la regla de reintento y agregar que la deriva `errores.error()` a partir del tipo (contrato del issue #4)
-- [ ] T022 [US6] En `plugins/andino-guardrails/hooks/test_bloquear_pii.py`, agregar:
+- [X] T021 [P] [US6] En `.claude/rules/herramientas-mcp.md`, mantener la regla de reintento y agregar que la deriva `errores.error()` a partir del tipo (contrato del issue #4)
+- [X] T022 [US6] En `plugins/andino-guardrails/hooks/test_bloquear_pii.py`, agregar:
   - Un test con una tarjeta válida de 15 dígitos agrupada en 4-6-5, generada al correr.
   - Un test del modo `--diff` donde se borra un archivo con una tarjeta generada (`+++ /dev/null` y líneas `-`): no debe reportar hallazgos.
-- [ ] T023 [US6] En `plugins/andino-guardrails/hooks/bloquear_pii.py`, hacer que el modo `--diff` ignore las líneas cuando el destino es `/dev/null`. Es una defensa explícita: git solo produce líneas `-` en un archivo borrado y esas ya se ignoraban, así que el test de T022 probablemente ya pasa (se documenta en el commit). Dejar verdes los tests y hacer commit `fix(#4): ajustes heredados de guardrails (4-6-5, /dev/null, rule de MCP)`
+- [X] T023 [US6] En `plugins/andino-guardrails/hooks/bloquear_pii.py`, hacer que el modo `--diff` ignore las líneas cuando el destino es `/dev/null`. Es una defensa explícita: git solo produce líneas `-` en un archivo borrado y esas ya se ignoraban, así que el test de T022 probablemente ya pasa (se documenta en el commit). Dejar verdes los tests y hacer commit `fix(#4): ajustes heredados de guardrails (4-6-5, /dev/null, rule de MCP)`
 
 ---
 
