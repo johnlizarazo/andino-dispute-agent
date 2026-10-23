@@ -129,6 +129,61 @@ def test_datos_invalidos_impiden_cargar(tmp_path, archivo, cambio, pista):
         Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
 
 
+def _digitos_arabigo_indicos(texto: str) -> str:
+    return "".join(chr(0x0660 + int(c)) for c in texto)
+
+
+@pytest.mark.parametrize(
+    ("archivo", "cambio", "pista"),
+    [
+        ("tarjetas.json", lambda d: d.append(5), "posición 5"),
+        ("clientes.json", lambda d: d[0].update(id=1), "id"),
+        ("clientes.json", lambda d: d[0].update(nombre=""), "nombre"),
+        ("clientes.json", lambda d: d[0].update(documento=1), "documento"),
+        ("tarjetas.json", lambda d: d[0].update(ultimos4=4821), "ultimos4"),
+        ("tarjetas.json", lambda d: d[0].update(cliente_id=None), "cliente_id"),
+        ("transacciones.json", lambda d: d[0].update(monto=1.5), "monto"),
+        ("transacciones.json", lambda d: d[0].update(monto=True), "monto"),
+        ("transacciones.json", lambda d: d[0].update(dias_atras="1"), "dias_atras"),
+        (
+            "politicas.json",
+            lambda d: d.update(umbral_disputa_automatica="500000"),
+            "umbral_disputa_automatica",
+        ),
+        ("tarjetas.json", lambda d: d[0].update(estado="perdida"), "estado"),
+        ("transacciones.json", lambda d: d[0].update(pais="COL"), "pais"),
+        (
+            "clientes.json",
+            lambda d: d[0].update(dato_verificacion="19x7"),
+            "dato_verificacion",
+        ),
+        (
+            "tarjetas.json",
+            lambda d: d[0].update(ultimos4=_digitos_arabigo_indicos("4821")),
+            "ultimos4",
+        ),
+    ],
+)
+def test_tipos_y_valores_incorrectos_impiden_cargar(tmp_path, archivo, cambio, pista):
+    carpeta = _copia(tmp_path)
+    _editar(carpeta, archivo, cambio)
+    with pytest.raises(DatosInvalidosError) as excinfo:
+        Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
+    assert archivo in str(excinfo.value)
+    assert pista in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    ("archivo", "contenido"),
+    [("clientes.json", {"id": "CLI-001"}), ("politicas.json", [])],
+)
+def test_archivo_con_estructura_incorrecta_impide_cargar(tmp_path, archivo, contenido):
+    carpeta = _copia(tmp_path)
+    (carpeta / archivo).write_text(json.dumps(contenido), encoding="utf-8")
+    with pytest.raises(DatosInvalidosError, match=archivo):
+        Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
+
+
 def test_archivo_ausente_impide_cargar(tmp_path):
     carpeta = _copia(tmp_path)
     (carpeta / "politicas.json").unlink()

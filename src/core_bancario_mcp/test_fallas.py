@@ -38,6 +38,26 @@ def test_configuracion_invalida_se_informa(invalida):
         InyectorFallas(invalida)
 
 
+@pytest.mark.parametrize(
+    "invalida",
+    [
+        f"op:{chr(0x0663)}",  # dígito arábigo-índico: isdigit() lo acepta, int() también
+        "op:+1",
+        "op:--1",
+        "op:1,op:2",
+        "Op Mal:1",
+    ],
+)
+def test_configuracion_estricta_rechaza_lo_ambiguo(invalida):
+    with pytest.raises(ConfiguracionFallasError, match=VARIABLE):
+        InyectorFallas(invalida)
+
+
+def test_operacion_repetida_se_nombra_en_el_error():
+    with pytest.raises(ConfiguracionFallasError, match="repetida.*op"):
+        InyectorFallas("op:1, op:2")
+
+
 def test_desde_entorno_lee_la_variable(monkeypatch):
     monkeypatch.setenv(VARIABLE, "op:1")
     inyector = desde_entorno()
