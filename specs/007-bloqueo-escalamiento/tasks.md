@@ -130,8 +130,8 @@ reiniciar la app.**
 
 - [X] T018 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T019 Marcar T001 a T019 en `specs/007-bloqueo-escalamiento/tasks.md` y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
-- [ ] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #7`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T021 Después del merge, hecho por el desarrollador: verificar que el #7 queda cerrado y en *Done*
+- [X] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #7`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T021 Después del merge, hecho por el desarrollador: verificar que el #7 queda cerrado y en *Done*
 
 ---
 
