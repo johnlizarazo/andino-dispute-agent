@@ -43,6 +43,15 @@ def _invalido(mensaje: str) -> dict:
     return error(TipoError.VALIDACION, Codigo.PARAMETRO_INVALIDO, mensaje)
 
 
+def tarjeta_no_encontrada(ultimos4: str) -> dict:
+    """Mismo error si el cliente no existe o la tarjeta es de otra persona."""
+    return error(
+        TipoError.VALIDACION,
+        Codigo.NO_ENCONTRADO,
+        f"No hay una tarjeta terminada en {ultimos4} para ese cliente.",
+    )
+
+
 def _fecha(campo: str, valor: str) -> date:
     """Fecha AAAA-MM-DD; ``ValueError`` con un mensaje para el agente si no lo es."""
     if not PATRON_FECHA.fullmatch(valor):
@@ -101,12 +110,7 @@ def consultar_transacciones(
 
     tarjetas = {t.id for t in repositorio.tarjetas_de(cliente_id, ultimos4)}
     if not tarjetas:
-        # Mismo mensaje si el cliente no existe o la tarjeta es de otra persona.
-        return error(
-            TipoError.VALIDACION,
-            Codigo.NO_ENCONTRADO,
-            f"No hay una tarjeta terminada en {ultimos4} para ese cliente.",
-        )
+        return tarjeta_no_encontrada(ultimos4)
     cobros = [
         t
         for t in repositorio.transacciones.values()

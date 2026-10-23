@@ -64,13 +64,13 @@ imports sin uso entre ediciones: agregar el import en la misma edición que su u
 
 **Independent Test**: `uv run pytest src/core_bancario_mcp/test_bloqueo_escalamiento.py -k bloquear`.
 
-- [ ] T007 [US1] Escribir `src/core_bancario_mcp/test_bloqueo_escalamiento.py` (nuevo), **antes** que el módulo, con una fixture `contexto` y los tests de bloqueo del contrato; verlos fallar:
+- [X] T007 [US1] Escribir `src/core_bancario_mcp/test_bloqueo_escalamiento.py` (nuevo), **antes** que el módulo, con una fixture `contexto` y los tests de bloqueo del contrato; verlos fallar:
   - CLI-001 `4821` → `{"ultimos4": "4821", "estado": "bloqueada", "ya_estaba_bloqueada": False}` y `contexto.bloqueos.estado_de` de TAR-001 es `"bloqueada"`.
   - Repetir → éxito con `ya_estaba_bloqueada` `True`; CLI-004 `9012` → éxito con `ya_estaba_bloqueada` `True`.
   - CLI-002 `4821` y CLI-999 `4821` → `NO_ENCONTRADO` con el mismo mensaje.
   - `PARAMETRO_INVALIDO` sin bloquear nada: motivo vacío, de solo espacios, de 501 caracteres ("hasta 500 caracteres") o numérico; `ultimos4` `48a1`; `cliente_id` ausente.
   - Tras bloquear la 4821, `consultar_transacciones` y `iniciar_disputa` sobre sus cobros siguen funcionando.
-- [ ] T008 [US1] Implementar `bloquear_tarjeta(contexto, cliente_id=None, ultimos4=None, motivo=None)` en `src/core_bancario_mcp/bloqueo_escalamiento.py` (nuevo) según [research.md R2](research.md): textos recortados, `ultimos4` con `PATRON_CUATRO_DIGITOS`, motivo hasta 500, `tarjetas_de` vacío → `NO_ENCONTRADO` con el mensaje de `consultar_transacciones`, bloquear todas las tarjetas devueltas y `ya_estaba_bloqueada` verdadero solo si todas lo estaban. Errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#7): bloquear_tarjeta`
+- [X] T008 [US1] Implementar `bloquear_tarjeta(contexto, cliente_id=None, ultimos4=None, motivo=None)` en `src/core_bancario_mcp/bloqueo_escalamiento.py` (nuevo) según [research.md R2](research.md): textos recortados, `ultimos4` con `PATRON_CUATRO_DIGITOS`, motivo hasta 500, `tarjetas_de` vacío → `NO_ENCONTRADO` con el mensaje de `consultar_transacciones`, bloquear todas las tarjetas devueltas y `ya_estaba_bloqueada` verdadero solo si todas lo estaban. Errores solo con `errores.error()`. Dejar verdes los tests y hacer commit `feat(#7): bloquear_tarjeta`
 
 ---
 

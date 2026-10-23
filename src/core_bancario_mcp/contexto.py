@@ -99,7 +99,7 @@ class DetalleTransaccion:
 
 @dataclass(frozen=True)
 class Escalamiento:
-    """Resumen para el analista. Al agente solo se le devuelve id, causa y estado."""
+    """Resumen para el analista; al agente solo se le devuelve id, causa, estado y conteo."""
 
     id: str
     causa: str
