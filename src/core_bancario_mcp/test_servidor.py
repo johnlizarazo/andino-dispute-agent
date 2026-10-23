@@ -71,6 +71,16 @@ def test_tipo_json_incorrecto_se_responde_con_el_contrato():
     assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
 
 
+def test_tipo_json_incorrecto_en_verificar_se_responde_con_el_contrato():
+    respuesta = _llamar(
+        crear_servidor(),
+        "verificar_identidad",
+        {"cliente_id": "CLI-001", "dato_verificacion": 1987},
+    )
+    assert respuesta["ok"] is False
+    assert respuesta["error"]["codigo"] == "PARAMETRO_INVALIDO"
+
+
 def test_servidor_no_cuelga_atributos_al_vuelo():
     servidor = crear_servidor()
     assert not hasattr(servidor, "repositorio")

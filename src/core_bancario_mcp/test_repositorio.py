@@ -136,7 +136,6 @@ def _digitos_arabigo_indicos(texto: str) -> str:
 @pytest.mark.parametrize(
     ("archivo", "cambio", "pista"),
     [
-        ("tarjetas.json", lambda d: d.append(5), "posición 5"),
         ("clientes.json", lambda d: d[0].update(id=1), "id"),
         ("clientes.json", lambda d: d[0].update(nombre=""), "nombre"),
         ("clientes.json", lambda d: d[0].update(documento=1), "documento"),
@@ -171,6 +170,16 @@ def test_tipos_y_valores_incorrectos_impiden_cargar(tmp_path, archivo, cambio, p
         Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
     assert archivo in str(excinfo.value)
     assert pista in str(excinfo.value)
+
+
+def test_registro_que_no_es_objeto_nombra_su_posicion(tmp_path):
+    carpeta = _copia(tmp_path)
+    ruta = carpeta / "tarjetas.json"
+    tarjetas = json.loads(ruta.read_text(encoding="utf-8"))
+    posicion = len(tarjetas)
+    ruta.write_text(json.dumps([*tarjetas, 5]), encoding="utf-8")
+    with pytest.raises(DatosInvalidosError, match=f"tarjetas.json posición {posicion}"):
+        Repositorio(hoy=date(2026, 10, 23), carpeta=carpeta)
 
 
 @pytest.mark.parametrize(

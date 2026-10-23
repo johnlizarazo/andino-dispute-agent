@@ -6,7 +6,7 @@
 
 **Issue**: #5 (https://github.com/johnlizarazo/andino-dispute-agent/issues/5)
 
-**Status**: Draft
+**Status**: Approved
 
 **Input**: Issue #5: las dos primeras herramientas de negocio del core bancario. Buscar no
 verifica identidad; con varias coincidencias se pide otro identificador; la verificación es
