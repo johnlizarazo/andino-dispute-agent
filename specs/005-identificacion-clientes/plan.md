@@ -26,7 +26,8 @@ Decisiones en [research.md](research.md).
 
 **Language/Version**: Python 3.14
 
-**Primary Dependencies**: `mcp[cli]` 1.30.0 (`FastMCP`), ya declarado; `unicodedata`,
+**Primary Dependencies**: `mcp[cli]` 1.30.0 (`FastMCP`) y `pydantic` (`WithJsonSchema`,
+ya instalado con `mcp`), declarados; `unicodedata`,
 `hmac` y `re` de la biblioteca estándar. Sin dependencias nuevas.
 
 **Storage**: los JSON del issue #4 (sin cambios de datos); el contador de intentos vive en
@@ -61,7 +62,7 @@ stdio
 | II. Garantías deterministas | Nivel declarado por regla: no elegir entre coincidencias es **imposible por diseño** (la búsqueda solo devuelve listas y nunca un "cliente elegido"); no revelar datos de otros es imposible por diseño (la coincidencia solo tiene id y nombre); el límite de intentos lo **garantiza el servidor**; "buscar no verifica" se **orienta** con la descripción y lo hará cumplir el hook del #9. | ✅ |
 | III. Datos ficticios | Sin datos nuevos; documento validado contra `CC-FIC-[0-9]{4}` también en la entrada de la búsqueda; tests con los datos ficticios del #4 o generados en `tmp_path`. | ✅ |
 | IV. Spec-first | Spec aprobada (commit `aa0426a`); plan y tareas antes de `src/`. | ✅ |
-| V. Contrato de herramientas | Ambas herramientas responden con `exito()`/`error()`; búsqueda vacía = `exito([])`; descripciones según US3. Límite declarado en R5: un argumento con tipo JSON distinto de texto lo rechaza FastMCP antes de la herramienta. | ✅ |
+| V. Contrato de herramientas | Ambas herramientas responden con `exito()`/`error()`; búsqueda vacía = `exito([])`; descripciones según US3. Los parámetros usan el tipo `Texto` (R5): incluso un tipo JSON incorrecto llega a la herramienta y se responde con el contrato. | ✅ |
 | VI. Tests junto al código | `test_identificacion.py` y `test_contexto.py` al lado de sus módulos; tests de repositorio y fallas ampliados. | ✅ |
 | VII. Simplicidad | Cierre sobre un `Contexto` en lugar de `lifespan`; sin sesiones en el core; sin dependencias. | ✅ |
 
@@ -123,7 +124,7 @@ una función `registrar(servidor, contexto)`; `servidor.py` solo las ensambla
 |---|---|
 | Un fragmento de documento en tests dispara `bloquear_pii` | Solo `CC-FIC-NNNN` y entradas inválidas sin forma de documento real (letras, longitudes cortas). |
 | El contador de intentos se comparte entre conversaciones del mismo proceso | Es intencional (protege al cliente, no a la sesión); se reinicia con el proceso. Límite declarado en R3. |
-| Errores de tipo JSON fuera del contrato | Parámetros opcionales de texto: la ausencia la maneja la herramienta; solo un tipo JSON distinto de texto queda en manos de FastMCP (R5). |
+| Errores de tipo JSON fuera del contrato | Tipo `Texto` con esquema de texto y validación en la herramienta (R5, ajuste C1). |
 | Romper el test de arranque al registrar herramientas | El test por stdio pasa a esperar las 2 herramientas. |
 
 ## Complexity Tracking

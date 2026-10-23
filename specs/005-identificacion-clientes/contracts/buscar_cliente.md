@@ -2,7 +2,7 @@
 
 Fundamento en [research.md R1, R4 y R5](../research.md).
 
-## Parámetros (todos `str | None`, exactamente uno con valor)
+## Parámetros (todos de tipo `Texto`, research R5; exactamente uno con valor)
 
 | Parámetro | Formato |
 |---|---|
@@ -14,7 +14,8 @@ Fundamento en [research.md R1, R4 y R5](../research.md).
 
 - Éxito, siempre lista (vacía si no hay coincidencias):
   `{"ok": true, "datos": [{"cliente_id": "CLI-002", "nombre": "..."}, ...]}`
-- Validación `PARAMETRO_INVALIDO`: ningún criterio, más de uno o mal formado. El mensaje
+- Validación `PARAMETRO_INVALIDO`: ningún criterio, más de uno, mal formado o que no es
+  texto (p. ej. un número). El mensaje
   explica el formato esperado.
 - Transitorio `FALLA_TRANSITORIA`: inyectada con `CORE_BANCARIO_FALLAS=buscar_cliente:N`.
 
@@ -30,9 +31,10 @@ coincidencias, no un error.
 
 - Documento existente → 1 coincidencia; últimos 4 existentes → el titular.
 - "Carlos Andrés Pérez", "carlos perez" y "CARLOS ANDRES PEREZ" → las 2 coincidencias.
-- Palabra parcial ("an") no coincide con "Andrés".
+- Palabra parcial ("an") no coincide con "Andrés"; "Pérez," (con puntuación) sí coincide.
 - Criterio sin coincidencias → `exito([])`.
 - Ninguna coincidencia tiene `documento` ni `dato_verificacion` (todas las búsquedas).
-- Sin criterio, dos criterios, documento con otro formato, últimos 4 con letras o 3
-  dígitos, nombre de 1 letra → validación no reintentable.
+- Sin criterio, dos criterios, criterio de solo espacios, documento con otro formato,
+  últimos 4 con letras o 3 dígitos, últimos 4 como número o lista, nombre de 1 letra →
+  validación no reintentable.
 - Últimos 4 compartidos por dos clientes (datos en `tmp_path`) → ambos, sin repetir.

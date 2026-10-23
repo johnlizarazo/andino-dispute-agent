@@ -2,18 +2,18 @@
 
 Fundamento en [research.md R3, R5 y R6](../research.md).
 
-## Parámetros (`str | None`, ambos obligatorios para la herramienta)
+## Parámetros (tipo `Texto`, research R5; ambos obligatorios para la herramienta)
 
 | Parámetro | Formato |
 |---|---|
 | `cliente_id` | id devuelto por `buscar_cliente` |
-| `dato` | dato de verificación que da el cliente (año ficticio) |
+| `dato_verificacion` | dato de verificación que da el cliente (año ficticio) |
 
 ## Respuestas (en este orden de evaluación)
 
 1. Transitorio `FALLA_TRANSITORIA` si hay falla inyectada (`verificar_identidad:N`); no
    cuenta como intento.
-2. Validación `PARAMETRO_INVALIDO` si falta o está vacío algún parámetro.
+2. Validación `PARAMETRO_INVALIDO` si falta, está vacío o no es texto algún parámetro.
 3. Validación `NO_ENCONTRADO` si el cliente no existe; no cuenta como intento.
 4. Negocio `INTENTOS_AGOTADOS` si el cliente ya acumuló 3 fallos consecutivos, aunque el
    dato sea correcto. El mensaje indica escalar a un analista.

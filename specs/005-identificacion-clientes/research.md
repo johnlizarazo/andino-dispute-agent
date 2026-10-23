@@ -51,8 +51,9 @@ API verificada contra `mcp` 1.30.0 instalado (`FastMCP.tool`, `add_tool`, `list_
 
 - **Decision**:
   - `_normalizar(texto)`: `unicodedata.normalize("NFKD")`, quitar marcas combinantes
-    (`unicodedata.combining`), `casefold()` y partir por espacios. "Pérez", "PEREZ" y
-    "perez" quedan iguales (también "ñ" → "n").
+    (`unicodedata.combining`), `casefold()` y extraer las palabras con
+    `re.findall(r"\w+")` (ajuste U1: la puntuación no se pega a la palabra, "Pérez,"
+    coincide). "Pérez", "PEREZ" y "perez" quedan iguales (también "ñ" → "n").
   - **Nombre**: coincide si cada palabra buscada es una palabra completa del nombre
     normalizado (no subcadena: "an" no debe encontrar "Andrés"). Rechazo por validación si
     tras normalizar quedan menos de 2 letras o el texto supera 100 caracteres.
@@ -60,29 +61,35 @@ API verificada contra `mcp` 1.30.0 instalado (`FastMCP.tool`, `add_tool`, `list_
   - **Últimos 4**: `^[0-9]{4}$`. Devuelve todos los titulares distintos de tarjetas con esos
     dígitos, sin repetir cliente, ordenados por id.
   - **Exactamente un criterio**: los tres parámetros son opcionales; se cuentan los que no
-    son `None` ni texto vacío. Cero o más de uno → `PARAMETRO_INVALIDO`.
+    son `None` ni texto vacío o de solo espacios. Cero o más de uno → `PARAMETRO_INVALIDO`.
+    Un valor que no es texto también es `PARAMETRO_INVALIDO` (R5).
 - **Rationale**: `[0-9]` en lugar de `\d` evita aceptar dígitos no ASCII; coincidencia por
   palabras completas cumple FR-004 sin falsos positivos. El orden por id hace las respuestas
   deterministas.
 
 ## R5. Errores de tipo fuera del contrato
 
-- **Hallazgo**: FastMCP valida los argumentos con pydantic antes de llamar a la herramienta.
+- **Hallazgo**: con parámetros tipados como `str`, FastMCP valida los argumentos con pydantic antes de llamar a la herramienta.
   Un valor de tipo JSON incorrecto (p. ej. `ultimos4: 4821` como número) o un parámetro
   obligatorio ausente se responden como error de protocolo (`isError: true`, texto libre),
   no con el contrato.
-- **Decision**: todos los parámetros son `str | None = None`. Así la **ausencia** y los
-  **valores vacíos o mal formados** los maneja la herramienta con el contrato; solo un tipo
-  JSON distinto de texto queda como error de protocolo, que el esquema publicado ya
-  previene.
-- **Alternatives considered**: tipar como `object`/`Any` y validar a mano: el esquema dejaría
-  de decirle al modelo que son textos, que es la mejor prevención. Interceptar la validación
-  de FastMCP: depende de internos del framework.
+- **Decision** (ajuste C1 del análisis): todos los parámetros usan el tipo
+  `Texto = Annotated[object, WithJsonSchema({"type": "string"})]` con valor por defecto
+  `None`. El esquema publicado sigue diciendo "texto" (la mejor prevención para el modelo),
+  pero pydantic deja pasar cualquier valor y la herramienta valida `isinstance(valor, str)`:
+  ausencia, vacío, número, lista u objeto se responden con el contrato
+  (`PARAMETRO_INVALIDO`). Ninguna respuesta queda fuera del principio V. Verificado en el
+  entorno con nada, un número, una lista y un texto.
+- **Alternatives considered**: `str | None` (un tipo JSON incorrecto quedaba como error de
+  protocolo de FastMCP, fuera del contrato: lo marcó `/speckit-analyze` como CRITICAL);
+  `Any` sin esquema (el modelo pierde la indicación de que son textos); interceptar la
+  validación de FastMCP (depende de internos del framework).
 
 ## R6. Comparación del dato de verificación (FR-006, FR-007)
 
-- **Decision**: `hmac.compare_digest(dato, cliente.dato_verificacion)` sin normalizar el
-  dato (coincidencia exacta). El mensaje de error no incluye el dato esperado ni pistas.
+- **Decision**: el parámetro se llama `dato_verificacion`, como el campo de los datos
+  (ajuste I1). `hmac.compare_digest(dato_verificacion, cliente.dato_verificacion)` sin
+  normalizar (coincidencia exacta). El mensaje de error no incluye el dato esperado ni pistas.
 - **Rationale**: una línea, tiempo constante; evita filtrar por tiempos aunque sea una demo.
 
 ## R7. Endurecimiento de datos y fallas (FR-014, FR-015)

@@ -31,8 +31,16 @@ Los datos correctos están en `src/core_bancario_mcp/datos/clientes.json` (ficti
 
 ## 3. Arranque con configuración inválida
 
+En Bash:
+
 ```bash
 CORE_BANCARIO_FALLAS="op:1,op:2" uv run --no-sync python -m core_bancario_mcp
+```
+
+En PowerShell:
+
+```powershell
+$env:CORE_BANCARIO_FALLAS = "op:1,op:2"; uv run --no-sync python -m core_bancario_mcp; Remove-Item Env:CORE_BANCARIO_FALLAS
 ```
 
 Esperado: `core-bancario no arrancó: ...` y código de salida 1, sin traza.

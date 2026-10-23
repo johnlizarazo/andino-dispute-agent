@@ -48,9 +48,9 @@ Nunca incluye `documento` ni `dato_verificacion` (FR-003). Lista ordenada por `c
 
 | Entrada | Regla | Error |
 |---|---|---|
-| criterios de búsqueda | exactamente uno no vacío | validación `PARAMETRO_INVALIDO` |
+| criterios de búsqueda | exactamente uno, texto no vacío ni de solo espacios | validación `PARAMETRO_INVALIDO` |
 | `documento` | `^CC-FIC-[0-9]{4}$` (sin espacios en los extremos) | validación `PARAMETRO_INVALIDO` |
 | `nombre` | 2+ letras tras normalizar, hasta 100 caracteres | validación `PARAMETRO_INVALIDO` |
 | `ultimos4` | `^[0-9]{4}$` | validación `PARAMETRO_INVALIDO` |
-| `cliente_id`, `dato` | presentes y no vacíos | validación `PARAMETRO_INVALIDO` |
+| `cliente_id`, `dato_verificacion` | textos presentes y no vacíos | validación `PARAMETRO_INVALIDO` |
 | `cliente_id` inexistente | — | validación `NO_ENCONTRADO` |
