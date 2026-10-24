@@ -68,7 +68,7 @@ Write/Edit. El hook `formatear` aplica ruff (B023, BLE001, …).
 
 **Independent Test**: quickstart paso 4.
 
-- [ ] T008 [US4] Reorganizar `README.md` conservando la cabecera (Project y marcador de video) y las secciones de desarrollo (token de GitHub, convenciones, guardrails) al final: **Inicio rápido** con dos bloques, PowerShell y bash/zsh, para definir `ANTHROPIC_API_KEY` solo en la sesión (sin escribirla en archivos), `uv sync`, `uv run pytest`, `uv run python -m agente_disputas` y `uv run andino-chat`; **Escenarios** con `uv run pytest -m e2e`, cuánto tardan y que consumen la API; **Casos obligatorios**: tabla con caso, test que lo cubre y un mensaje de ejemplo para el chat (en palabras distintas de las de `casos.py` y del prompt); la sección **Interfaz de chat** existente se mantiene. Commit `docs(#13): README con inicio rápido y casos obligatorios`
+- [X] T008 [US4] Reorganizar `README.md` conservando la cabecera (Project y marcador de video) y las secciones de desarrollo (token de GitHub, convenciones, guardrails) al final: **Inicio rápido** con dos bloques, PowerShell y bash/zsh, para definir `ANTHROPIC_API_KEY` solo en la sesión (sin escribirla en archivos), `uv sync`, `uv run pytest`, `uv run python -m agente_disputas` y `uv run andino-chat`; **Escenarios** con `uv run pytest -m e2e`, cuánto tardan y que consumen la API; **Casos obligatorios**: tabla con caso, test que lo cubre y un mensaje de ejemplo para el chat (en palabras distintas de las de `casos.py` y del prompt); la sección **Interfaz de chat** existente se mantiene. Commit `docs(#13): README con inicio rápido y casos obligatorios`
 
 ---
 
