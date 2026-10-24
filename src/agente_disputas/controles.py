@@ -352,7 +352,14 @@ class Controles:
         return {"decision": "block", "reason": razon}
 
     async def al_recibir_mensaje(self, entrada, tool_use_id, contexto) -> dict:
-        """UserPromptSubmit: cada mensaje del cliente empieza sin pendientes ni cierres."""
-        self.estado.pendientes = {}
-        self.estado.cierres_impedidos = 0
+        """UserPromptSubmit: cada mensaje del cliente empieza sin pendientes ni cierres.
+
+        Un mensaje con ``agent_id`` no es del cliente (viene de un subagente) y no reinicia
+        nada: no debe borrar los pendientes del turno del principal.
+        """
+        with suppress(Exception):
+            if isinstance(entrada, dict) and entrada.get("agent_id"):
+                return {}
+            self.estado.pendientes = {}
+            self.estado.cierres_impedidos = 0
         return {}

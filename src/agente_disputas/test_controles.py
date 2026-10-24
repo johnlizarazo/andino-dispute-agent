@@ -575,3 +575,23 @@ def test_mensaje_de_ejemplo_el_pendiente_no_impide_lo_resoluble(controles):
     assert _terminar(controles)["decision"] == "block"
     _escalar(controles, _bloques(ESCALADO))
     assert _terminar(controles) == {}
+
+
+# --- heredados del #10 (#11) ---
+
+
+@pytest.mark.parametrize("entrada", [None, {}])
+def test_cierre_y_mensaje_nuevo_con_entrada_mal_formada_no_lanzan(controles, entrada):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    assert (
+        asyncio.run(controles.antes_de_terminar(entrada, None, {}))["decision"]
+        == "block"
+    )
+    assert asyncio.run(controles.al_recibir_mensaje(entrada, None, {})) == {}
+
+
+def test_mensaje_de_un_subagente_no_vacia_pendientes(controles):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    entrada = {"hook_event_name": "UserPromptSubmit", "agent_id": "a1", "prompt": "x"}
+    assert asyncio.run(controles.al_recibir_mensaje(entrada, None, {})) == {}
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}

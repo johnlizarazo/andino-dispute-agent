@@ -43,8 +43,8 @@ lleve barras invertidas (se pierden); usar Write/Edit. El hook `formatear` aplic
 
 **Independent Test**: `uv run pytest src/agente_disputas/test_controles.py`.
 
-- [ ] T002 [US5] (b) En `src/agente_disputas/test_controles.py`, **antes** del código: `antes_de_terminar` y `al_recibir_mensaje` con `None` y `{}` devuelven `{}` sin lanzar; `al_recibir_mensaje` con `{"agent_id": "a1", "hook_event_name": "UserPromptSubmit"}` no vacía los pendientes (research R3). Verlo fallar
-- [ ] T003 [US5] (c) En `src/agente_disputas/controles.py`: `al_recibir_mensaje` con `suppress(Exception)` y sin efecto si la entrada trae `agent_id`. (a) En `specs/010-escalamiento-criterio-solicitudes/tasks.md`, T006 nombra `DISPUTA_EXISTENTE` en lugar de `TRANSACCION_YA_DISPUTADA`. Dejar verde. Commit `fix(#11): ajustes heredados de las revisiones del #10`
+- [X] T002 [US5] (b) En `src/agente_disputas/test_controles.py`, **antes** del código: `antes_de_terminar` y `al_recibir_mensaje` con `None` y `{}` devuelven `{}` sin lanzar; `al_recibir_mensaje` con `{"agent_id": "a1", "hook_event_name": "UserPromptSubmit"}` no vacía los pendientes (research R3). Verlo fallar
+- [X] T003 [US5] (c) En `src/agente_disputas/controles.py`: `al_recibir_mensaje` con `suppress(Exception)` y sin efecto si la entrada trae `agent_id`. (a) En `specs/010-escalamiento-criterio-solicitudes/tasks.md`, T006 nombra `DISPUTA_EXISTENTE` en lugar de `TRANSACCION_YA_DISPUTADA`. Dejar verde. Commit `fix(#11): ajustes heredados de las revisiones del #10`
 
 ---
 
