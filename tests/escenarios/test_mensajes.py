@@ -44,7 +44,9 @@ def test_la_ventana_detecta_una_copia_parcial():
     copia = "Hola. " + EJEMPLOS[1] + " Gracias."
     assert VENTANA == 8
     assert comparten_ventana(copia, PROMPT_SISTEMA)
-    assert not comparten_ventana("tarjeta terminada en 7730", PROMPT_SISTEMA)
+    # Menos de VENTANA palabras del ejemplo no delatan una copia (sin literales: test_prompts).
+    fragmento = " ".join(EJEMPLOS[1].split()[:4])
+    assert not comparten_ventana(fragmento, PROMPT_SISTEMA)
 
 
 def test_normalizar_quita_tildes_signos_y_espacios():
