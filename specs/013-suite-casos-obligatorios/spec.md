@@ -69,8 +69,10 @@ los seis en verde.
    operación que falló se reintentó y el turno se completó; con una falla persistente, el
    agente dejó de reintentar dentro del límite y ofreció escalar, sin mostrar códigos
    técnicos.
-7. **Given** el caso 6, **When** termina el turno, **Then** el core rechazó la disputa por
-   política, la disputa no se repitió y hubo un escalamiento con causa fuera de política.
+7. **Given** el caso 6, **When** termina el turno, **Then** la disputa nunca se abrió: el
+   core la rechazó por política (y no se repitió) o el agente no la intentó porque el
+   análisis ya la clasificaba fuera de política; y hubo un escalamiento con causa fuera de
+   política. (Ajuste del punto de control 2, research R3.)
 
 ---
 
