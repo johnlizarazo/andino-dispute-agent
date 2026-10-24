@@ -44,8 +44,10 @@ DESCRIPCION_ESCALAR = (
     "indican transacciones, solo la causa y el resumen). Úsala también cuando el "
     "core responde REQUIERE_ANALISTA (causa umbral), FUERA_DE_POLITICA (causa "
     "fuera_de_politica) o INTENTOS_AGOTADOS (causa intentos_agotados); para lo demás, causa "
-    "otra. El core completa los montos y guarda el resumen para el analista; responde el "
-    "número de escalamiento para informarlo al cliente."
+    "otra. No la uses solo porque el cliente esté molesto o insatisfecho; si el caso se "
+    "puede resolver, como una disputa bajo el umbral o un bloqueo, resuélvelo. El core "
+    "completa los montos y guarda el resumen para el analista; responde el número de "
+    "escalamiento para informarlo al cliente."
 )
 
 

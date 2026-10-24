@@ -6,6 +6,7 @@ import pytest
 from mcp.server.fastmcp import FastMCP
 
 from core_bancario_mcp.bloqueo_escalamiento import (
+    DESCRIPCION_ESCALAR,
     bloquear_tarjeta,
     escalar_a_analista,
     registrar,
@@ -316,3 +317,11 @@ def test_falla_inyectada_en_escalamiento_no_registra():
     assert contexto.escalamientos.todos() == []
     assert _llamar(servidor, "escalar_a_analista", argumentos)["ok"] is True
     assert len(contexto.escalamientos.todos()) == 1
+
+
+def test_descripcion_de_escalar_dice_cuando_usarla_y_cuando_no():
+    # Regla 4: de inmediato si pide una persona; no solo por molestia ni si se puede resolver.
+    assert "persona_solicitada" in DESCRIPCION_ESCALAR
+    assert "de inmediato" in DESCRIPCION_ESCALAR
+    assert "molest" in DESCRIPCION_ESCALAR
+    assert "bajo el umbral" in DESCRIPCION_ESCALAR
