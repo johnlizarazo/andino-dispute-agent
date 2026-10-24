@@ -560,3 +560,18 @@ def test_entradas_mal_formadas_no_cambian_el_estado(controles, entrada):
 def test_falla_interna_del_stop_deja_terminar(controles):
     controles.estado.pendientes = None  # fuerza un error interno
     assert _terminar(controles) == {}
+
+
+# --- mensaje de ejemplo (US2, FR-006) ---
+
+
+def test_mensaje_de_ejemplo_el_pendiente_no_impide_lo_resoluble(controles):
+    # Dos cobros de ayer en la 4821 (180.000 y 1.250.000) y el pedido de bloqueo.
+    _verificar(controles, _exito("CLI-001"))
+    _negada(_disputar(controles, "TRX-002"))
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+    assert _disputar(controles, "TRX-001") == {}
+    assert _antes(controles, BLOQUEAR, OPERACIONES[BLOQUEAR]) == {}
+    assert _terminar(controles)["decision"] == "block"
+    _escalar(controles, _bloques(ESCALADO))
+    assert _terminar(controles) == {}

@@ -71,7 +71,7 @@ amplias justificadas.
 
 **Independent Test**: `uv run pytest src/agente_disputas/test_controles.py -k mensaje_de_ejemplo`.
 
-- [ ] T011 [US2] En `src/agente_disputas/test_controles.py`, caso 6: `test_mensaje_de_ejemplo_el_pendiente_no_impide_lo_resoluble`: CLI-001 verificado; `TRX-002` negada por umbral; `TRX-001` se autoriza y el bloqueo de la 4821 se autoriza (`{}`); `antes_de_terminar` bloquea; tras `despues_de_escalar` exitoso con `TRX-002` y causa `umbral`, `antes_de_terminar` → `{}`. Debe pasar sin cambios de código (R5); si falla, corregir `controles.py`. Commit `test(#10): el pendiente no bloquea lo resoluble`
+- [X] T011 [US2] En `src/agente_disputas/test_controles.py`, caso 6: `test_mensaje_de_ejemplo_el_pendiente_no_impide_lo_resoluble`: CLI-001 verificado; `TRX-002` negada por umbral; `TRX-001` se autoriza y el bloqueo de la 4821 se autoriza (`{}`); `antes_de_terminar` bloquea; tras `despues_de_escalar` exitoso con `TRX-002` y causa `umbral`, `antes_de_terminar` → `{}`. Debe pasar sin cambios de código (R5); si falla, corregir `controles.py`. Commit `test(#10): el pendiente no bloquea lo resoluble`
 
 ---
 
