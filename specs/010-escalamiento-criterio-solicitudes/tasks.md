@@ -101,17 +101,17 @@ amplias justificadas.
 
 **Purpose**: requiere `ANTHROPIC_API_KEY` en el entorno (nunca se lee ni imprime su valor).
 
-- [ ] T016 Ejecutar `uv run pytest` completo, `ruff check src tests` y `ruff format --check src tests` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T017 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md)): los escenarios del #8 y el #9 siguen en verde con el prompt v4
-- [ ] T018 Validación manual de [quickstart.md §3](quickstart.md) (a–e) con una sonda que registra herramientas por turno y pendientes al final; anotar el resultado de cada caso en esta tarea. Ajuste M1: después del caso (e), en la misma conversación, enviar un mensaje más y comprobar que `pendientes` quedó vacío y `cierres_impedidos` en 0 (el hook `UserPromptSubmit` se disparó). Si no se dispara, agregar en `src/agente_disputas/cli.py` la llamada `controles.al_recibir_mensaje(...)` antes de cada `cliente.query` (con su test en `test_cli.py`) y documentarlo en research R3. Si un caso falla por el prompt, ajustar el prompt (sin palabras clave) y repetir; si falla por los controles, corregir con su test
-- [ ] T019 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
+- [X] T016 Ejecutar `uv run pytest` completo, `ruff check src tests` y `ruff format --check src tests` en verde ([quickstart.md §1](quickstart.md))
+- [X] T017 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md)): los escenarios del #8 y el #9 siguen en verde con el prompt v4. Resultado (2026-10-24): 3/3 en verde; en una tanda de repeticiones el escenario de falla transitoria falló 3 de ~16 veces porque el proceso del motor del agente terminó abruptamente (códigos 0xC0000409 y 3, a veces a los 2,7 s del arranque), sin fallar ninguna aserción; con el código de main pasó 5/5 en esa ventana y la rama pasó 6/6 en la tanda siguiente. Se atribuye a inestabilidad del equipo y queda anotado como límite conocido
+- [X] T018 Validación manual de [quickstart.md §3](quickstart.md) (a–e) con una sonda que registra herramientas por turno y pendientes al final; anotar el resultado de cada caso en esta tarea. Ajuste M1: después del caso (e), en la misma conversación, enviar un mensaje más y comprobar que `pendientes` quedó vacío y `cierres_impedidos` en 0 (el hook `UserPromptSubmit` se disparó). Si no se dispara, agregar en `src/agente_disputas/cli.py` la llamada `controles.al_recibir_mensaje(...)` antes de cada `cliente.query` (con su test en `test_cli.py`) y documentarlo en research R3. Resultado (2026-10-24): (a) bloqueo, CASO-0001 por el cobro menor, negación por umbral del mayor y escalamiento ESC-0001 con causa umbral, en una sola respuesta; (b) solo `escalar_a_analista` con `persona_solicitada`; (c) disputa rechazada por política y escalada con `fuera_de_politica`, pendiente limpio; (d) sin escalar: bloqueo y consulta de cobros; (e) el `Stop` impidió terminar 2 veces, quedó el pendiente y se mostró el aviso, y el mensaje siguiente dejó pendientes vacíos y cierres en 0 (el `UserPromptSubmit` se dispara, sin necesidad del respaldo de M1). Si un caso falla por el prompt, ajustar el prompt (sin palabras clave) y repetir; si falla por los controles, corregir con su test
+- [X] T019 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
 
 ---
 
 ## Phase 8: Cierre con `/abrir-pr`
 
-- [ ] T020 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T021 Marcar T001 a T021 en `specs/010-escalamiento-criterio-solicitudes/tasks.md` y hacer commit. T022 y T023 se marcan en la rama del issue siguiente
+- [X] T020 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T021 Marcar T001 a T021 en `specs/010-escalamiento-criterio-solicitudes/tasks.md` y hacer commit. T022 y T023 se marcan en la rama del issue siguiente
 - [ ] T022 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #10`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T023 Después del merge, hecho por el desarrollador: verificar que el #10 queda cerrado y en *Done*
 
