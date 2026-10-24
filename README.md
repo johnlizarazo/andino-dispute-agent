@@ -26,6 +26,27 @@ uv run pytest            # tests deterministas (sin llamadas a la API)
 uv run pytest -m e2e     # tests de escenario (requieren ANTHROPIC_API_KEY)
 ```
 
+## Interfaz de chat
+
+```bash
+uv run andino-chat
+```
+
+Abre la interfaz en el navegador (`http://localhost:8000`). Requiere `ANTHROPIC_API_KEY` en
+el entorno; sin ella, el chat lo avisa y no atiende mensajes. Cada pestaña es una
+conversación independiente, con su propio agente y sin compartir la identidad verificada.
+
+Además de las respuestas del agente, el chat muestra **eventos**, derivados de lo que
+realmente ocurrió en el core y en los controles, no del texto del modelo:
+
+- ✅ éxito: identidad verificada, tarjeta bloqueada, disputa iniciada, caso escalado a un
+  analista, análisis de transacciones realizado.
+- ⛔ negado: un control del banco impidió la operación o el core rechazó la disputa por
+  umbral o por política.
+- ⚠️ falla: la operación no se pudo completar y no se da por hecha.
+
+El agente también se puede usar en la terminal con `uv run python -m agente_disputas`.
+
 ## Token de GitHub
 
 Claude Code se conecta al servidor MCP de GitHub ([`.mcp.json`](.mcp.json)) para leer y

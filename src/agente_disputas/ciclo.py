@@ -53,15 +53,28 @@ def clasificar(resultado: ResultMessage) -> tuple[str, str | None]:
 
 
 async def procesar_turno(mensajes: AsyncIterable[Message]) -> ResultadoTurno:
+    """Resultado del turno; el texto es solo el escrito después de la última herramienta.
+
+    Lo que el modelo escribe antes de usar una herramienta es su paso intermedio, no la
+    respuesta al cliente, y el texto de un subagente (``parent_tool_use_id``) es para el
+    agente principal: ninguno de los dos se muestra.
+    """
     textos: list[str] = []
     herramientas: list[str] = []
     async for mensaje in mensajes:
         if isinstance(mensaje, AssistantMessage):
+            del_principal = mensaje.parent_tool_use_id is None
             for bloque in mensaje.content:
-                if isinstance(bloque, TextBlock) and bloque.text.strip():
-                    textos.append(bloque.text.strip())
-                elif isinstance(bloque, ToolUseBlock):
+                if isinstance(bloque, ToolUseBlock):
                     herramientas.append(bloque.name)
+                    if del_principal:
+                        textos.clear()
+                elif (
+                    del_principal
+                    and isinstance(bloque, TextBlock)
+                    and bloque.text.strip()
+                ):
+                    textos.append(bloque.text.strip())
         elif isinstance(mensaje, ResultMessage):
             estado, detalle = clasificar(mensaje)
             return ResultadoTurno(

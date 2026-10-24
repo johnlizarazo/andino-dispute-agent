@@ -10,6 +10,9 @@ dependencies = [
     "mcp[cli]>=1.30.0",
 ]
 
+[project.scripts]
+andino-chat = "agente_disputas.interfaz:main"
+
 [build-system]
 requires = ["uv_build>=0.13.2,<0.14.0"]
 build-backend = "uv_build"

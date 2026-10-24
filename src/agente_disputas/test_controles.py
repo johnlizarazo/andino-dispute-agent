@@ -718,3 +718,36 @@ def test_la_clasificacion_no_habilita_una_disputa_sobre_el_umbral(controles):
     assert _delegar(controles, _prompt_delegacion(CONTEXTO)) == {}
     _negada(_disputar(controles, "TRX-002"))
     assert _codigos(controles) == ["REQUIERE_ANALISTA"]
+
+
+# --- tool_use_id de las negaciones (#12) ---
+
+
+def test_negacion_guarda_el_tool_use_id_del_hook(controles):
+    _negada(_antes(controles, BLOQUEAR, OPERACIONES[BLOQUEAR]))
+    _negada(_delegar(controles, _prompt_delegacion(CONTEXTO)))
+    assert [n.tool_use_id for n in controles.estado.negaciones] == ["uso-2", "uso-5"]
+
+
+def test_sin_argumento_usa_el_tool_use_id_de_la_entrada(controles):
+    entrada = {
+        "hook_event_name": "PreToolUse",
+        "tool_name": BLOQUEAR,
+        "tool_input": OPERACIONES[BLOQUEAR],
+        "tool_use_id": "uso-entrada",
+    }
+    _negada(asyncio.run(controles.antes_de_herramienta(entrada, None, {})))
+    assert controles.estado.negaciones[-1].tool_use_id == "uso-entrada"
+
+
+def test_sin_tool_use_id_la_negacion_queda_sin_el(controles):
+    entrada = {
+        "hook_event_name": "PreToolUse",
+        "tool_name": BLOQUEAR,
+        "tool_input": OPERACIONES[BLOQUEAR],
+    }
+    salida = asyncio.run(controles.antes_de_herramienta(entrada, None, {}))
+    assert _negada(salida) == _negada(
+        _antes(controles, BLOQUEAR, OPERACIONES[BLOQUEAR])
+    )
+    assert controles.estado.negaciones[0].tool_use_id is None

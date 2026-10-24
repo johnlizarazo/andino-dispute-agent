@@ -158,17 +158,17 @@ def sin_espera(monkeypatch):
 
 def test_espera_mientras_el_core_esta_pendiente(sin_espera):
     cliente = ClienteConEstados("pending", "pending", "connected")
-    assert asyncio.run(cli._esperar_core(cliente)) == "connected"
+    assert asyncio.run(cli.esperar_core(cliente)) == "connected"
 
 
 def test_core_que_falla_se_informa_sin_esperar_mas(sin_espera):
     cliente = ClienteConEstados("failed")
-    assert asyncio.run(cli._esperar_core(cliente)) == "failed"
+    assert asyncio.run(cli.esperar_core(cliente)) == "failed"
 
 
 def test_core_que_nunca_arranca_agota_la_espera(sin_espera):
     cliente = ClienteConEstados("pending")
-    assert asyncio.run(cli._esperar_core(cliente)) == "pending"
+    assert asyncio.run(cli.esperar_core(cliente)) == "pending"
 
 
 def test_core_no_conectado_termina_con_uno(monkeypatch, sin_espera, capsys):
