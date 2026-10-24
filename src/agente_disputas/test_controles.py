@@ -349,3 +349,214 @@ def test_la_razon_del_umbral_sale_de_la_politica(repositorio):
     razon = _negada(_disputar(controles, "TRX-002"))
     assert "$300.000" in razon
     assert "$500.000" not in razon
+
+
+# --- escalamiento pendiente: estado (#10) ---
+
+
+def test_estado_nace_sin_pendientes():
+    estado = EstadoSesion()
+    assert estado.pendientes == {}
+    assert estado.cierres_impedidos == 0
+
+
+def test_negacion_por_umbral_crea_un_pendiente(controles):
+    _verificar(controles, _exito("CLI-001"))
+    _negada(_disputar(controles, "TRX-002"))
+    _negada(_disputar(controles, " TRX-002 "))
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+
+
+def test_otras_negaciones_no_crean_pendientes(controles, repositorio):
+    _negada(_disputar(controles, "TRX-002"))  # SIN_IDENTIDAD
+    _verificar(controles, _exito("CLI-001"))
+    _negada(_antes(controles, CONSULTAR, {"cliente_id": "CLI-002", "ultimos4": "1357"}))
+    _negada(_disputar(controles, "TRX-004"))  # TRANSACCION_NO_CONFIRMADA
+    _negada(_antes(controles, "mcp__core-bancario__otra", {}))  # FALLA_CONTROL
+    assert controles.estado.pendientes == {}
+
+
+# --- escalamiento pendiente: creación por el core, Stop, limpieza (US1) ---
+
+ESCALAR = "mcp__core-bancario__escalar_a_analista"
+
+
+def _error_core(codigo: str) -> dict:
+    return {
+        "ok": False,
+        "error": {
+            "tipo": "negocio",
+            "codigo": codigo,
+            "mensaje": "Mensaje del core.",
+            "reintentable": False,
+        },
+    }
+
+
+def _bloques(respuesta: dict) -> list:
+    """Forma real de tool_response para herramientas MCP (verificada con la API en el #9)."""
+    return [{"type": "text", "text": json.dumps(respuesta)}]
+
+
+def _despues_de_disputar(controles: Controles, transaccion_id, respuesta) -> dict:
+    entrada = {
+        "hook_event_name": "PostToolUse",
+        "tool_name": DISPUTAR,
+        "tool_input": {"transaccion_id": transaccion_id, "motivo": "x"},
+        "tool_response": respuesta,
+    }
+    return asyncio.run(controles.despues_de_disputar(entrada, "uso-3", {}))
+
+
+def _escalar(controles: Controles, respuesta, causa="umbral", transacciones=None):
+    entrada = {
+        "hook_event_name": "PostToolUse",
+        "tool_name": ESCALAR,
+        "tool_input": {
+            "causa": causa,
+            "cliente_id": "CLI-001",
+            "transacciones": ["TRX-002"] if transacciones is None else transacciones,
+            "acciones_realizadas": "Disputa negada por umbral",
+            "accion_recomendada": "Revisar el cobro",
+        },
+        "tool_response": respuesta,
+    }
+    return asyncio.run(controles.despues_de_escalar(entrada, "uso-4", {}))
+
+
+ESCALADO = {
+    "ok": True,
+    "datos": {
+        "escalamiento_id": "ESC-0001",
+        "causa": "umbral",
+        "estado": "pendiente",
+        "cantidad_transacciones": 1,
+    },
+}
+
+
+def _terminar(controles: Controles) -> dict:
+    entrada = {"hook_event_name": "Stop", "stop_hook_active": False}
+    return asyncio.run(controles.antes_de_terminar(entrada, None, {}))
+
+
+def _nuevo_mensaje(controles: Controles) -> dict:
+    entrada = {"hook_event_name": "UserPromptSubmit", "prompt": "Hola"}
+    return asyncio.run(controles.al_recibir_mensaje(entrada, None, {}))
+
+
+@pytest.mark.parametrize(
+    ("codigo", "causa"),
+    [("FUERA_DE_POLITICA", "fuera_de_politica"), ("REQUIERE_ANALISTA", "umbral")],
+)
+def test_rechazo_del_core_crea_pendiente(controles, codigo, causa):
+    assert (
+        _despues_de_disputar(controles, " TRX-006 ", _bloques(_error_core(codigo)))
+        == {}
+    )
+    assert controles.estado.pendientes == {"TRX-006": causa}
+
+
+@pytest.mark.parametrize(
+    "respuesta",
+    [
+        _bloques({"ok": True, "datos": {"caso_id": "CASO-0001"}}),
+        _bloques(_error_core("DISPUTA_EXISTENTE")),
+        "ilegible",
+        None,
+    ],
+)
+def test_otras_respuestas_de_disputa_no_crean_pendiente(controles, respuesta):
+    assert _despues_de_disputar(controles, "TRX-006", respuesta) == {}
+    assert controles.estado.pendientes == {}
+
+
+def test_disputa_sin_transaccion_no_crea_pendiente(controles):
+    _despues_de_disputar(controles, None, _bloques(_error_core("FUERA_DE_POLITICA")))
+    assert controles.estado.pendientes == {}
+
+
+def test_sin_pendientes_el_turno_termina(controles):
+    assert _terminar(controles) == {}
+    assert controles.estado.cierres_impedidos == 0
+
+
+def test_con_pendiente_se_impide_terminar_hasta_el_tope(controles):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    for _ in range(2):
+        salida = _terminar(controles)
+        assert salida["decision"] == "block"
+        assert "TRX-002" in salida["reason"]
+        assert "umbral" in salida["reason"]
+        assert "escalar_a_analista" in salida["reason"]
+        assert "1.250.000" not in salida["reason"]
+    assert _terminar(controles) == {}  # tope alcanzado: deja terminar
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+    assert controles.estado.cierres_impedidos == 2
+
+
+@pytest.mark.parametrize("transacciones", [["TRX-002"], '["TRX-002"]', [" TRX-002 "]])
+def test_escalamiento_exitoso_con_la_transaccion_limpia(controles, transacciones):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    assert _escalar(controles, _bloques(ESCALADO), transacciones=transacciones) == {}
+    assert controles.estado.pendientes == {}
+    assert _terminar(controles) == {}
+
+
+@pytest.mark.parametrize(
+    ("respuesta", "causa", "transacciones"),
+    [
+        (_bloques(ESCALADO), "umbral", ["TRX-001"]),
+        (_bloques(ESCALADO), "otra", ["TRX-002"]),
+        (_bloques(_error_core("FALLA_TRANSITORIA")), "umbral", ["TRX-002"]),
+        ("ilegible", "umbral", ["TRX-002"]),
+        (_bloques(ESCALADO), "umbral", "no es una lista"),
+    ],
+)
+def test_escalamiento_que_no_cubre_el_pendiente_no_limpia(
+    controles, respuesta, causa, transacciones
+):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    _escalar(controles, respuesta, causa=causa, transacciones=transacciones)
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+
+
+def test_escalar_una_de_dos_deja_la_otra(controles):
+    controles.estado.pendientes.update(
+        {"TRX-002": "umbral", "TRX-006": "fuera_de_politica"}
+    )
+    _escalar(controles, _bloques(ESCALADO))
+    assert controles.estado.pendientes == {"TRX-006": "fuera_de_politica"}
+    assert "TRX-006" in _terminar(controles)["reason"]
+
+
+def test_escalamiento_por_persona_sin_cliente_no_limpia(controles):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    entrada = {
+        "tool_name": ESCALAR,
+        "tool_input": {"causa": "persona_solicitada", "acciones_realizadas": "x"},
+        "tool_response": _bloques(ESCALADO),
+    }
+    asyncio.run(controles.despues_de_escalar(entrada, None, {}))
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+
+
+def test_nuevo_mensaje_vacia_pendientes_y_reinicia_el_tope(controles):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    controles.estado.cierres_impedidos = 2
+    assert _nuevo_mensaje(controles) == {}
+    assert controles.estado.pendientes == {}
+    assert controles.estado.cierres_impedidos == 0
+
+
+@pytest.mark.parametrize("entrada", [None, {}, {"tool_input": "x"}])
+def test_entradas_mal_formadas_no_cambian_el_estado(controles, entrada):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    for callback in (controles.despues_de_disputar, controles.despues_de_escalar):
+        assert asyncio.run(callback(entrada, None, {})) == {}
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+
+
+def test_falla_interna_del_stop_deja_terminar(controles):
+    controles.estado.pendientes = None  # fuerza un error interno
+    assert _terminar(controles) == {}

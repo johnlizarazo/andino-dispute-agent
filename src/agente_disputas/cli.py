@@ -30,6 +30,7 @@ from agente_disputas.configuracion import (
     crear_opciones,
     validar_credencial,
 )
+from agente_disputas.controles import Controles
 
 ORDEN_SALIDA = "/salir"
 BIENVENIDA = (
@@ -52,6 +53,11 @@ AVISO_SESION = (
     "La conversación no puede continuar por un problema técnico. Hasta pronto."
 )
 SIN_TEXTO = "(Sin respuesta del agente.)"
+# Lo muestra la interfaz, no el modelo: la falla del escalamiento queda visible siempre.
+AVISO_ESCALAMIENTO_PENDIENTE = (
+    "No pude pasar tu caso a un analista en este momento. "
+    "Por favor, inténtalo de nuevo más tarde."
+)
 ESPERA_CORE_SEGUNDOS = 15
 
 AVISOS = {
@@ -61,8 +67,12 @@ AVISOS = {
 }
 
 
-async def conversar(cliente, leer, escribir) -> int:
-    """Bucle turno a turno; termina con ``/salir``, fin de entrada o Ctrl+C."""
+async def conversar(cliente, leer, escribir, controles: Controles | None = None) -> int:
+    """Bucle turno a turno; termina con ``/salir``, fin de entrada o Ctrl+C.
+
+    Si el turno termina con escalamientos pendientes (el hook ``Stop`` alcanzó su tope),
+    avisa al cliente después de la respuesta.
+    """
     while True:
         try:
             linea = leer().strip()
@@ -84,6 +94,8 @@ async def conversar(cliente, leer, escribir) -> int:
             escribir(resultado.texto or SIN_TEXTO)
         else:
             escribir(AVISOS[resultado.estado])
+        if controles is not None and controles.estado.pendientes:
+            escribir(AVISO_ESCALAMIENTO_PENDIENTE)
 
 
 async def _esperar_core(cliente) -> str:
@@ -98,14 +110,15 @@ async def _esperar_core(cliente) -> str:
 
 
 async def _ejecutar(entorno) -> int:
-    async with ClaudeSDKClient(options=crear_opciones(entorno)) as cliente:
+    controles = Controles.desde_entorno(entorno)
+    async with ClaudeSDKClient(options=crear_opciones(entorno, controles)) as cliente:
         if await _esperar_core(cliente) != "connected":
             print(
                 "El core bancario no arrancó; revisa su configuración.", file=sys.stderr
             )
             return 1
         print(BIENVENIDA)
-        return await conversar(cliente, lambda: input("> "), print)
+        return await conversar(cliente, lambda: input("> "), print, controles)
 
 
 def main() -> int:

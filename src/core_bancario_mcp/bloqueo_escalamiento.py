@@ -82,7 +82,7 @@ def bloquear_tarjeta(
     )
 
 
-def _lista_de_ids(valor) -> list[str] | None:
+def lista_de_ids(valor) -> list[str] | None:
     """Ids recortados y sin repetir; acepta una lista o un texto con una lista JSON.
 
     Devuelve ``None`` si el valor no es una lista de textos (algunos clientes MCP envían los
@@ -117,7 +117,7 @@ def escalar_a_analista(
     for campo, valor in textos.items():
         if valor is not None and not isinstance(valor, str):
             return _invalido(f"{campo} debe ser texto")
-    ids = _lista_de_ids(transacciones)
+    ids = lista_de_ids(transacciones)
     if ids is None:
         return _invalido("transacciones debe ser una lista de ids de transacción")
     causa, cliente_id, acciones, recomendacion = (
