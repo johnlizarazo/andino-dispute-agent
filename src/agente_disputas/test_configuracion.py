@@ -59,18 +59,28 @@ def test_con_los_hooks_del_issue_9_se_habilitan_las_seis():
 
 def test_hooks_por_nombre_completo_de_cada_herramienta():
     hooks = crear_opciones(ENTORNO).hooks
+    assert set(hooks) == {"PreToolUse", "PostToolUse", "Stop", "UserPromptSubmit"}
     (antes,) = hooks["PreToolUse"]
-    (despues,) = hooks["PostToolUse"]
     assert antes.matcher == "|".join(PRODUCTOS)
-    assert despues.matcher == VERIFICAR
-    assert set(hooks) == {"PreToolUse", "PostToolUse"}
+    assert [m.matcher for m in hooks["PostToolUse"]] == [
+        VERIFICAR,
+        "mcp__core-bancario__iniciar_disputa",
+        "mcp__core-bancario__escalar_a_analista",
+    ]
 
 
-def test_las_exentas_no_tienen_hooks():
+def test_stop_y_mensaje_nuevo_aplican_a_todo_el_turno():
     hooks = crear_opciones(ENTORNO).hooks
-    matchers = " ".join(m.matcher for lista in hooks.values() for m in lista)
-    assert "buscar_cliente" not in matchers
-    assert "escalar_a_analista" not in matchers
+    for evento in ("Stop", "UserPromptSubmit"):
+        (matcher,) = hooks[evento]
+        assert matcher.matcher is None
+
+
+def test_las_exentas_no_tienen_control_previo():
+    # Regla 1: buscar, verificar y escalar nunca se niegan por identidad.
+    (antes,) = crear_opciones(ENTORNO).hooks["PreToolUse"]
+    for exenta in ("buscar_cliente", "verificar_identidad", "escalar_a_analista"):
+        assert exenta not in antes.matcher
 
 
 def test_sin_prompt_de_sistema_la_disputa_sin_verificar_se_niega():

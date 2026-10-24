@@ -10,6 +10,7 @@ from claude_agent_sdk import (
 )
 
 from agente_disputas import cli
+from agente_disputas.controles import Controles
 
 MODELO = "claude-sonnet-5-5"
 
@@ -219,3 +220,31 @@ def test_main_sin_motor_del_agente_termina_con_uno(monkeypatch, capsys):
     salida = capsys.readouterr()
     assert "motor del agente" in salida.err
     assert "Traceback" not in salida.out + salida.err
+
+
+def _controles_con(pendientes: dict) -> Controles:
+    controles = Controles(lambda _: None, None)
+    controles.estado.pendientes.update(pendientes)
+    return controles
+
+
+def _conversar_con_controles(controles, *lineas) -> list[str]:
+    salida: list[str] = []
+    cliente = ClienteFalso(_turno("Respuesta del agente"))
+    asyncio.run(cli.conversar(cliente, _entrada(*lineas), salida.append, controles))
+    return salida
+
+
+def test_escalamiento_pendiente_al_terminar_el_turno_se_avisa():
+    salida = _conversar_con_controles(_controles_con({"TRX-002": "umbral"}), "hola")
+    respuesta = salida.index("Respuesta del agente")
+    assert salida[respuesta + 1] == cli.AVISO_ESCALAMIENTO_PENDIENTE
+    assert "TRX-002" not in cli.AVISO_ESCALAMIENTO_PENDIENTE
+
+
+@pytest.mark.parametrize("controles", [None, "sin_pendientes"])
+def test_sin_pendientes_no_hay_aviso(controles):
+    if controles == "sin_pendientes":
+        controles = _controles_con({})
+    salida = _conversar_con_controles(controles, "hola")
+    assert cli.AVISO_ESCALAMIENTO_PENDIENTE not in salida

@@ -1,19 +1,27 @@
-"""Controles del agente: hooks del SDK que garantizan las reglas 1 y 2 (principio II).
+"""Controles del agente: hooks del SDK que garantizan reglas del banco (principio II).
 
-Un hook ``PostToolUse`` sobre ``verificar_identidad`` registra en el estado de la
-conversación el cliente verificado; un hook ``PreToolUse`` sobre las herramientas que operan
-sobre productos niega sin identidad verificada, sobre productos de otro cliente o con una
-disputa por encima del umbral. El monto y el titular se leen de los datos del core por el
-``transaccion_id``, nunca de otro argumento del modelo. Los controles fallan cerrado: si no
+Reglas 1 y 2 (#9): un hook ``PostToolUse`` sobre ``verificar_identidad`` registra en el estado
+de la conversación el cliente verificado; un hook ``PreToolUse`` sobre las herramientas que
+operan sobre productos niega sin identidad verificada, sobre productos de otro cliente o con
+una disputa por encima del umbral. El monto y el titular se leen de los datos del core por el
+``transaccion_id``, nunca de otro argumento del modelo. Estos controles fallan cerrado: si no
 pueden obtener el dato o algo falla, niegan. No leen el prompt de sistema.
+
+Escalar tras una negación (#10): una disputa negada por umbral o rechazada por el core por
+umbral o política queda como escalamiento pendiente; un hook ``Stop`` impide terminar el turno
+mientras quede alguno, con un tope de ``MAXIMO_CIERRES_IMPEDIDOS``. Un escalamiento exitoso
+con esa transacción y esa causa lo limpia, y cada mensaje nuevo del cliente vacía los
+pendientes (el agente decide de nuevo con lo que diga el cliente).
 """
 
 import json
 from collections.abc import Callable, Mapping
+from contextlib import suppress
 from dataclasses import dataclass, field
 
 from claude_agent_sdk import HookMatcher
 
+from core_bancario_mcp.bloqueo_escalamiento import lista_de_ids
 from core_bancario_mcp.fallas import VARIABLE as VARIABLE_FALLAS
 from core_bancario_mcp.fallas import InyectorFallas
 from core_bancario_mcp.repositorio import Politica, Repositorio, Transaccion
@@ -23,11 +31,24 @@ CONSULTAR = PREFIJO + "consultar_transacciones"
 DISPUTAR = PREFIJO + "iniciar_disputa"
 BLOQUEAR = PREFIJO + "bloquear_tarjeta"
 VERIFICAR = PREFIJO + "verificar_identidad"
+ESCALAR = PREFIJO + "escalar_a_analista"
 SOBRE_PRODUCTOS = (CONSULTAR, DISPUTAR, BLOQUEAR)
 # Operación de CORE_BANCARIO_FALLAS que hace fallar la consulta de datos del control.
 OPERACION_FALLAS = "control_transaccion"
 # Los controles son consultas en memoria; el tope solo evita esperar de más.
 TIEMPO_MAXIMO_SEGUNDOS = 10
+# Nombre con el que se registra una negación cuando la entrada no trae la herramienta.
+HERRAMIENTA_DESCONOCIDA = "desconocida"
+# Causas de un escalamiento pendiente: mismos valores que las de escalar_a_analista.
+UMBRAL = "umbral"
+FUERA_DE_POLITICA = "fuera_de_politica"
+# Tope del hook Stop: no forzar un ciclo sin salida si el escalamiento sigue fallando.
+MAXIMO_CIERRES_IMPEDIDOS = 2
+# Códigos del core que obligan a escalar una disputa rechazada.
+CAUSA_POR_CODIGO_DEL_CORE = {
+    "REQUIERE_ANALISTA": UMBRAL,
+    "FUERA_DE_POLITICA": FUERA_DE_POLITICA,
+}
 
 SIN_IDENTIDAD = "SIN_IDENTIDAD"
 CLIENTE_DISTINTO = "CLIENTE_DISTINTO"
@@ -42,9 +63,6 @@ RAZONES = {
     ),
     TRANSACCION_NO_CONFIRMADA: (
         "No se pudo confirmar que esa transacción pertenezca al cliente verificado."
-    ),
-    REQUIERE_ANALISTA: (
-        "Esta disputa supera $500.000 y requiere un analista humano: escala el caso."
     ),
     FALLA_CONTROL: "No se pudo confirmar la operación en este momento; no se realizó.",
 }
@@ -70,6 +88,9 @@ class EstadoSesion:
 
     cliente_verificado: str | None = None
     negaciones: list[Negacion] = field(default_factory=list)
+    # Transacción → causa (umbral o fuera de política) que falta escalar en este turno.
+    pendientes: dict[str, str] = field(default_factory=dict)
+    cierres_impedidos: int = 0
 
 
 def _contrato(valor) -> dict | None:
@@ -123,6 +144,8 @@ class Decision:
     autorizada: bool
     codigo: str | None = None
     razon: str | None = None
+    # Transacción que queda pendiente de escalar (solo en la negación por umbral).
+    pendiente: str | None = None
 
 
 AUTORIZADA = Decision(True)
@@ -130,6 +153,20 @@ AUTORIZADA = Decision(True)
 
 def negar(codigo: str) -> Decision:
     return Decision(False, codigo, RAZONES[codigo])
+
+
+def _pesos(monto: int) -> str:
+    """Monto en pesos con punto de miles, como lo lee el cliente: 500000 → $500.000."""
+    return "$" + f"{monto:,}".replace(",", ".")
+
+
+def negar_por_umbral(politica: Politica, transaccion_id: str) -> Decision:
+    """La razón usa el umbral de la política, la misma fuente de la decisión."""
+    umbral = _pesos(politica.umbral_disputa_automatica)
+    razon = (
+        f"Esta disputa supera {umbral} y requiere un analista humano: escala el caso."
+    )
+    return Decision(False, REQUIERE_ANALISTA, razon, pendiente=transaccion_id)
 
 
 class Controles:
@@ -174,13 +211,34 @@ class Controles:
                     matcher=VERIFICAR,
                     hooks=[self.despues_de_verificar],
                     timeout=TIEMPO_MAXIMO_SEGUNDOS,
+                ),
+                HookMatcher(
+                    matcher=DISPUTAR,
+                    hooks=[self.despues_de_disputar],
+                    timeout=TIEMPO_MAXIMO_SEGUNDOS,
+                ),
+                HookMatcher(
+                    matcher=ESCALAR,
+                    hooks=[self.despues_de_escalar],
+                    timeout=TIEMPO_MAXIMO_SEGUNDOS,
+                ),
+            ],
+            "Stop": [
+                HookMatcher(
+                    hooks=[self.antes_de_terminar], timeout=TIEMPO_MAXIMO_SEGUNDOS
+                )
+            ],
+            "UserPromptSubmit": [
+                HookMatcher(
+                    hooks=[self.al_recibir_mensaje], timeout=TIEMPO_MAXIMO_SEGUNDOS
                 )
             ],
         }
 
     async def despues_de_verificar(self, entrada, tool_use_id, contexto) -> dict:
         """PostToolUse: solo un éxito explícito del core, para el cliente pedido, registra."""
-        try:
+        # Falla cerrada: cualquier error al leer la verificación no registra a nadie.
+        with suppress(Exception):
             pedido = entrada["tool_input"]["cliente_id"].strip()
             respuesta = leer_respuesta(entrada["tool_response"])
             datos = respuesta["datos"] if respuesta and respuesta["ok"] is True else {}
@@ -192,21 +250,22 @@ class Controles:
                 and verificado == pedido
             ):
                 self.estado.cliente_verificado = verificado
-        except Exception:  # noqa: BLE001 - falla cerrada: cualquier error no registra
-            return {}
         return {}
 
     async def antes_de_herramienta(self, entrada, tool_use_id, contexto) -> dict:
         """PreToolUse: autoriza solo si pasan todas las comprobaciones; si no, niega."""
-        herramienta = None
+        herramienta = HERRAMIENTA_DESCONOCIDA
         try:
-            herramienta = entrada["tool_name"]
+            if isinstance(entrada.get("tool_name"), str):
+                herramienta = entrada["tool_name"]
             decision = self.decidir(herramienta, entrada["tool_input"])
         except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
             decision = negar(FALLA_CONTROL)
         if decision.autorizada:
             return {}
-        self.estado.negaciones.append(Negacion(str(herramienta), decision.codigo))
+        self.estado.negaciones.append(Negacion(herramienta, decision.codigo))
+        if decision.pendiente:
+            self.estado.pendientes[decision.pendiente] = UMBRAL
         return {
             "hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
@@ -237,5 +296,63 @@ class Controles:
             return negar(TRANSACCION_NO_CONFIRMADA)
         # Regla 2 con el monto del core, nunca con un argumento del modelo.
         if self.politica.requiere_analista(transaccion.monto):
-            return negar(REQUIERE_ANALISTA)
+            return negar_por_umbral(self.politica, transaccion.id)
         return AUTORIZADA
+
+    async def despues_de_disputar(self, entrada, tool_use_id, contexto) -> dict:
+        """PostToolUse: el rechazo del core por umbral o política crea un pendiente."""
+        # Un error al leer la respuesta no inventa pendientes.
+        with suppress(Exception):
+            transaccion_id = _texto(entrada["tool_input"], "transaccion_id")
+            respuesta = leer_respuesta(entrada["tool_response"])
+            if transaccion_id and respuesta and respuesta["ok"] is False:
+                causa = CAUSA_POR_CODIGO_DEL_CORE.get(respuesta["error"]["codigo"])
+                if causa:
+                    self.estado.pendientes[transaccion_id] = causa
+        return {}
+
+    async def despues_de_escalar(self, entrada, tool_use_id, contexto) -> dict:
+        """PostToolUse: un escalamiento exitoso limpia los pendientes que cubre.
+
+        Cubre un pendiente si incluye su transacción y su misma causa: así el analista recibe
+        el caso completo. Un escalamiento fallido o ilegible no limpia nada.
+        """
+        with suppress(Exception):
+            argumentos = entrada["tool_input"]
+            respuesta = leer_respuesta(entrada["tool_response"])
+            causa = _texto(argumentos, "causa")
+            ids = lista_de_ids(argumentos.get("transacciones")) or []
+            if respuesta and respuesta["ok"] is True:
+                for transaccion_id in ids:
+                    if self.estado.pendientes.get(transaccion_id) == causa:
+                        del self.estado.pendientes[transaccion_id]
+        return {}
+
+    async def antes_de_terminar(self, entrada, tool_use_id, contexto) -> dict:
+        """Stop: con pendientes, impide terminar el turno hasta el tope; luego deja terminar.
+
+        Una falla interna deja terminar: bloquear por un error podría forzar un ciclo, y el
+        pendiente que queda lo hace visible la interfaz.
+        """
+        try:
+            pendientes = self.estado.pendientes
+            if (
+                not pendientes
+                or self.estado.cierres_impedidos >= MAXIMO_CIERRES_IMPEDIDOS
+            ):
+                return {}
+            self.estado.cierres_impedidos += 1
+            lista = ", ".join(f"{t} (causa {c})" for t, c in sorted(pendientes.items()))
+            razon = (
+                f"Antes de terminar, escala con escalar_a_analista: {lista}. Incluye el "
+                "cliente, las transacciones, las acciones realizadas y la acción recomendada."
+            )
+        except Exception:  # noqa: BLE001 - falla abierta justificada (research R4)
+            return {}
+        return {"decision": "block", "reason": razon}
+
+    async def al_recibir_mensaje(self, entrada, tool_use_id, contexto) -> dict:
+        """UserPromptSubmit: cada mensaje del cliente empieza sin pendientes ni cierres."""
+        self.estado.pendientes = {}
+        self.estado.cierres_impedidos = 0
+        return {}
