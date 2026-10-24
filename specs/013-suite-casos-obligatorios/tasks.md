@@ -14,7 +14,8 @@ description: "Lista de tareas del issue #13: Suite de casos obligatorios y READM
 test determinista junto a ellos, escrito **antes** que el ayudante y visto fallar. Los
 escenarios van en `tests/escenarios/`, marcados `e2e`, con mensajes distintos de los
 ejemplos del prompt. Solo datos ficticios; los datos de verificación se leen del core en
-tiempo de ejecución. No se toca `src/`.
+tiempo de ejecución. En `src/` solo cambia el nombre de la búsqueda en los eventos (T010,
+pedido en la revisión manual).
 
 **Organization**: fundación (`registro.py`) → US3 (`casos.py` y su test) → US1 y US2 (suite)
 → US4 (README) → verificación. US1 y US2 comparten el archivo de la suite y van juntas.
