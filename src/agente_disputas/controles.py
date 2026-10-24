@@ -17,6 +17,9 @@ Delegación (#11): un hook ``PreToolUse`` sobre la herramienta de delegación so
 en ``analista-transacciones``, sin segundo plano, con cliente verificado y un bloque
 ``<contexto>`` completo para ese cliente. Las consultas del subagente pasan por los mismos
 controles de las reglas 1 y 2 (llegan con ``agent_id``).
+
+Interfaz (#12): cada negación guarda el ``tool_use_id`` de la llamada negada, para que la
+interfaz muestre la negación como evento sin interpretar el texto del resultado.
 """
 
 import json
@@ -94,6 +97,17 @@ def _sin_datos(_transaccion_id: str) -> Transaccion | None:
 class Negacion:
     herramienta: str
     codigo: str
+    # El de la llamada negada, para que la interfaz la reconozca (#12); None si no llega.
+    tool_use_id: str | None = None
+
+
+def _id_de_uso(entrada, tool_use_id) -> str | None:
+    """El ``tool_use_id`` del callback o, si falta, el de la entrada del hook."""
+    if isinstance(tool_use_id, str) and tool_use_id:
+        return tool_use_id
+    if isinstance(entrada, dict) and isinstance(entrada.get("tool_use_id"), str):
+        return entrada["tool_use_id"] or None
+    return None
 
 
 @dataclass
@@ -276,7 +290,7 @@ class Controles:
             decision = self.decidir(herramienta, entrada["tool_input"])
         except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
             decision = negar(FALLA_CONTROL)
-        return self._responder(herramienta, decision)
+        return self._responder(herramienta, decision, _id_de_uso(entrada, tool_use_id))
 
     async def antes_de_delegar(self, entrada, tool_use_id, contexto) -> dict:
         """PreToolUse sobre la delegación: subagente, identidad y contexto explícito."""
@@ -287,7 +301,7 @@ class Controles:
             decision = self.decidir_delegacion(entrada["tool_input"])
         except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
             decision = negar(FALLA_CONTROL)
-        return self._responder(herramienta, decision)
+        return self._responder(herramienta, decision, _id_de_uso(entrada, tool_use_id))
 
     def decidir_delegacion(self, argumentos: dict) -> Decision:
         """Orden: subagente permitido, sin segundo plano, identidad, contexto, cliente."""
@@ -310,11 +324,15 @@ class Controles:
             return negar(CLIENTE_DISTINTO)
         return AUTORIZADA
 
-    def _responder(self, herramienta: str, decision: Decision) -> dict:
+    def _responder(
+        self, herramienta: str, decision: Decision, tool_use_id: str | None = None
+    ) -> dict:
         """Salida del PreToolUse: ``{}`` si se autoriza; si no, registra y niega."""
         if decision.autorizada:
             return {}
-        self.estado.negaciones.append(Negacion(herramienta, decision.codigo))
+        self.estado.negaciones.append(
+            Negacion(herramienta, decision.codigo, tool_use_id)
+        )
         if decision.pendiente:
             self.estado.pendientes[decision.pendiente] = UMBRAL
         return {
