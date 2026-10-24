@@ -94,7 +94,7 @@ lleve barras invertidas (se pierden); usar Write/Edit. El hook `formatear` aplic
 
 ## Phase 7: Escenario de delegación (FR-005, test del issue)
 
-- [ ] T012 [US3] Escribir `tests/escenarios/test_delegacion_e2e.py` (marcado `e2e`, se salta sin la clave) según el contrato: `Controles.desde_entorno`, espías que envuelven `antes_de_herramienta` y `antes_de_delegar` registrando `tool_name` y `agent_id`; mensaje distinto de los ejemplos del prompt (clienta CC-FIC-0001 con su dato de verificación, leído del repositorio en tiempo de ejecución, que pide revisar los cobros de ayer de su tarjeta antes de reclamar); aserciones: una delegación autorizada a `analista-transacciones`, al menos una `consultar_transacciones` con `agent_id` llegó a los controles, y ninguna `iniciar_disputa` de `TRX-002` fue autorizada. Comprobar que se salta sin la clave. Commit `test(#11): escenario de delegación`
+- [X] T012 [US3] Escribir `tests/escenarios/test_delegacion_e2e.py` (marcado `e2e`, se salta sin la clave) según el contrato: `Controles.desde_entorno`, espías que envuelven `antes_de_herramienta` y `antes_de_delegar` registrando `tool_name` y `agent_id`; mensaje distinto de los ejemplos del prompt (clienta CC-FIC-0001 con su dato de verificación, leído del repositorio en tiempo de ejecución, que pide revisar los cobros de ayer de su tarjeta antes de reclamar); aserciones: una delegación autorizada a `analista-transacciones`, al menos una `consultar_transacciones` con `agent_id` llegó a los controles, y ninguna `iniciar_disputa` de `TRX-002` fue autorizada. Comprobar que se salta sin la clave. Commit `test(#11): escenario de delegación`
 
 ---
 
