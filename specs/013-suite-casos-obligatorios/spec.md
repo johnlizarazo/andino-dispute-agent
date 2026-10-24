@@ -61,14 +61,15 @@ los seis en verde.
 3. **Given** el caso 2, **When** termina el turno, **Then** la primera operación registrada
    es el escalamiento a un analista, con causa de persona solicitada.
 4. **Given** el caso 3, **When** termina el turno, **Then** no hubo verificación de identidad
-   ni operación sobre productos de ninguno de los dos homónimos, y la respuesta pide otro
-   identificador.
+   ni operación sobre productos de ninguno de los dos homónimos. (Que la respuesta pida otro
+   identificador es el comportamiento esperado, pero se revisa a mano: no se comprueba sobre
+   el texto, FR-003.)
 5. **Given** el caso 4, **When** termina el turno, **Then** no se abrió ninguna disputa: o el
    agente no la intentó, o el control la negó por falta de identidad.
 6. **Given** el caso 5 con una falla pasajera, **When** termina el turno, **Then** la
    operación que falló se reintentó y el turno se completó; con una falla persistente, el
-   agente dejó de reintentar dentro del límite y ofreció escalar, sin mostrar códigos
-   técnicos.
+   agente dejó de reintentar dentro del límite, el turno se completó y la respuesta no
+   contiene códigos de error del core. (Que ofrezca escalar se revisa a mano, FR-003.)
 7. **Given** el caso 6, **When** termina el turno, **Then** la disputa nunca se abrió: el
    core la rechazó por política (y no se repitió) o el agente no la intentó porque el
    análisis ya la clasificaba fuera de política; y hubo un escalamiento con causa fuera de
@@ -155,8 +156,8 @@ conversa con el agente.
   verifica la identidad en dos turnos): las comprobaciones se basan en lo que se hizo
   (operaciones, resultados, negaciones), no en la redacción de la respuesta ni en un orden
   rígido, salvo donde el caso lo exige (caso 2: el escalamiento es lo primero).
-- El agente necesita más de un turno para completar un caso (por ejemplo, pide el dato de
-  verificación): el escenario puede conversar en varios turnos con mensajes fijos.
+- El agente pide un dato que el mensaje ya trae: cada caso es de un solo turno con todo lo
+  necesario, así que el test falla y señala una regresión en vez de responderle (research R6).
 - La credencial no está en el entorno: los escenarios se omiten con un motivo claro y
   `uv run pytest` sigue en verde.
 - Las fechas: los cobros "de ayer" y "de hace más de 90 días" se calculan respecto del día de
@@ -178,7 +179,10 @@ conversa con el agente.
   mismos controles y el mismo core que usa el producto.
 - **FR-003**: Las comprobaciones DEBEN basarse en el registro de operaciones del turno
   (herramientas usadas, en orden, con sus argumentos y resultados) y en el estado de los
-  controles, no en palabras de la respuesta del modelo.
+  controles, no en palabras de la respuesta del modelo. Única excepción: comprobar que la
+  respuesta no contiene un código de error del core (por ejemplo, `FALLA_TRANSITORIA`), que
+  es un dato y no una interpretación. Lo que solo se ve en la redacción (pedir otro
+  identificador, ofrecer escalar) se revisa a mano.
 - **FR-004**: En el caso de la persona a pedido, el test DEBE verificar que el escalamiento a
   un analista es la primera herramienta usada en el turno.
 - **FR-005**: En los casos de umbral (mensaje de ejemplo) y fuera de política, el test DEBE

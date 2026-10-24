@@ -34,4 +34,11 @@ prompt), todos en verde; ya no hay tests de falla transitoria fuera de la suite.
 En una máquina con Python 3.14 y `uv` instalados (Windows y, si es posible, Linux/macOS), una
 persona que no conoce el proyecto sigue solo el README: instala, define la credencial para la
 sesión, corre `uv run pytest`, abre `uv run andino-chat` y reproduce un caso de la tabla.
-Anotar el tiempo (SC-004).
+Anotar el tiempo (SC-004). Si no hay una máquina Linux o macOS disponible, revisar que los
+comandos de bash/zsh equivalen a los de PowerShell y declararlo en el PR.
+
+## 5. Revisión manual de la redacción
+
+En el chat, reproducir el caso 3 (debe pedir otro identificador) y el caso 5 con
+`CORE_BANCARIO_FALLAS="buscar_cliente:5"` (debe ofrecer escalar). Estas dos cosas no las
+comprueba la suite, porque solo se ven en el texto (FR-003).

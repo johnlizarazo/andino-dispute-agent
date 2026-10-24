@@ -28,8 +28,8 @@ Solo se registran llamadas del agente principal, en el orden de los `ToolUseBloc
 Consultas: `de(herramienta)` → llamadas de esa herramienta; `primera()` → primera llamada;
 `escalamientos(causa)` → escalamientos exitosos con esa causa.
 
-Funciones: `armar_registro(mensajes, estado_controles, inicio_negaciones)` pura y probada sin
-API; `conversar(mensaje, entorno=None)` corre el turno real y devuelve el `Registro`.
+Funciones: `armar_registro(mensajes, estado_controles, inicio_negaciones, resultado)` pura y
+probada sin API (`resultado` es el `ResultadoTurno` de `procesar_turno`); `conversar(mensaje, entorno=None)` corre el turno real y devuelve el `Registro`.
 
 ## Caso (`tests/escenarios/casos.py`)
 
