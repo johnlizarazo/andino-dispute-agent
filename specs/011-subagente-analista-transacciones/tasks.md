@@ -100,17 +100,17 @@ lleve barras invertidas (se pierden); usar Write/Edit. El hook `formatear` aplic
 
 ## Phase 8: Verificación
 
-- [ ] T013 Ejecutar `uv run pytest` completo, `ruff check src tests` y `ruff format --check src tests` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T014 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §3](quickstart.md)); si el motor se cierra abruptamente (visto en el #10), repetir y anotarlo
-- [ ] T015 Conversación de [quickstart.md §4](quickstart.md) (a–c) con una sonda que registre herramientas, `agent_id` y el bloque `<analisis>`; ajuste L1: en el caso (a), el cliente reporta además un monto que no existe y se comprueba que aparece en `montos_no_encontrados`; anotar el resultado de cada caso en esta tarea
-- [ ] T016 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
+- [X] T013 Ejecutar `uv run pytest` completo, `ruff check src tests` y `ruff format --check src tests` en verde ([quickstart.md §1](quickstart.md))
+- [X] T014 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §3](quickstart.md)); si el motor se cierra abruptamente (visto en el #10), repetir y anotarlo. Resultado (2026-10-24): 4/4 en verde, incluido `test_delegacion_e2e.py` (además 4/4 en repeticiones; una falla previa ocurrió durante la falta de memoria del equipo y no se reprodujo). Límites de la API leídos con una consulta de 1 token: margen completo por minuto
+- [X] T015 Conversación de [quickstart.md §4](quickstart.md) (a–c) con una sonda que registre herramientas, `agent_id` y el bloque `<analisis>`; ajuste L1: en el caso (a), el cliente reporta además un monto que no existe y se comprueba que aparece en `montos_no_encontrados`; anotar el resultado de cada caso en esta tarea. Resultado (2026-10-24): (a) delegó con contexto explícito; la consulta del subagente llegó a los controles con `agent_id`; `<analisis>`: TRX-001 disputable, TRX-002 sobre umbral y `montos_no_encontrados` [777000]; el principal disputó el menor (CASO-0001) y preguntó por el mayor; (b) TRX-006 fuera de política y escalado (ESC-0001); (c) sin verificar, el agente pidió verificar y no intentó delegar (el control de delegación queda cubierto por los tests deterministas)
+- [X] T016 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
 
 ---
 
 ## Phase 9: Cierre con `/abrir-pr`
 
-- [ ] T017 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T018 Marcar T001 a T018 en `specs/011-subagente-analista-transacciones/tasks.md` y hacer commit. T019 y T020 se marcan en la rama del issue siguiente
+- [X] T017 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T018 Marcar T001 a T018 en `specs/011-subagente-analista-transacciones/tasks.md` y hacer commit. T019 y T020 se marcan en la rama del issue siguiente
 - [ ] T019 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #11`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T020 Después del merge, hecho por el desarrollador: verificar que el #11 queda cerrado y en *Done*
 
