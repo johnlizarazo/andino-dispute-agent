@@ -87,8 +87,8 @@ lleve barras invertidas (se pierden); usar Write/Edit. El hook `formatear` aplic
 
 **Independent Test**: `uv run pytest src/agente_disputas/test_prompts.py`.
 
-- [ ] T010 [US1] En `src/agente_disputas/test_prompts.py`, **antes** del prompt: `VERSION_PROMPT == "5"`; el prompt menciona `analista-transacciones` y `<contexto>` con los cinco campos (`cliente_id`, `ultimos4`, `fecha_desde`, `fecha_hasta`, `montos_reportados`). Los tests de ejemplos y separación del #10 siguen pasando. Verlo fallar
-- [ ] T011 [US1] En `src/agente_disputas/prompts.py` (con Write/Edit, no scripts): sección "Análisis con analista-transacciones" según research R5 (cuándo delegar, formato exacto del bloque, usar la clasificación, los controles deciden, no delegar sin verificación ni para otro cliente); `VERSION_PROMPT = "5"`; líneas ≤ 95 caracteres; sin datos del core dentro de `<ejemplos>`. Dejar verde. Commit `feat(#11): subagente registrado y prompt v5`
+- [X] T010 [US1] En `src/agente_disputas/test_prompts.py`, **antes** del prompt: `VERSION_PROMPT == "5"`; el prompt menciona `analista-transacciones` y `<contexto>` con los cinco campos (`cliente_id`, `ultimos4`, `fecha_desde`, `fecha_hasta`, `montos_reportados`). Los tests de ejemplos y separación del #10 siguen pasando. Verlo fallar
+- [X] T011 [US1] En `src/agente_disputas/prompts.py` (con Write/Edit, no scripts): sección "Análisis con analista-transacciones" según research R5 (cuándo delegar, formato exacto del bloque, usar la clasificación, los controles deciden, no delegar sin verificación ni para otro cliente); `VERSION_PROMPT = "5"`; líneas ≤ 95 caracteres; sin datos del core dentro de `<ejemplos>`. Dejar verde. Commit `feat(#11): subagente registrado y prompt v5`
 
 ---
 
