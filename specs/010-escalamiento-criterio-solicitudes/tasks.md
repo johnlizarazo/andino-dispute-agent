@@ -112,8 +112,8 @@ amplias justificadas.
 
 - [X] T020 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T021 Marcar T001 a T021 en `specs/010-escalamiento-criterio-solicitudes/tasks.md` y hacer commit. T022 y T023 se marcan en la rama del issue siguiente
-- [ ] T022 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #10`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T023 Después del merge, hecho por el desarrollador: verificar que el #10 queda cerrado y en *Done*
+- [X] T022 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #10`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T023 Después del merge, hecho por el desarrollador: verificar que el #10 queda cerrado y en *Done*
 
 ---
 
