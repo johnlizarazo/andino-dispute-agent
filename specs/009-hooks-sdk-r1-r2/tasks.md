@@ -102,17 +102,17 @@ elimina imports sin uso entre ediciones: agregar el import en la misma edición 
 
 **Purpose**: requiere `ANTHROPIC_API_KEY` en el entorno (nunca se lee ni imprime su valor).
 
-- [ ] T018 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src tests` y `ruff format --check` en verde ([quickstart.md §1](quickstart.md))
-- [ ] T019 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md))
-- [ ] T020 Conversación de [quickstart.md §3](quickstart.md) (a–e). En (b), confirmar que el control registró al cliente (la disputa se autoriza); si no, registrar la forma real de `tool_response` (sin datos fuera de los ficticios) y ajustar `leer_respuesta` con su test antes de seguir
-- [ ] T021 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
+- [X] T018 Ejecutar `uv run pytest` completo y `uv run --no-sync ruff check src tests` y `ruff format --check` en verde ([quickstart.md §1](quickstart.md))
+- [X] T019 Ejecutar `uv run pytest -m e2e -s` ([quickstart.md §2](quickstart.md))
+- [X] T020 Conversación de [quickstart.md §3](quickstart.md) (a–e). En (b), confirmar que el control registró al cliente (la disputa se autoriza); si no, registrar la forma real de `tool_response` (sin datos fuera de los ficticios) y ajustar `leer_respuesta` con su test antes de seguir. Resultado (2026-10-23): e2e 3/3 en verde; `tool_response` llega como lista de bloques `[{"type", "text"}]` (forma ya aceptada) y el cliente quedó registrado. (a) el agente pidió verificar y no intentó la disputa; (b) CASO-0001; (c) negada por el hook con `REQUIERE_ANALISTA` y el agente escaló (ESC-0001); (d) el agente se negó sin llamar a la herramienta (el hook queda cubierto por los tests deterministas); (e) primera disputa negada con `FALLA_CONTROL` y el agente ofreció escalar
+- [X] T021 Pasar `bloquear_pii.py --diff` sobre un archivo con `git diff --unified=0 main...HEAD` sin hallazgos
 
 ---
 
 ## Phase 8: Cierre con `/abrir-pr`
 
-- [ ] T022 Verificar `uv run pytest` en verde y el árbol limpio
-- [ ] T023 Marcar T001 a T023 en `specs/009-hooks-sdk-r1-r2/tasks.md` y hacer commit. T024 y T025 se marcan en la rama del issue siguiente
+- [X] T022 Verificar `uv run pytest` en verde y el árbol limpio
+- [X] T023 Marcar T001 a T023 en `specs/009-hooks-sdk-r1-r2/tasks.md` y hacer commit. T024 y T025 se marcan en la rama del issue siguiente
 - [ ] T024 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #9`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
 - [ ] T025 Después del merge, hecho por el desarrollador: verificar que el #9 queda cerrado y en *Done*
 
