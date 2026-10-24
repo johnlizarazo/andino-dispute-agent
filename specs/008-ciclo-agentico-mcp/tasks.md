@@ -56,7 +56,7 @@ su uso.
 - [X] T006 [US3] Escribir `src/agente_disputas/prompts.py` con `VERSION_PROMPT = "1"` y `PROMPT_SISTEMA` según [contracts/configuracion.md](contracts/configuracion.md): rol, español, las 5 reglas de la constitución, cuándo usar cada herramienta, no inventar datos ni montos, y manejo de errores ("reintentable: true" → reintentar la misma llamada hasta dos veces y luego informar sin detalles técnicos y ofrecer escalar; "reintentable: false" → no repetir y actuar según tipo). Sin datos de clientes reales; los ejemplos usan solo datos ficticios. Dejar verde el test
 - [X] T007 [P] [US3] Escribir `src/agente_disputas/test_configuracion.py` **antes** del módulo, sin API, con un `entorno` de prueba (diccionario) que contiene una clave ficticia `"clave-de-prueba"` (nunca una real), y verlo fallar:
   - `tools == []`, `permission_mode == "dontAsk"`, `strict_mcp_config is True`, `setting_sources == []`, `max_turns == 25`.
-  - `allowed_tools` es exactamente `["mcp__core-bancario__" + n for n in HERRAMIENTAS]` y `HERRAMIENTAS` son las 6 del core.
+  - `HERRAMIENTAS` son las 6 del core; `allowed_tools` es exactamente las 3 exentas de identidad (`buscar_cliente`, `verificar_identidad`, `escalar_a_analista`) con el prefijo `mcp__core-bancario__`, y `disallowed_tools` las otras 3 (ajuste T023; el #9 las habilita junto con sus hooks).
   - `mcp_servers` tiene solo `core-bancario`: `type` `"stdio"`, `command` `sys.executable`, `args` `["-m", "core_bancario_mcp"]`.
   - Sin `CORE_BANCARIO_FALLAS` en el entorno, el `env` del servidor no la tiene; con ella, la pasa tal cual.
   - `model` es `"claude-sonnet-5-5"` por omisión y `ANDINO_MODELO` lo cambia.
@@ -115,8 +115,8 @@ lee su valor) y una sesión que la vea.
 
 - [X] T018 Verificar `uv run pytest` en verde y el árbol limpio
 - [X] T019 Marcar T001 a T019 en `specs/008-ciclo-agentico-mcp/tasks.md` (T016 marcada solo si se hizo) y hacer commit. T020 y T021 ocurren después del último commit y se marcan en la rama del issue siguiente
-- [ ] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #8`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
-- [ ] T021 Después del merge, hecho por el desarrollador: verificar que el #8 queda cerrado y en *Done*
+- [X] T020 El desarrollador ejecuta `/abrir-pr` y aprueba el push y el PR. Esperado: revisión de código `APROBADO`, cumplimiento `APROBADO`, PR con `Closes #8`, CI `guardrails` en verde, issue en *In Review* y comentario de avance
+- [X] T021 Después del merge, hecho por el desarrollador: verificar que el #8 queda cerrado y en *Done*
 
 ---
 

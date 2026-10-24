@@ -1,14 +1,16 @@
+import asyncio
 import sys
+from dataclasses import replace
 
 import pytest
 
 from agente_disputas.configuracion import (
     HERRAMIENTAS,
-    HERRAMIENTAS_HABILITADAS,
     CredencialFaltanteError,
     crear_opciones,
     validar_credencial,
 )
+from agente_disputas.controles import Controles
 from agente_disputas.prompts import PROMPT_SISTEMA
 
 CLAVE_FICTICIA = "clave-de-prueba"
@@ -34,27 +36,67 @@ def test_sin_herramientas_ni_settings_del_entorno_ni_permisos_interactivos():
     assert opciones.setting_sources == []
 
 
-def test_hasta_el_issue_9_solo_se_habilitan_las_exentas_de_identidad():
-    # Regla 1 por diseño: sin los hooks del #9, el agente no puede operar sobre productos.
-    assert set(HERRAMIENTAS_HABILITADAS) == {
-        "buscar_cliente",
-        "verificar_identidad",
-        "escalar_a_analista",
-    }
+PRODUCTOS = (
+    "mcp__core-bancario__consultar_transacciones",
+    "mcp__core-bancario__iniciar_disputa",
+    "mcp__core-bancario__bloquear_tarjeta",
+)
+VERIFICAR = "mcp__core-bancario__verificar_identidad"
+DISPUTA_SIN_VERIFICAR = {
+    "hook_event_name": "PreToolUse",
+    "tool_name": "mcp__core-bancario__iniciar_disputa",
+    "tool_input": {"transaccion_id": "TRX-001", "motivo": "No lo reconozco"},
+}
+
+
+def test_con_los_hooks_del_issue_9_se_habilitan_las_seis():
     opciones = crear_opciones(ENTORNO)
     assert opciones.allowed_tools == [
-        f"mcp__core-bancario__{nombre}" for nombre in HERRAMIENTAS_HABILITADAS
+        f"mcp__core-bancario__{nombre}" for nombre in HERRAMIENTAS
     ]
+    assert opciones.disallowed_tools == []
 
 
-def test_las_herramientas_sobre_productos_quedan_deshabilitadas():
-    opciones = crear_opciones(ENTORNO)
-    assert set(opciones.disallowed_tools) == {
-        "mcp__core-bancario__consultar_transacciones",
-        "mcp__core-bancario__iniciar_disputa",
-        "mcp__core-bancario__bloquear_tarjeta",
-    }
-    assert not set(opciones.allowed_tools) & set(opciones.disallowed_tools)
+def test_hooks_por_nombre_completo_de_cada_herramienta():
+    hooks = crear_opciones(ENTORNO).hooks
+    (antes,) = hooks["PreToolUse"]
+    (despues,) = hooks["PostToolUse"]
+    assert antes.matcher == "|".join(PRODUCTOS)
+    assert despues.matcher == VERIFICAR
+    assert set(hooks) == {"PreToolUse", "PostToolUse"}
+
+
+def test_las_exentas_no_tienen_hooks():
+    hooks = crear_opciones(ENTORNO).hooks
+    matchers = " ".join(m.matcher for lista in hooks.values() for m in lista)
+    assert "buscar_cliente" not in matchers
+    assert "escalar_a_analista" not in matchers
+
+
+def test_sin_prompt_de_sistema_la_disputa_sin_verificar_se_niega():
+    opciones = replace(crear_opciones(ENTORNO), system_prompt=None)
+    (antes,) = opciones.hooks["PreToolUse"]
+    (callback,) = antes.hooks
+    salida = asyncio.run(callback(DISPUTA_SIN_VERIFICAR, "uso-1", {"signal": None}))
+    assert salida["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def test_cada_conversacion_tiene_su_propio_estado():
+    primera, segunda = crear_opciones(ENTORNO), crear_opciones(ENTORNO)
+    (callback,) = primera.hooks["PreToolUse"][0].hooks
+    asyncio.run(callback(DISPUTA_SIN_VERIFICAR, "uso-1", {"signal": None}))
+    estado_primera = primera.hooks["PreToolUse"][0].hooks[0].__self__.estado
+    estado_segunda = segunda.hooks["PreToolUse"][0].hooks[0].__self__.estado
+    assert len(estado_primera.negaciones) == 1
+    assert estado_segunda.negaciones == []
+
+
+def test_acepta_controles_inyectados():
+    controles = Controles.desde_entorno(ENTORNO)
+    opciones = crear_opciones(ENTORNO, controles=controles)
+    (callback,) = opciones.hooks["PreToolUse"][0].hooks
+    asyncio.run(callback(DISPUTA_SIN_VERIFICAR, "uso-1", {"signal": None}))
+    assert [n.codigo for n in controles.estado.negaciones] == ["SIN_IDENTIDAD"]
 
 
 def test_max_turns_es_la_salvaguarda():
