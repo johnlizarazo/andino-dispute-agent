@@ -12,6 +12,11 @@ umbral o política queda como escalamiento pendiente; un hook ``Stop`` impide te
 mientras quede alguno, con un tope de ``MAXIMO_CIERRES_IMPEDIDOS``. Un escalamiento exitoso
 con esa transacción y esa causa lo limpia, y cada mensaje nuevo del cliente vacía los
 pendientes (el agente decide de nuevo con lo que diga el cliente).
+
+Delegación (#11): un hook ``PreToolUse`` sobre la herramienta de delegación solo deja delegar
+en ``analista-transacciones``, sin segundo plano, con cliente verificado y un bloque
+``<contexto>`` completo para ese cliente. Las consultas del subagente pasan por los mismos
+controles de las reglas 1 y 2 (llegan con ``agent_id``).
 """
 
 import json
@@ -21,7 +26,8 @@ from dataclasses import dataclass, field
 
 from claude_agent_sdk import HookMatcher
 
-from agente_disputas.analista import pesos
+from agente_disputas.analista import NOMBRE as NOMBRE_ANALISTA
+from agente_disputas.analista import leer_contexto, pesos
 from core_bancario_mcp.bloqueo_escalamiento import lista_de_ids
 from core_bancario_mcp.fallas import VARIABLE as VARIABLE_FALLAS
 from core_bancario_mcp.fallas import InyectorFallas
@@ -56,8 +62,15 @@ CLIENTE_DISTINTO = "CLIENTE_DISTINTO"
 TRANSACCION_NO_CONFIRMADA = "TRANSACCION_NO_CONFIRMADA"
 REQUIERE_ANALISTA = "REQUIERE_ANALISTA"
 FALLA_CONTROL = "FALLA_CONTROL"
+SUBAGENTE_NO_PERMITIDO = "SUBAGENTE_NO_PERMITIDO"
+SEGUNDO_PLANO_NO_PERMITIDO = "SEGUNDO_PLANO_NO_PERMITIDO"
+CONTEXTO_INCOMPLETO = "CONTEXTO_INCOMPLETO"
 # Las razones nunca nombran a otro cliente ni dicen si una transacción existe.
 RAZONES = {
+    SUBAGENTE_NO_PERMITIDO: f"Solo puedes delegar en el subagente {NOMBRE_ANALISTA}.",
+    SEGUNDO_PLANO_NO_PERMITIDO: (
+        "Delega sin segundo plano: necesitas el resultado del análisis en este turno."
+    ),
     SIN_IDENTIDAD: "Primero verifica la identidad del cliente con verificar_identidad.",
     CLIENTE_DISTINTO: (
         "Solo puedes operar sobre productos del cliente verificado en esta conversación."
@@ -200,7 +213,13 @@ class Controles:
                     matcher="|".join(SOBRE_PRODUCTOS),
                     hooks=[self.antes_de_herramienta],
                     timeout=TIEMPO_MAXIMO_SEGUNDOS,
-                )
+                ),
+                # Agent es el nombre actual de la delegación; Task, el anterior.
+                HookMatcher(
+                    matcher="Agent|Task",
+                    hooks=[self.antes_de_delegar],
+                    timeout=TIEMPO_MAXIMO_SEGUNDOS,
+                ),
             ],
             "PostToolUse": [
                 HookMatcher(
@@ -257,6 +276,42 @@ class Controles:
             decision = self.decidir(herramienta, entrada["tool_input"])
         except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
             decision = negar(FALLA_CONTROL)
+        return self._responder(herramienta, decision)
+
+    async def antes_de_delegar(self, entrada, tool_use_id, contexto) -> dict:
+        """PreToolUse sobre la delegación: subagente, identidad y contexto explícito."""
+        herramienta = HERRAMIENTA_DESCONOCIDA
+        try:
+            if isinstance(entrada.get("tool_name"), str):
+                herramienta = entrada["tool_name"]
+            decision = self.decidir_delegacion(entrada["tool_input"])
+        except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
+            decision = negar(FALLA_CONTROL)
+        return self._responder(herramienta, decision)
+
+    def decidir_delegacion(self, argumentos: dict) -> Decision:
+        """Orden: subagente permitido, sin segundo plano, identidad, contexto, cliente."""
+        if argumentos.get("subagent_type") != NOMBRE_ANALISTA:
+            return negar(SUBAGENTE_NO_PERMITIDO)
+        if argumentos.get("run_in_background") is True:
+            return negar(SEGUNDO_PLANO_NO_PERMITIDO)
+        if self.estado.cliente_verificado is None:
+            return negar(SIN_IDENTIDAD)
+        datos, invalidos = leer_contexto(argumentos.get("prompt"))
+        if invalidos:
+            # Solo nombres de campo: nunca valores, que podrían ser de otro cliente.
+            razon = (
+                "Falta o es inválido en el bloque <contexto>: "
+                + ", ".join(invalidos)
+                + "."
+            )
+            return Decision(False, CONTEXTO_INCOMPLETO, razon)
+        if datos["cliente_id"] != self.estado.cliente_verificado:
+            return negar(CLIENTE_DISTINTO)
+        return AUTORIZADA
+
+    def _responder(self, herramienta: str, decision: Decision) -> dict:
+        """Salida del PreToolUse: ``{}`` si se autoriza; si no, registra y niega."""
         if decision.autorizada:
             return {}
         self.estado.negaciones.append(Negacion(herramienta, decision.codigo))
