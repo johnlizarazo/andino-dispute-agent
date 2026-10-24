@@ -78,6 +78,10 @@ Write/Edit. El hook `formatear` aplica ruff (B023, BLE001, …).
 
 ---
 
+## Phase 6: Ajuste pedido en la revisión manual
+
+- [X] T010 En la revisión manual del caso 5 (T009), los eventos de las búsquedas fallidas decían "No se pudo completar: la operación", porque `buscar_cliente` no está en `OPERACIONES` de `src/agente_disputas/eventos.py` (no bloqueante 3 de la revisión del #12). A pedido del desarrollador: en `src/agente_disputas/test_eventos.py`, **antes** del código, agregar `BUSCAR` a la parametrización de `test_falla_del_core` y un test de que una búsqueda sin resultado al `cerrar()` da "No se pudo completar: Búsqueda del cliente"; verlo fallar. Luego agregar `BUSCAR: "Búsqueda del cliente"` a `OPERACIONES` y la constante `BUSCAR` en `controles.py`, junto a las demás herramientas. Las búsquedas exitosas siguen sin producir evento. `uv run pytest` en verde. Commit `fix(#13): nombre de negocio de la búsqueda en los eventos`
+
 ## Dependencies & Execution Order
 
 - **T001 → T002** bloquea T005.

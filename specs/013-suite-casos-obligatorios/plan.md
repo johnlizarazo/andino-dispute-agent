@@ -17,7 +17,9 @@
   suite (caso 5).
 - **README**: inicio rápido para Windows y Linux/macOS, escenarios y tabla de casos.
 
-No cambia nada en `src/`. Decisiones en [research.md](research.md).
+En `src/` solo cambia una línea, agregada a pedido del desarrollador tras la revisión manual
+de T009: el nombre de negocio de `buscar_cliente` en `eventos.py` (T010). Decisiones en
+[research.md](research.md).
 
 ## Technical Context
 
@@ -43,7 +45,8 @@ anteriores
 **Constraints**:
 - Ninguna comprobación sobre el texto de la respuesta (FR-003).
 - Datos de verificación leídos del core en tiempo de ejecución (FR-012).
-- Sin cambios en el agente, el prompt, los controles ni el core.
+- Sin cambios en el agente, el prompt, los controles ni el core (T010 solo toca el texto de un
+  evento de la interfaz).
 
 **Scale/Scope**: 4 archivos nuevos en `tests/escenarios/`, 1 modificado
 (`test_conversacion_e2e.py`), README
