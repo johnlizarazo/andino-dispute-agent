@@ -64,6 +64,18 @@ y su test, la regla de herramientas y el texto de T007 del #8
 | VI. Tests en dos niveles | `test_controles.py` junto al módulo, sin API; escenario `e2e` sin prompt con mensaje distinto de los ejemplos del prompt. | ✅ |
 | VII. Simplicidad | Un módulo y dos callbacks; reutiliza `Repositorio`, `Politica` e `InyectorFallas` en lugar de duplicarlos. | ✅ |
 
+**Monto "del core" (regla 2, ajuste M2 del análisis)**: el hook no consulta al servidor MCP
+por una herramienta; lee monto y titular con `core_bancario_mcp.repositorio`, el mismo módulo y
+los mismos datos que usa el servidor, por el `transaccion_id`. Se cumple el propósito de la
+regla (el monto nunca sale del argumento del modelo) porque:
+
+- es la misma fuente de datos del core, con la misma `Politica.requiere_analista`;
+- monto y titular no cambian durante la conversación, así que no importa que agente y servidor
+  corran en procesos distintos;
+- una herramienta MCP extra para consultar montos expondría datos de productos y agregaría un
+  punto de falla, y el hook debe fallar cerrado de todos modos;
+- el servidor repite la regla como segunda defensa (`REQUIERE_ANALISTA`, #6).
+
 **Resultado**: todos los gates pasan. **Re-evaluación tras la fase 1**: sin cambios.
 
 ## Project Structure
