@@ -113,6 +113,51 @@ def test_palabras_del_modelo_no_cierran_el_turno(palabra):
     assert resultado.texto.endswith("Ya revisé tu caso.")
 
 
+def test_el_texto_entre_herramientas_no_llega_al_cliente():
+    resultado = _procesar(
+        _responde("Busco al cliente."),
+        _pide_herramienta(texto="Intento la disputa; el core decide según el umbral."),
+        _resultado_herramienta(),
+        _responde("Hola, Laura. Ya revisé el cobro."),
+        _responde("Tu caso es el ESC-0001."),
+        _resultado(),
+    )
+    assert (
+        resultado.texto == "Hola, Laura. Ya revisé el cobro.\nTu caso es el ESC-0001."
+    )
+    assert resultado.herramientas == (BUSCAR,)
+
+
+def test_turno_sin_herramientas_conserva_todo_el_texto():
+    resultado = _procesar(
+        _responde("Hola."), _responde("¿En qué te ayudo?"), _resultado()
+    )
+    assert resultado.texto == "Hola.\n¿En qué te ayudo?"
+
+
+def test_sin_texto_despues_de_la_ultima_herramienta_no_hay_texto():
+    resultado = _procesar(
+        _pide_herramienta(texto="Reviso."), _resultado_herramienta(), _resultado()
+    )
+    assert resultado.texto == ""
+
+
+def test_el_texto_del_subagente_no_llega_al_cliente():
+    del_subagente = AssistantMessage(
+        content=[TextBlock(text="<analisis>{}</analisis>")],
+        model=MODELO,
+        parent_tool_use_id="uso-1",
+    )
+    resultado = _procesar(
+        _pide_herramienta(),
+        del_subagente,
+        _resultado_herramienta(),
+        _responde("Revisé tus cobros."),
+        _resultado(),
+    )
+    assert resultado.texto == "Revisé tus cobros."
+
+
 @pytest.mark.parametrize(
     ("estado", "esperado"),
     [("connected", "connected"), ("failed", "failed"), ("pending", "pending")],
