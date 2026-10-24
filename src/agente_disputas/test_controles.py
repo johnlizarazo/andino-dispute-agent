@@ -1,5 +1,6 @@
 import asyncio
 import json
+from dataclasses import replace
 from datetime import date
 
 import pytest
@@ -338,3 +339,13 @@ def test_entrada_mal_formada_niega(controles, entrada):
     salida = asyncio.run(controles.antes_de_herramienta(entrada, None, {}))
     _negada(salida)
     assert _codigos(controles) == ["FALLA_CONTROL"]
+    if not isinstance(entrada, dict) or "tool_name" not in entrada:
+        assert controles.estado.negaciones[-1].herramienta == "desconocida"
+
+
+def test_la_razon_del_umbral_sale_de_la_politica(repositorio):
+    politica = replace(repositorio.politica, umbral_disputa_automatica=300000)
+    controles = _verificado(Controles(repositorio.obtener_transaccion, politica))
+    razon = _negada(_disputar(controles, "TRX-002"))
+    assert "$300.000" in razon
+    assert "$500.000" not in razon

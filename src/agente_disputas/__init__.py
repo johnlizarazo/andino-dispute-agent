@@ -1,1 +1,4 @@
-"""Agente de disputas de transacciones de Banco Andino (ficticio), construido con Claude Agent SDK."""
+"""Agente de disputas de transacciones de Banco Andino (ficticio).
+
+Construido con Claude Agent SDK.
+"""

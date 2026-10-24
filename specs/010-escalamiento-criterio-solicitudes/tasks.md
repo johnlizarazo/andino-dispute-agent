@@ -36,9 +36,9 @@ amplias justificadas.
 
 **Independent Test**: `uv run pytest src/agente_disputas`.
 
-- [ ] T001 [US6] (a) y (b) En `src/agente_disputas/test_controles.py`, **antes** del código: `test_entrada_mal_formada_niega` comprueba además que la negación se registra con herramienta `"desconocida"`; nuevo test: con `Controles(repositorio.obtener_transaccion, replace(repositorio.politica, umbral_disputa_automatica=300000))`, CLI-001 verificado y `TRX-002`, la razón contiene `"$300.000"` y no `"$500.000"`. Verlos fallar
-- [ ] T002 [US6] (a), (b) y (c) En `src/agente_disputas/controles.py`: constante `HERRAMIENTA_DESCONOCIDA = "desconocida"` usada cuando `tool_name` no es texto; la razón de `REQUIERE_ANALISTA` se arma con `self.politica.umbral_disputa_automatica` formateado con punto de miles (`f"{umbral:,}".replace(",", ".")`), y el resto de razones sigue en `RAZONES`; un solo `return {}` en `despues_de_verificar`. Dejar verde
-- [ ] T003 [P] [US6] (d) y (e): `if controles is None:` en `src/agente_disputas/configuracion.py`; docstring de `src/agente_disputas/__init__.py` partido en líneas ≤ 95 caracteres. Commit `fix(#10): ajustes heredados de las revisiones del #9`
+- [X] T001 [US6] (a) y (b) En `src/agente_disputas/test_controles.py`, **antes** del código: `test_entrada_mal_formada_niega` comprueba además que la negación se registra con herramienta `"desconocida"`; nuevo test: con `Controles(repositorio.obtener_transaccion, replace(repositorio.politica, umbral_disputa_automatica=300000))`, CLI-001 verificado y `TRX-002`, la razón contiene `"$300.000"` y no `"$500.000"`. Verlos fallar
+- [X] T002 [US6] (a), (b) y (c) En `src/agente_disputas/controles.py`: constante `HERRAMIENTA_DESCONOCIDA = "desconocida"` usada cuando `tool_name` no es texto; la razón de `REQUIERE_ANALISTA` se arma con `self.politica.umbral_disputa_automatica` formateado con punto de miles (`f"{umbral:,}".replace(",", ".")`), y el resto de razones sigue en `RAZONES`; un solo `return {}` en `despues_de_verificar`. Dejar verde
+- [X] T003 [P] [US6] (d) y (e): `if controles is None:` en `src/agente_disputas/configuracion.py`; docstring de `src/agente_disputas/__init__.py` partido en líneas ≤ 95 caracteres. Commit `fix(#10): ajustes heredados de las revisiones del #9`
 
 ---
 

@@ -52,7 +52,8 @@ def _nombre(herramienta: str) -> str:
 def crear_opciones(
     entorno: Mapping[str, str], controles: Controles | None = None
 ) -> ClaudeAgentOptions:
-    controles = controles or Controles.desde_entorno(entorno)
+    if controles is None:
+        controles = Controles.desde_entorno(entorno)
     servidor = {
         "type": "stdio",
         "command": sys.executable,

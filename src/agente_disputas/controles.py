@@ -10,6 +10,7 @@ pueden obtener el dato o algo falla, niegan. No leen el prompt de sistema.
 
 import json
 from collections.abc import Callable, Mapping
+from contextlib import suppress
 from dataclasses import dataclass, field
 
 from claude_agent_sdk import HookMatcher
@@ -28,6 +29,8 @@ SOBRE_PRODUCTOS = (CONSULTAR, DISPUTAR, BLOQUEAR)
 OPERACION_FALLAS = "control_transaccion"
 # Los controles son consultas en memoria; el tope solo evita esperar de más.
 TIEMPO_MAXIMO_SEGUNDOS = 10
+# Nombre con el que se registra una negación cuando la entrada no trae la herramienta.
+HERRAMIENTA_DESCONOCIDA = "desconocida"
 
 SIN_IDENTIDAD = "SIN_IDENTIDAD"
 CLIENTE_DISTINTO = "CLIENTE_DISTINTO"
@@ -42,9 +45,6 @@ RAZONES = {
     ),
     TRANSACCION_NO_CONFIRMADA: (
         "No se pudo confirmar que esa transacción pertenezca al cliente verificado."
-    ),
-    REQUIERE_ANALISTA: (
-        "Esta disputa supera $500.000 y requiere un analista humano: escala el caso."
     ),
     FALLA_CONTROL: "No se pudo confirmar la operación en este momento; no se realizó.",
 }
@@ -132,6 +132,20 @@ def negar(codigo: str) -> Decision:
     return Decision(False, codigo, RAZONES[codigo])
 
 
+def _pesos(monto: int) -> str:
+    """Monto en pesos con punto de miles, como lo lee el cliente: 500000 → $500.000."""
+    return "$" + f"{monto:,}".replace(",", ".")
+
+
+def negar_por_umbral(politica: Politica) -> Decision:
+    """La razón usa el umbral de la política, la misma fuente de la decisión."""
+    umbral = _pesos(politica.umbral_disputa_automatica)
+    razon = (
+        f"Esta disputa supera {umbral} y requiere un analista humano: escala el caso."
+    )
+    return Decision(False, REQUIERE_ANALISTA, razon)
+
+
 class Controles:
     def __init__(
         self,
@@ -180,7 +194,8 @@ class Controles:
 
     async def despues_de_verificar(self, entrada, tool_use_id, contexto) -> dict:
         """PostToolUse: solo un éxito explícito del core, para el cliente pedido, registra."""
-        try:
+        # Falla cerrada: cualquier error al leer la verificación no registra a nadie.
+        with suppress(Exception):
             pedido = entrada["tool_input"]["cliente_id"].strip()
             respuesta = leer_respuesta(entrada["tool_response"])
             datos = respuesta["datos"] if respuesta and respuesta["ok"] is True else {}
@@ -192,21 +207,20 @@ class Controles:
                 and verificado == pedido
             ):
                 self.estado.cliente_verificado = verificado
-        except Exception:  # noqa: BLE001 - falla cerrada: cualquier error no registra
-            return {}
         return {}
 
     async def antes_de_herramienta(self, entrada, tool_use_id, contexto) -> dict:
         """PreToolUse: autoriza solo si pasan todas las comprobaciones; si no, niega."""
-        herramienta = None
+        herramienta = HERRAMIENTA_DESCONOCIDA
         try:
-            herramienta = entrada["tool_name"]
+            if isinstance(entrada.get("tool_name"), str):
+                herramienta = entrada["tool_name"]
             decision = self.decidir(herramienta, entrada["tool_input"])
         except Exception:  # noqa: BLE001 - falla cerrada: cualquier error niega
             decision = negar(FALLA_CONTROL)
         if decision.autorizada:
             return {}
-        self.estado.negaciones.append(Negacion(str(herramienta), decision.codigo))
+        self.estado.negaciones.append(Negacion(herramienta, decision.codigo))
         return {
             "hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
@@ -237,5 +251,5 @@ class Controles:
             return negar(TRANSACCION_NO_CONFIRMADA)
         # Regla 2 con el monto del core, nunca con un argumento del modelo.
         if self.politica.requiere_analista(transaccion.monto):
-            return negar(REQUIERE_ANALISTA)
+            return negar_por_umbral(self.politica)
         return AUTORIZADA
