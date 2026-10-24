@@ -575,3 +575,146 @@ def test_mensaje_de_ejemplo_el_pendiente_no_impide_lo_resoluble(controles):
     assert _terminar(controles)["decision"] == "block"
     _escalar(controles, _bloques(ESCALADO))
     assert _terminar(controles) == {}
+
+
+# --- heredados del #10 (#11) ---
+
+
+@pytest.mark.parametrize("entrada", [None, {}])
+def test_cierre_y_mensaje_nuevo_con_entrada_mal_formada_no_lanzan(controles, entrada):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    assert (
+        asyncio.run(controles.antes_de_terminar(entrada, None, {}))["decision"]
+        == "block"
+    )
+    assert asyncio.run(controles.al_recibir_mensaje(entrada, None, {})) == {}
+
+
+def test_mensaje_de_un_subagente_no_vacia_pendientes(controles):
+    controles.estado.pendientes["TRX-002"] = "umbral"
+    entrada = {"hook_event_name": "UserPromptSubmit", "agent_id": "a1", "prompt": "x"}
+    assert asyncio.run(controles.al_recibir_mensaje(entrada, None, {})) == {}
+    assert controles.estado.pendientes == {"TRX-002": "umbral"}
+
+
+# --- control de la delegación al subagente (#11) ---
+
+DELEGAR = "Agent"
+CONTEXTO = {
+    "cliente_id": "CLI-001",
+    "ultimos4": "4821",
+    "fecha_desde": "2026-10-22",
+    "fecha_hasta": "2026-10-22",
+    "montos_reportados": [180000, 1250000],
+}
+
+
+def _prompt_delegacion(contexto) -> str:
+    return f"Analiza los cobros.\n<contexto>{json.dumps(contexto)}</contexto>"
+
+
+def _delegar(controles, prompt, subagente="analista-transacciones", **extra) -> dict:
+    entrada = {
+        "hook_event_name": "PreToolUse",
+        "tool_name": DELEGAR,
+        "tool_input": {
+            "subagent_type": subagente,
+            "description": "Analizar cobros",
+            "prompt": prompt,
+            **extra,
+        },
+    }
+    return asyncio.run(controles.antes_de_delegar(entrada, "uso-5", {}))
+
+
+def test_delegacion_sin_identidad_se_niega(controles):
+    _negada(_delegar(controles, _prompt_delegacion(CONTEXTO)))
+    assert _codigos(controles) == ["SIN_IDENTIDAD"]
+
+
+def test_delegacion_valida_se_autoriza(controles):
+    _verificar(controles, _exito("CLI-001"))
+    assert _delegar(controles, _prompt_delegacion(CONTEXTO)) == {}
+    assert (
+        _delegar(controles, _prompt_delegacion(CONTEXTO), run_in_background=False) == {}
+    )
+    assert controles.estado.negaciones == []
+
+
+def test_delegacion_a_otro_subagente_se_niega(controles):
+    _verificar(controles, _exito("CLI-001"))
+    _negada(
+        _delegar(controles, _prompt_delegacion(CONTEXTO), subagente="general-purpose")
+    )
+    assert _codigos(controles) == ["SUBAGENTE_NO_PERMITIDO"]
+
+
+def test_delegacion_en_segundo_plano_se_niega(controles):
+    _verificar(controles, _exito("CLI-001"))
+    _negada(_delegar(controles, _prompt_delegacion(CONTEXTO), run_in_background=True))
+    assert _codigos(controles) == ["SEGUNDO_PLANO_NO_PERMITIDO"]
+
+
+@pytest.mark.parametrize(
+    ("prompt", "campo"),
+    [
+        ("Analiza los cobros de la 4821", "contexto"),
+        (_prompt_delegacion({**CONTEXTO, "ultimos4": "48A1"}), "ultimos4"),
+        (_prompt_delegacion({**CONTEXTO, "fecha_hasta": "ayer"}), "fecha_hasta"),
+    ],
+)
+def test_delegacion_con_contexto_incompleto_nombra_el_campo(controles, prompt, campo):
+    _verificar(controles, _exito("CLI-001"))
+    razon = _negada(_delegar(controles, prompt))
+    assert campo in razon
+    assert "48A1" not in razon and "ayer" not in razon
+    assert _codigos(controles) == ["CONTEXTO_INCOMPLETO"]
+
+
+def test_delegacion_para_otro_cliente_se_niega_sin_revelarlo(controles):
+    _verificar(controles, _exito("CLI-001"))
+    razon = _negada(
+        _delegar(controles, _prompt_delegacion({**CONTEXTO, "cliente_id": "CLI-002"}))
+    )
+    assert "CLI-002" not in razon
+    assert _codigos(controles) == ["CLIENTE_DISTINTO"]
+
+
+@pytest.mark.parametrize(
+    "entrada",
+    [
+        None,
+        {},
+        {"tool_name": DELEGAR, "tool_input": "x"},
+        {"tool_name": DELEGAR, "tool_input": {}},
+    ],
+)
+def test_delegacion_mal_formada_nunca_se_autoriza(controles, entrada):
+    _verificar(controles, _exito("CLI-001"))
+    _negada(asyncio.run(controles.antes_de_delegar(entrada, None, {})))
+
+
+def _consulta_del_subagente(controles, cliente_id) -> dict:
+    entrada = {
+        "hook_event_name": "PreToolUse",
+        "tool_name": CONSULTAR,
+        "tool_input": {"cliente_id": cliente_id, "ultimos4": "4821"},
+        "agent_id": "sub-1",
+        "agent_type": "analista-transacciones",
+    }
+    return asyncio.run(controles.antes_de_herramienta(entrada, "uso-6", {}))
+
+
+def test_consultas_del_subagente_pasan_por_los_mismos_controles(controles):
+    _verificar(controles, _exito("CLI-001"))
+    assert _consulta_del_subagente(controles, "CLI-001") == {}
+    _negada(_consulta_del_subagente(controles, "CLI-002"))
+    assert _codigos(controles) == ["CLIENTE_DISTINTO"]
+
+
+def test_la_clasificacion_no_habilita_una_disputa_sobre_el_umbral(controles):
+    # Aunque el subagente hubiera marcado TRX-002 como disputable, el umbral decide (L2).
+    _verificar(controles, _exito("CLI-001"))
+    assert _delegar(controles, _prompt_delegacion(CONTEXTO)) == {}
+    _negada(_disputar(controles, "TRX-002"))
+    assert _codigos(controles) == ["REQUIERE_ANALISTA"]

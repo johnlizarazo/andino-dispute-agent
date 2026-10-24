@@ -31,9 +31,22 @@ def test_prompt_tiene_version():
     assert VERSION_PROMPT.strip()
 
 
-def test_version_4_sin_disponibilidad_limitada():
-    assert VERSION_PROMPT == "4"
+def test_version_5_sin_disponibilidad_limitada():
+    assert VERSION_PROMPT == "5"
     assert "Disponibilidad actual" not in PROMPT_SISTEMA
+
+
+def test_prompt_orienta_la_delegacion_con_el_contexto_explicito():
+    assert "analista-transacciones" in PROMPT_SISTEMA
+    assert "<contexto>" in PROMPT_SISTEMA
+    for campo in (
+        "cliente_id",
+        "ultimos4",
+        "fecha_desde",
+        "fecha_hasta",
+        "montos_reportados",
+    ):
+        assert campo in PROMPT_SISTEMA
 
 
 def test_prompt_orienta_que_hacer_cuando_una_operacion_se_niega():

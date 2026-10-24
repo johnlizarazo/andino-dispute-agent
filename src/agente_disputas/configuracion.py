@@ -1,8 +1,8 @@
 """Opciones del agente: solo las herramientas del core bancario, nada del entorno.
 
 La limitación de herramientas es una garantía por configuración (principio II): el agente no
-tiene herramientas propias de Claude Code, no pide permisos y no carga settings ni servidores
-MCP del disco. Las reglas 1 y 2 las garantizan los hooks de ``controles`` (issue #9), que se
+tiene herramientas propias de Claude Code salvo la de delegar en ``analista-transacciones``
+(issue #11), no pide permisos y no carga settings ni servidores MCP del disco. Las reglas 1 y 2 las garantizan los hooks de ``controles`` (issue #9), que se
 registran aquí con un estado nuevo por conversación y no dependen del prompt. La clave de API
 no pasa por aquí: el SDK la hereda del entorno, y ``validar_credencial`` solo comprueba que
 exista.
@@ -13,6 +13,8 @@ from collections.abc import Mapping
 
 from claude_agent_sdk import ClaudeAgentOptions
 
+from agente_disputas.analista import HERRAMIENTA_DELEGAR, definir_analista
+from agente_disputas.analista import NOMBRE as NOMBRE_ANALISTA
 from agente_disputas.controles import Controles
 from agente_disputas.prompts import PROMPT_SISTEMA
 
@@ -61,10 +63,17 @@ def crear_opciones(
     }
     if VARIABLE_FALLAS in entorno:
         servidor["env"] = {VARIABLE_FALLAS: entorno[VARIABLE_FALLAS]}
+    # El subagente necesita la política para sus instrucciones; sin datos del core no se
+    # registra ni él ni la herramienta de delegación (falla cerrada).
+    delegar = [HERRAMIENTA_DELEGAR] if controles.politica is not None else []
+    agentes = (
+        {NOMBRE_ANALISTA: definir_analista(controles.politica)} if delegar else None
+    )
     return ClaudeAgentOptions(
-        tools=[],
-        allowed_tools=[_nombre(n) for n in HERRAMIENTAS],
+        tools=delegar,
+        allowed_tools=[_nombre(n) for n in HERRAMIENTAS] + delegar,
         disallowed_tools=[],
+        agents=agentes,
         hooks=controles.hooks(),
         permission_mode="dontAsk",
         mcp_servers={SERVIDOR: servidor},
