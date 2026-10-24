@@ -208,15 +208,19 @@ def test_transaccion_inexistente_o_ajena_dan_la_misma_respuesta(contexto):
     )
 
 
-def test_persona_solicitada_sin_cliente_acepta_transacciones(contexto):
-    respuesta = _escalar(
-        contexto,
-        causa="persona_solicitada",
-        cliente_id=None,
-        transacciones=["TRX-001"],
+def test_persona_solicitada_sin_cliente_rechaza_transacciones(contexto):
+    existente, inexistente = (
+        _escalar(
+            contexto,
+            causa="persona_solicitada",
+            cliente_id=None,
+            transacciones=[transaccion],
+        )
+        for transaccion in ("TRX-001", "TRX-999")
     )
-    assert respuesta["ok"] is True
-    assert respuesta["datos"]["cantidad_transacciones"] == 1
+    assert _error(existente, "validacion", "PARAMETRO_INVALIDO")
+    assert existente == inexistente  # sin cliente no se puede sondear qué ids existen
+    assert contexto.escalamientos.todos() == []
 
 
 def test_transacciones_repetidas_se_cuentan_una_vez(contexto):

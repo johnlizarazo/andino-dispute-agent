@@ -4,6 +4,7 @@ import pytest
 from claude_agent_sdk import (
     AssistantMessage,
     CLIJSONDecodeError,
+    CLINotFoundError,
     ResultMessage,
     TextBlock,
 )
@@ -195,3 +196,26 @@ def test_cualquier_error_del_sdk_al_arrancar_termina_sin_traza(monkeypatch, caps
     salida = capsys.readouterr()
     assert "Traceback" not in salida.out + salida.err
     assert "clave-de-prueba" not in salida.out + salida.err
+
+
+def _main_con_falla(monkeypatch, excepcion: BaseException) -> int:
+    async def ejecutar_que_falla(_entorno):
+        raise excepcion
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "clave-de-prueba")
+    monkeypatch.setattr(cli, "_ejecutar", ejecutar_que_falla)
+    return cli.main()
+
+
+def test_main_con_ctrl_c_al_arrancar_se_despide_con_cero(monkeypatch, capsys):
+    assert _main_con_falla(monkeypatch, KeyboardInterrupt()) == 0
+    salida = capsys.readouterr()
+    assert cli.DESPEDIDA in salida.out
+    assert "Traceback" not in salida.out + salida.err
+
+
+def test_main_sin_motor_del_agente_termina_con_uno(monkeypatch, capsys):
+    assert _main_con_falla(monkeypatch, CLINotFoundError("sin motor")) == 1
+    salida = capsys.readouterr()
+    assert "motor del agente" in salida.err
+    assert "Traceback" not in salida.out + salida.err

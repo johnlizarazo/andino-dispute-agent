@@ -9,7 +9,13 @@ razón de terminación: nunca se cuentan mensajes ni se buscan palabras en el te
 from collections.abc import AsyncIterable
 from dataclasses import dataclass
 
-from claude_agent_sdk import AssistantMessage, ResultMessage, TextBlock, ToolUseBlock
+from claude_agent_sdk import (
+    AssistantMessage,
+    Message,
+    ResultMessage,
+    TextBlock,
+    ToolUseBlock,
+)
 
 from agente_disputas.configuracion import SERVIDOR
 
@@ -46,7 +52,7 @@ def clasificar(resultado: ResultMessage) -> tuple[str, str | None]:
     return ERROR, f"{resultado.subtype}: {resultado.errors or resultado.result}"
 
 
-async def procesar_turno(mensajes: AsyncIterable) -> ResultadoTurno:
+async def procesar_turno(mensajes: AsyncIterable[Message]) -> ResultadoTurno:
     textos: list[str] = []
     herramientas: list[str] = []
     async for mensaje in mensajes:

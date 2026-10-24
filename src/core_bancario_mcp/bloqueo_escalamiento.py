@@ -40,7 +40,8 @@ DESCRIPCION_ESCALAR = (
     "Escala el caso a un analista humano con un resumen estructurado: causa, cliente_id, "
     "transacciones (solo sus ids), acciones_realizadas y accion_recomendada. No requiere "
     "identidad verificada. Si el cliente pide hablar con una persona, escala de inmediato "
-    "con causa persona_solicitada, aunque no esté identificado. Úsala también cuando el "
+    "con causa persona_solicitada, aunque no esté identificado (sin cliente_id no se "
+    "indican transacciones, solo la causa y el resumen). Úsala también cuando el "
     "core responde REQUIERE_ANALISTA (causa umbral), FUERA_DE_POLITICA (causa "
     "fuera_de_politica) o INTENTOS_AGOTADOS (causa intentos_agotados); para lo demás, causa "
     "otra. El core completa los montos y guarda el resumen para el analista; responde el "
@@ -157,6 +158,9 @@ def escalar_a_analista(
             )
     elif causa not in CAUSAS_SIN_CLIENTE:
         return _invalido(f"cliente_id es obligatorio con la causa {causa}")
+    elif ids:
+        # Sin cliente no se consulta ninguna transacción: así no sirve para sondear ids.
+        return _invalido("sin cliente_id no se indican transacciones")
 
     if causa in CAUSAS_CON_TRANSACCIONES and not ids:
         return _invalido(f"transacciones es obligatoria con la causa {causa}")

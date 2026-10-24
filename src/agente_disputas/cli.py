@@ -37,8 +37,14 @@ BIENVENIDA = (
     f"{ORDEN_SALIDA} para terminar."
 )
 DESPEDIDA = "Hasta pronto."
-AVISO_SALVAGUARDA = "No pude terminar de atender tu solicitud. Si quieres, puedo pasarte con una persona."
-AVISO_FALLA_SERVICIO = "Tuvimos un problema temporal. Por favor, escribe tu mensaje de nuevo en un momento."
+AVISO_SALVAGUARDA = (
+    "No pude terminar de atender tu solicitud. "
+    "Si quieres, puedo pasarte con una persona."
+)
+AVISO_FALLA_SERVICIO = (
+    "Tuvimos un problema temporal. "
+    "Por favor, escribe tu mensaje de nuevo en un momento."
+)
 AVISO_ERROR = (
     "Ocurrió un problema al procesar tu mensaje. Por favor, inténtalo de nuevo."
 )

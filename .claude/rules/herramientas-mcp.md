@@ -26,5 +26,7 @@ paths:
   acepta una lista o un texto con una lista JSON, y responde `PARAMETRO_INVALIDO` a lo demás.
 - Una herramienta exenta de identidad verificada (`buscar_cliente`, `verificar_identidad`,
   `escalar_a_analista`) no devuelve datos de productos (montos, fechas, comercios).
+  `escalar_a_analista` sin `cliente_id` no acepta transacciones, para que no sirva para
+  sondear qué identificadores existen.
 - Nombres de herramientas en español: `buscar_cliente`, `verificar_identidad`,
   `consultar_transacciones`, `iniciar_disputa`, `bloquear_tarjeta`, `escalar_a_analista`.
