@@ -54,8 +54,57 @@ uv run python -m agente_disputas   # o en la terminal; /salir para terminar
 ```
 
 Prueba con un cliente ficticio: documento `CC-FIC-0001`, dato de verificación `1987`,
-tarjeta terminada en `4821`. La tabla de [casos obligatorios](#casos-obligatorios) trae un
-mensaje para cada caso.
+tarjeta terminada en `4821`. Los demás clientes, tarjetas y cobros están en
+[datos de prueba](#datos-de-prueba), y la tabla de [casos obligatorios](#casos-obligatorios)
+trae un mensaje para cada caso.
+
+## Datos de prueba
+
+El core bancario trae datos **ficticios** fijos (en
+[`src/core_bancario_mcp/datos/`](src/core_bancario_mcp/datos/)). El agente solo conoce
+estos clientes: con cualquier otro documento responderá que no lo encuentra.
+
+**Clientes**
+
+| Documento | Nombre | Dato de verificación | Tarjetas |
+|---|---|---|---|
+| `CC-FIC-0001` | Laura Méndez Ríos | `1987` | `4821` (activa) |
+| `CC-FIC-0002` | Carlos Andrés Pérez | `1975` | `1357` (activa) |
+| `CC-FIC-0003` | Carlos Andrés Pérez | `1992` | `2468` (activa) |
+| `CC-FIC-0004` | Marta Lucía Gómez | `1980` | `9012` (ya bloqueada), `3344` (activa) |
+
+**Cobros** (las fechas se calculan desde el día en que corres el agente)
+
+| Cobro | Tarjeta | Fecha | Monto | Comercio | País | Sirve para |
+|---|---|---|---|---|---|---|
+| `TRX-001` | `4821` | ayer | $180.000 | Tienda Ficticia Uno | Colombia | Disputa automática (bajo el umbral) |
+| `TRX-002` | `4821` | ayer | $1.250.000 | Electro Ficticio | Colombia | Disputa sobre el umbral: se escala a un analista |
+| `TRX-003` | `4821` | hace 10 días | $45.000 | Café Imaginario | Colombia | Historial normal |
+| `TRX-004` | `1357` | hace 5 días | $500.000 | Viajes Inventados | Colombia | Borde exacto del umbral: se disputa automáticamente |
+| `TRX-005` | `2468` | hace 3 días | $75.000 | Librería Ficticia | Colombia | Historial del segundo Carlos Andrés Pérez |
+| `TRX-006` | `3344` | hace 120 días | $320.000 | Tienda Exterior Ficticia | Estados Unidos | Fuera de política: se escala |
+| `TRX-007` | `9012` | hace 15 días | $90.000 | Farmacia Inventada | Colombia | Cobro de una tarjeta ya bloqueada |
+
+**Política del banco**
+
+- Disputa automática hasta **$500.000 inclusive**; por encima, la revisa un analista.
+- Plazo para disputar: **90 días** si el comercio está en el exterior y **120 días** si es
+  nacional. Fuera de plazo, se escala.
+
+**Comportamientos útiles para probar**
+
+- **Homónimos**: buscar por "Carlos Andrés Pérez" encuentra a dos clientes; el agente pide
+  otro dato (documento o últimos 4 de la tarjeta) en vez de elegir.
+- **Verificación**: el agente busca al cliente y luego pide el dato de verificación. Con
+  **3 fallos seguidos**, la verificación de ese cliente queda bloqueada en esa conversación
+  y el agente escala; un acierto antes del tercer fallo reinicia la cuenta.
+- **Tarjeta ya bloqueada**: bloquear la `9012` responde que ya estaba bloqueada; no es un
+  error.
+- **Estado por conversación**: cada conversación (cada chat nuevo o cada arranque de la
+  terminal) empieza con el core en su estado inicial; las disputas, bloqueos y
+  escalamientos de una conversación no se ven en otra.
+- **Persona a pedido**: pedir hablar con una persona se escala de inmediato, aunque no te
+  hayas identificado.
 
 ## Tests de escenario
 

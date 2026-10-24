@@ -82,6 +82,8 @@ Write/Edit. El hook `formatear` aplica ruff (B023, BLE001, …).
 
 - [X] T010 En la revisión manual del caso 5 (T009), los eventos de las búsquedas fallidas decían "No se pudo completar: la operación", porque `buscar_cliente` no está en `OPERACIONES` de `src/agente_disputas/eventos.py` (no bloqueante 3 de la revisión del #12). A pedido del desarrollador: en `src/agente_disputas/test_eventos.py`, **antes** del código, agregar `BUSCAR` a la parametrización de `test_falla_del_core` y un test de que una búsqueda sin resultado al `cerrar()` da "No se pudo completar: Búsqueda del cliente"; verlo fallar. Luego agregar `BUSCAR: "Búsqueda del cliente"` a `OPERACIONES` y la constante `BUSCAR` en `controles.py`, junto a las demás herramientas. Las búsquedas exitosas siguen sin producir evento. `uv run pytest` en verde. Commit `fix(#13): nombre de negocio de la búsqueda en los eventos`
 
+- [X] T011 [US4] A pedido del desarrollador: los datos ficticios están fijos en `src/core_bancario_mcp/datos/` y quien prueba el agente necesita conocerlos. Agregar a `README.md` una sección **Datos de prueba**, enlazada desde el inicio rápido, con: clientes (documento, nombre, dato de verificación, tarjetas y estado), cobros (id, tarjeta, antigüedad relativa a hoy, monto, comercio, país y para qué caso sirve), política (umbral de $500.000 inclusive, 90 días en el exterior, 120 nacionales) y comportamientos útiles (homónimos, tarjeta ya bloqueada, 3 fallos de verificación bloquean la verificación, cada conversación arranca con el core en su estado inicial). Verificar cada valor contra los JSON. Commit `docs(#13): datos de prueba en el README`
+
 ## Dependencies & Execution Order
 
 - **T001 → T002** bloquea T005.
