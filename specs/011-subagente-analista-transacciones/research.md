@@ -28,6 +28,13 @@ API verificada por introspección de `claude-agent-sdk` 0.2.168 (`types.py`: `Ag
     `description`) y que el `PreToolUse` de `consultar_transacciones` recibe `agent_id` cuando
     consulta el subagente. Si el nombre fuera `Task`, se usa ese; el matcher del control acepta
     ambos (`Agent|Task`).
+- **Resultado de la sonda (T001)**: herramienta `Agent` con `description`, `prompt`,
+  `subagent_type` y `run_in_background`; la consulta del subagente llega al `PreToolUse` con
+  `agent_id` y `agent_type`; `UserPromptSubmit` no se dispara con la delegación. Sin
+  `background=False` el subagente corre en segundo plano y el principal termina el turno sin su
+  resultado: la definición fija `background=False` y el control de delegación niega
+  `run_in_background` verdadero (`SEGUNDO_PLANO_NO_PERMITIDO`), así la clasificación siempre
+  vuelve dentro del mismo turno y los controles del #10 siguen viendo el turno completo.
 - **Alternatives considered**: un segundo `ClaudeSDKClient` llamado desde una herramienta MCP
   propia (más piezas, y perdería los hooks del principal sobre las consultas).
 

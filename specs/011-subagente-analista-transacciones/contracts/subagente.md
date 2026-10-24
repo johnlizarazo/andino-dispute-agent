@@ -14,14 +14,15 @@ Fundamento en [research.md](../research.md) R1 a R5; entidades en
   transacciones y hablar con el cliente.
 - `definir_analista(politica: Politica) -> AgentDefinition`: `description` (cuándo usarlo),
   `prompt=prompt_analista(politica)`, `tools=["mcp__core-bancario__consultar_transacciones"]`,
-  `model="inherit"`, `maxTurns=8`.
+  `model="inherit"`, `maxTurns=8`, `background=False` (resultado dentro del turno; sonda T001).
 - `leer_contexto(prompt: str) -> tuple[dict | None, list[str]]`: extrae y valida el bloque
   `<contexto>`; devuelve el contexto normalizado (sin espacios) y la lista de campos inválidos
   o faltantes (vacía si es válido).
 
 ## `src/agente_disputas/controles.py`
 
-- Constantes `SUBAGENTE_NO_PERMITIDO`, `CONTEXTO_INCOMPLETO` con razones en `RAZONES`
+- Constantes `SUBAGENTE_NO_PERMITIDO`, `SEGUNDO_PLANO_NO_PERMITIDO` (delegación con
+  `run_in_background` verdadero) y `CONTEXTO_INCOMPLETO` con razones en `RAZONES`
   (la de `CONTEXTO_INCOMPLETO` se arma con los nombres de campo: "Falta o es inválido en el
   bloque <contexto>: ultimos4, fecha_hasta.").
 - `antes_de_delegar(entrada, tool_use_id, contexto) -> dict` (`PreToolUse`): orden de
