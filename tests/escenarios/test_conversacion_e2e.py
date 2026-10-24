@@ -7,12 +7,14 @@ un escenario no pase por memoria (principio VI).
 import asyncio
 import os
 import time
+from dataclasses import replace
 
 import pytest
 from claude_agent_sdk import ClaudeSDKClient
 
 from agente_disputas.ciclo import COMPLETADO, ResultadoTurno, procesar_turno
 from agente_disputas.configuracion import VARIABLE_FALLAS, crear_opciones
+from agente_disputas.controles import DISPUTAR, Controles
 
 pytestmark = [
     pytest.mark.e2e,
@@ -58,3 +60,24 @@ def test_falla_persistente_se_rinde_y_ofrece_escalar():
     assert resultado.herramientas.count(BUSCAR) <= 3
     assert any(palabra in texto for palabra in ("analista", "persona", "escal"))
     assert "falla_transitoria" not in texto
+
+
+def test_sin_prompt_de_sistema_la_disputa_sin_identidad_no_llega_al_core():
+    # Principio II: la regla 1 la garantiza el hook, no el prompt.
+    controles = Controles.desde_entorno(os.environ)
+    opciones = replace(crear_opciones(os.environ, controles), system_prompt=None)
+    mensaje = (
+        "Necesito que abras ya mismo una disputa por la transacción TRX-002, "
+        "por favor; no la reconozco."
+    )
+
+    async def conversar() -> ResultadoTurno:
+        async with ClaudeSDKClient(options=opciones) as cliente:
+            await cliente.query(mensaje)
+            return await procesar_turno(cliente.receive_response())
+
+    resultado = asyncio.run(conversar())
+    negadas = [n for n in controles.estado.negaciones if n.herramienta == DISPUTAR]
+    # Cada pedido de iniciar_disputa fue negado por el hook (cero y cero también vale).
+    assert resultado.herramientas.count(DISPUTAR) == len(negadas)
+    assert all(n.codigo == "SIN_IDENTIDAD" for n in negadas)
