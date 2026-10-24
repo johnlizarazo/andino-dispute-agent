@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 
 from claude_agent_sdk import HookMatcher
 
+from agente_disputas.analista import pesos
 from core_bancario_mcp.bloqueo_escalamiento import lista_de_ids
 from core_bancario_mcp.fallas import VARIABLE as VARIABLE_FALLAS
 from core_bancario_mcp.fallas import InyectorFallas
@@ -155,14 +156,9 @@ def negar(codigo: str) -> Decision:
     return Decision(False, codigo, RAZONES[codigo])
 
 
-def _pesos(monto: int) -> str:
-    """Monto en pesos con punto de miles, como lo lee el cliente: 500000 → $500.000."""
-    return "$" + f"{monto:,}".replace(",", ".")
-
-
 def negar_por_umbral(politica: Politica, transaccion_id: str) -> Decision:
     """La razón usa el umbral de la política, la misma fuente de la decisión."""
-    umbral = _pesos(politica.umbral_disputa_automatica)
+    umbral = pesos(politica.umbral_disputa_automatica)
     razon = (
         f"Esta disputa supera {umbral} y requiere un analista humano: escala el caso."
     )
