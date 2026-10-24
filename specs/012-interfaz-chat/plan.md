@@ -17,7 +17,7 @@
   respuesta o el aviso final con los mismos textos que la línea de comandos.
 - **Interfaz** (`interfaz.py`, nuevo): capa delgada de Chainlit (`on_chat_start`,
   `on_message`, `on_chat_end`) que muestra mensajes y eventos. Arranca con
-  `uv run chainlit run src/agente_disputas/interfaz.py`.
+  `uv run andino-chat`.
 - **CLI** (`cli.py`): `_esperar_core` pasa a `esperar_core` para compartirla.
 
 Decisiones en [research.md](research.md).

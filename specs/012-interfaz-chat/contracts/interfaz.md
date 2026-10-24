@@ -5,7 +5,7 @@
 ## Arranque
 
 ```bash
-uv run chainlit run src/agente_disputas/interfaz.py
+uv run andino-chat
 ```
 
 - Requiere `ANTHROPIC_API_KEY` en el entorno (Chainlit también lee un `.env` local del
@@ -25,8 +25,10 @@ uv run chainlit run src/agente_disputas/interfaz.py
 
 ## Formato de un evento
 
-`<prefijo> <título>` en una línea y, si hay, `<detalle>` debajo. Prefijos: ✅ exito,
-⛔ negado, ⚠️ falla. Ejemplo: `✅ Tarjeta bloqueada` / `•••• 4821`.
+`<prefijo> **<título>**` en una línea y, si hay, `<detalle>` debajo. Prefijos: ✅ exito,
+⛔ negado, ⚠️ falla. Ejemplo: `✅ **Tarjeta bloqueada**` / `•••• 4821`. El título va en
+negrita porque Chainlit 2 no muestra el nombre del autor junto al mensaje (verificación
+T011).
 
 ## Lo que la interfaz no hace
 

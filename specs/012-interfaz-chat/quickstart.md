@@ -31,7 +31,7 @@ uno en el turno correspondiente.
 ## 3. Verificación manual en el navegador
 
 ```bash
-uv run chainlit run src/agente_disputas/interfaz.py
+uv run andino-chat
 ```
 
 Con los datos ficticios del core (clientes y transacciones de `core_bancario_mcp/datos`):

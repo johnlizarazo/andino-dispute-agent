@@ -13,3 +13,7 @@ __pycache__/
 # Configuración personal de Claude Code
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Archivos que genera Chainlit al arrancar la interfaz
+.chainlit/
+.files/

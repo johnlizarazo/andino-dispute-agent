@@ -61,16 +61,22 @@
 
 ## R5. Comando de arranque
 
-- **Decision**: `uv run chainlit run src/agente_disputas/interfaz.py`, documentado en el
-  README. `interfaz.py` es la única pieza que importa Chainlit. Se versiona un `chainlit.md`
-  corto (pantalla de bienvenida) que explica qué son los eventos; `.chainlit/` y `.files/`
-  (generados por Chainlit) se agregan a `.gitignore`.
-- **Rationale**: es el comando estándar de Chainlit, sin scripts adicionales (principio VII).
-  La bienvenida ayuda a que un observador sin contexto entienda el chat (SC-003).
-- **Alternatives considered**: entrada `[project.scripts]` que invoque Chainlit desde código
-  (una pieza más para ahorrar dos palabras); versionar `.chainlit/config.toml` (archivo
-  generado y largo; los valores por omisión bastan porque los eventos no dependen de la
-  configuración de pasos).
+- **Decision** (revisada en la implementación, T011): `uv run andino-chat`, entrada de
+  `[project.scripts]` que apunta a `interfaz.main`, documentada en el README. `main`
+  neutraliza `nest_asyncio.apply` y luego invoca el CLI de Chainlit (`run` sobre
+  `interfaz.py`). `interfaz.py` es la única pieza que importa Chainlit. Se versiona un
+  `chainlit.md` corto (pantalla de bienvenida) que explica qué son los eventos; `.chainlit/`
+  y `.files/` (generados por Chainlit) se agregan a `.gitignore`.
+- **Rationale**: el CLI de Chainlit 2.12 aplica `nest_asyncio` al importarse, y en Python
+  3.14 eso impide que anyio y sniffio detecten el event loop. Con
+  `uv run chainlit run src/agente_disputas/interfaz.py` toda petición HTTP fallaba con
+  `NoEventLoopError` y la interfaz no cargaba (reproducido en la verificación). La interfaz
+  es asíncrona de punta a punta y no necesita reentrada. La bienvenida ayuda a que un
+  observador sin contexto entienda el chat (SC-003).
+- **Alternatives considered**: el comando estándar de Chainlit (no funciona en Python 3.14
+  por lo anterior); bajar la versión de Python (la constitución fija 3.14); un servidor
+  uvicorn propio (reimplementaría el arranque de Chainlit); versionar `.chainlit/config.toml`
+  (archivo generado y largo; los valores por omisión bastan).
 
 ## R6. Presentación de eventos en Chainlit
 

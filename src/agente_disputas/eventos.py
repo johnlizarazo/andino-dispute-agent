@@ -90,7 +90,7 @@ class Evento:
 
 def formatear_evento(evento: Evento) -> str:
     """Prefijo según el resultado y título; el detalle, si hay, en la línea siguiente."""
-    linea = f"{PREFIJOS[evento.resultado]} {evento.titulo}"
+    linea = f"{PREFIJOS[evento.resultado]} **{evento.titulo}**"
     return f"{linea}\n{evento.detalle}" if evento.detalle else linea
 
 

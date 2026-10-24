@@ -383,9 +383,9 @@ def test_solo_hay_exito_con_ok_verdadero():
 )
 def test_formato_del_evento(resultado, prefijo):
     evento = Evento("bloqueo", resultado, "Tarjeta bloqueada", "•••• 4821")
-    assert formatear_evento(evento) == f"{prefijo} Tarjeta bloqueada\n•••• 4821"
+    assert formatear_evento(evento) == f"{prefijo} **Tarjeta bloqueada**\n•••• 4821"
 
 
 def test_formato_sin_detalle():
     evento = Evento("analisis", EXITO, "Análisis de transacciones realizado", "")
-    assert formatear_evento(evento) == "✅ Análisis de transacciones realizado"
+    assert formatear_evento(evento) == "✅ **Análisis de transacciones realizado**"
