@@ -98,7 +98,7 @@ async def conversar(cliente, leer, escribir, controles: Controles | None = None)
             escribir(AVISO_ESCALAMIENTO_PENDIENTE)
 
 
-async def _esperar_core(cliente) -> str:
+async def esperar_core(cliente) -> str:
     """Estado final del core tras arrancar (espera mientras esté ``pending``)."""
     estado = "pending"
     for _ in range(ESPERA_CORE_SEGUNDOS * 2):
@@ -112,7 +112,7 @@ async def _esperar_core(cliente) -> str:
 async def _ejecutar(entorno) -> int:
     controles = Controles.desde_entorno(entorno)
     async with ClaudeSDKClient(options=crear_opciones(entorno, controles)) as cliente:
-        if await _esperar_core(cliente) != "connected":
+        if await esperar_core(cliente) != "connected":
             print(
                 "El core bancario no arrancó; revisa su configuración.", file=sys.stderr
             )
