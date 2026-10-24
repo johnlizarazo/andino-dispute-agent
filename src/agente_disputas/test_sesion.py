@@ -175,6 +175,18 @@ def test_falla_al_arrancar_el_agente_avisa_sin_traza():
     assert _correr(probar()) == AVISO_ARRANQUE
 
 
+def test_falla_al_armar_las_opciones_avisa_sin_colgar(monkeypatch):
+    def falla(*_args, **_kwargs):
+        raise RuntimeError("opciones inválidas")
+
+    monkeypatch.setattr("agente_disputas.sesion.crear_opciones", falla)
+
+    async def probar():
+        return await asyncio.wait_for(_sesion(ClienteFalso()).iniciar(), 5)
+
+    assert _correr(probar()) == AVISO_ARRANQUE
+
+
 def test_core_conectado_queda_lista_con_los_controles_de_la_sesion():
     cliente = ClienteFalso()
     controles = _controles()

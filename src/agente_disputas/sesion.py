@@ -95,8 +95,8 @@ class SesionChat:
         self._trabajador = None
 
     async def _trabajar(self, lista: asyncio.Future) -> None:
-        opciones = crear_opciones(self.entorno, self.controles)
         try:
+            opciones = crear_opciones(self.entorno, self.controles)
             async with self.fabrica_cliente(options=opciones) as cliente:
                 if await esperar_core(cliente) != "connected":
                     lista.set_result(AVISO_SIN_CORE)
