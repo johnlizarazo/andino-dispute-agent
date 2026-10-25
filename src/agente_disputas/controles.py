@@ -42,6 +42,7 @@ DISPUTAR = PREFIJO + "iniciar_disputa"
 BLOQUEAR = PREFIJO + "bloquear_tarjeta"
 VERIFICAR = PREFIJO + "verificar_identidad"
 ESCALAR = PREFIJO + "escalar_a_analista"
+BUSCAR = PREFIJO + "buscar_cliente"
 SOBRE_PRODUCTOS = (CONSULTAR, DISPUTAR, BLOQUEAR)
 # Operación de CORE_BANCARIO_FALLAS que hace fallar la consulta de datos del control.
 OPERACION_FALLAS = "control_transaccion"

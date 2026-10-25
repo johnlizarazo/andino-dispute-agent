@@ -12,6 +12,7 @@ from claude_agent_sdk import (
 from agente_disputas.analista import HERRAMIENTA_DELEGAR
 from agente_disputas.controles import (
     BLOQUEAR,
+    BUSCAR,
     CONSULTAR,
     DISPUTAR,
     ESCALAR,
@@ -30,7 +31,6 @@ from agente_disputas.eventos import (
 from core_bancario_mcp.bloqueo_escalamiento import CAUSAS
 from core_bancario_mcp.errores import TipoError, error, exito
 
-BUSCAR = "mcp__core-bancario__buscar_cliente"
 MODELO = "modelo-de-prueba"
 ARGUMENTOS = {
     VERIFICAR: {"cliente_id": "CLI-001", "dato_verificacion": "0000"},
@@ -193,11 +193,16 @@ def test_lecturas_exitosas_no_producen_evento(herramienta, datos):
         (TipoError.VALIDACION, "datos inválidos"),
     ],
 )
-@pytest.mark.parametrize("herramienta", [BLOQUEAR, DISPUTAR, ESCALAR, CONSULTAR])
+@pytest.mark.parametrize(
+    "herramienta", [BLOQUEAR, DISPUTAR, ESCALAR, CONSULTAR, BUSCAR]
+)
 def test_falla_del_core(herramienta, tipo, detalle):
     evento = _uno(herramienta, _error("FALLA_TRANSITORIA", tipo))
     assert (evento.tipo, evento.resultado) == ("falla", FALLA)
     assert evento.titulo.startswith("No se pudo completar: ")
+    assert not evento.titulo.endswith(
+        "la operación"
+    )  # cada herramienta tiene su nombre
     assert detalle in evento.detalle
 
 
@@ -286,6 +291,13 @@ def test_llamada_sin_resultado_ni_negacion_es_falla_al_cerrar():
     [evento] = lector.cerrar()
     assert (evento.tipo, evento.resultado) == ("falla", FALLA)
     assert evento.titulo == "No se pudo completar: Bloqueo de tarjeta"
+
+
+def test_busqueda_sin_resultado_nombra_la_operacion():
+    lector = LectorEventos(EstadoSesion())
+    lector.leer(_llamada(BUSCAR))
+    [evento] = lector.cerrar()
+    assert evento.titulo == "No se pudo completar: Búsqueda del cliente"
 
 
 def test_eventos_en_el_orden_de_los_resultados_y_uno_por_llamada():

@@ -19,6 +19,7 @@ from claude_agent_sdk import (
 from agente_disputas.analista import HERRAMIENTA_DELEGAR, pesos
 from agente_disputas.controles import (
     BLOQUEAR,
+    BUSCAR,
     CONSULTAR,
     DISPUTAR,
     ESCALAR,
@@ -35,6 +36,7 @@ PREFIJOS = {EXITO: "✅", NEGADO: "⛔", FALLA: "⚠️"}
 # Task es el nombre anterior de la delegación (mismo criterio que los controles).
 DELEGAR = (HERRAMIENTA_DELEGAR, "Task")
 OPERACIONES = {
+    BUSCAR: "Búsqueda del cliente",
     VERIFICAR: "Verificación de identidad",
     CONSULTAR: "Consulta de transacciones",
     DISPUTAR: "Disputa",

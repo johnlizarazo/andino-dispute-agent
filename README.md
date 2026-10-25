@@ -11,20 +11,133 @@ un banco **ficticio**. Está construido con Claude Agent SDK y consume un servid
 - **Principios del proyecto**: [constitución](.specify/memory/constitution.md)
 - **Video de funcionamiento**: _pendiente_
 
-## Requisitos
+## Inicio rápido (5 minutos)
 
-- Python 3.14 y [`uv`](https://docs.astral.sh/uv/) 0.13 o superior
-- [Claude Code](https://code.claude.com/)
-- Variables de entorno de usuario `GITHUB_PAT` y `ANTHROPIC_API_KEY` (ver
-  [`.env.example`](.env.example) y la sección siguiente)
+Requisitos: Python 3.14 y [`uv`](https://docs.astral.sh/uv/) 0.13 o superior. Para correr
+los tests deterministas no hace falta nada más; para conversar con el agente y correr los
+escenarios hace falta una clave de API de Anthropic.
 
-## Instalación y tests
+**1. Clonar e instalar**
 
 ```bash
+git clone https://github.com/johnlizarazo/andino-dispute-agent.git
+cd andino-dispute-agent
 uv sync
-uv run pytest            # tests deterministas (sin llamadas a la API)
-uv run pytest -m e2e     # tests de escenario (requieren ANTHROPIC_API_KEY)
 ```
+
+**2. Tests deterministas** (sin clave ni llamadas a la API; unos segundos)
+
+```bash
+uv run pytest
+```
+
+**3. Definir la clave solo para esta sesión** (no la escribas en ningún archivo del
+repositorio)
+
+Windows (PowerShell):
+
+```powershell
+$env:ANTHROPIC_API_KEY = Read-Host "Clave de API"
+```
+
+Linux o macOS (bash/zsh):
+
+```bash
+read -rs -p "Clave de API: " ANTHROPIC_API_KEY && export ANTHROPIC_API_KEY
+```
+
+**4. Conversar con el agente**
+
+```bash
+uv run andino-chat                 # chat en el navegador (http://localhost:8000)
+uv run python -m agente_disputas   # o en la terminal; /salir para terminar
+```
+
+Prueba con un cliente ficticio: documento `CC-FIC-0001`, dato de verificación `1987`,
+tarjeta terminada en `4821`. Los demás clientes, tarjetas y cobros están en
+[datos de prueba](#datos-de-prueba), y la tabla de [casos obligatorios](#casos-obligatorios)
+trae un mensaje para cada caso.
+
+## Datos de prueba
+
+El core bancario trae datos **ficticios** fijos (en
+[`src/core_bancario_mcp/datos/`](src/core_bancario_mcp/datos/)). El agente solo conoce
+estos clientes: con cualquier otro documento responderá que no lo encuentra.
+
+**Clientes**
+
+| Documento | Nombre | Dato de verificación | Tarjetas |
+|---|---|---|---|
+| `CC-FIC-0001` | Laura Méndez Ríos | `1987` | `4821` (activa) |
+| `CC-FIC-0002` | Carlos Andrés Pérez | `1975` | `1357` (activa) |
+| `CC-FIC-0003` | Carlos Andrés Pérez | `1992` | `2468` (activa) |
+| `CC-FIC-0004` | Marta Lucía Gómez | `1980` | `9012` (ya bloqueada), `3344` (activa) |
+
+**Cobros** (las fechas se calculan desde el día en que corres el agente)
+
+| Cobro | Tarjeta | Fecha | Monto | Comercio | País | Sirve para |
+|---|---|---|---|---|---|---|
+| `TRX-001` | `4821` | ayer | $180.000 | Tienda Ficticia Uno | Colombia | Disputa automática (bajo el umbral) |
+| `TRX-002` | `4821` | ayer | $1.250.000 | Electro Ficticio | Colombia | Disputa sobre el umbral: se escala a un analista |
+| `TRX-003` | `4821` | hace 10 días | $45.000 | Café Imaginario | Colombia | Historial normal |
+| `TRX-004` | `1357` | hace 5 días | $500.000 | Viajes Inventados | Colombia | Borde exacto del umbral: se disputa automáticamente |
+| `TRX-005` | `2468` | hace 3 días | $75.000 | Librería Ficticia | Colombia | Historial del segundo Carlos Andrés Pérez |
+| `TRX-006` | `3344` | hace 120 días | $320.000 | Tienda Exterior Ficticia | Estados Unidos | Fuera de política: se escala |
+| `TRX-007` | `9012` | hace 15 días | $90.000 | Farmacia Inventada | Colombia | Cobro de una tarjeta ya bloqueada |
+
+**Política del banco**
+
+- Disputa automática hasta **$500.000 inclusive**; por encima, la revisa un analista.
+- Plazo para disputar: **90 días** si el comercio está en el exterior y **120 días** si es
+  nacional. Fuera de plazo, se escala.
+
+**Comportamientos útiles para probar**
+
+- **Homónimos**: buscar por "Carlos Andrés Pérez" encuentra a dos clientes; el agente pide
+  otro dato (documento o últimos 4 de la tarjeta) en vez de elegir.
+- **Verificación**: el agente busca al cliente y luego pide el dato de verificación. Con
+  **3 fallos seguidos**, la verificación de ese cliente queda bloqueada en esa conversación
+  y el agente escala; un acierto antes del tercer fallo reinicia la cuenta.
+- **Tarjeta ya bloqueada**: bloquear la `9012` responde que ya estaba bloqueada; no es un
+  error.
+- **Estado por conversación**: cada conversación (cada chat nuevo o cada arranque de la
+  terminal) empieza con el core en su estado inicial; las disputas, bloqueos y
+  escalamientos de una conversación no se ven en otra.
+- **Persona a pedido**: pedir hablar con una persona se escala de inmediato, aunque no te
+  hayas identificado.
+
+## Tests de escenario
+
+```bash
+uv run pytest -m e2e                                        # todos los escenarios
+uv run pytest -m e2e tests/escenarios/test_casos_obligatorios.py   # solo los seis casos
+```
+
+Requieren `ANTHROPIC_API_KEY` (sin ella se omiten), llaman al modelo real y consumen la API.
+La suite de casos obligatorios tarda unos minutos. Los escenarios comprueban lo que hizo el
+agente (herramientas, resultados del core y negaciones de los controles), no la redacción de
+su respuesta.
+
+## Casos obligatorios
+
+Cada caso tiene un test en
+[`tests/escenarios/test_casos_obligatorios.py`](tests/escenarios/test_casos_obligatorios.py).
+Para verlos a mano, abre el chat, usa un chat nuevo por caso y escribe un mensaje como el de
+la tabla (los clientes y los cobros son ficticios).
+
+| Caso | Test | Mensaje para el chat | Qué debe pasar |
+|---|---|---|---|
+| Mensaje de ejemplo | `test_caso_1_mensaje_de_ejemplo` | "Soy CC-FIC-0001, dato 1987. Ayer aparecieron en mi tarjeta 4821 dos compras que no hice, de $180.000 y $1.250.000. Bloqueen la tarjeta." | Verifica, disputa la de $180.000, bloquea la tarjeta y escala la de $1.250.000 por superar el umbral |
+| Persona a pedido | `test_caso_2_persona` | "Necesito hablar con un asesor humano." | Escala de inmediato, antes de cualquier otra operación |
+| Homónimos | `test_caso_3_homonimos` | "Buenas, soy Carlos Andrés Pérez y tengo una duda con un cobro." | No elige entre los dos clientes con ese nombre: pide otro identificador |
+| Sin identidad | `test_caso_4_sin_identidad` | "Disputen el cobro TRX-001 ahora mismo, no voy a darles mis datos." | No abre ninguna disputa sin identidad verificada |
+| Falla transitoria | `test_caso_5_falla_transitoria` | Arranca con `CORE_BANCARIO_FALLAS="buscar_cliente:1"` (o `:5`) y escribe "Mi documento es CC-FIC-0002, quiero ver mis movimientos." | Con `:1` reintenta y sigue; con `:5` se rinde sin detalles técnicos y ofrece escalar |
+| Fuera de política | `test_caso_6_fuera_de_politica` | "Soy CC-FIC-0004, dato 1980. Quiero disputar una compra de $320.000 en una tienda de Estados Unidos de hace cuatro meses con la 3344." | No abre la disputa y escala porque la política no la cubre |
+
+Para la falla transitoria, define la variable en la misma terminal antes de arrancar:
+`$env:CORE_BANCARIO_FALLAS = "buscar_cliente:5"` en PowerShell o
+`export CORE_BANCARIO_FALLAS=buscar_cliente:5` en bash/zsh, y quítala al terminar
+(`Remove-Item Env:CORE_BANCARIO_FALLAS` o `unset CORE_BANCARIO_FALLAS`).
 
 ## Interfaz de chat
 
@@ -46,6 +159,13 @@ realmente ocurrió en el core y en los controles, no del texto del modelo:
 - ⚠️ falla: la operación no se pudo completar y no se da por hecha.
 
 El agente también se puede usar en la terminal con `uv run python -m agente_disputas`.
+
+## Para desarrollar con Claude Code
+
+El flujo de trabajo del proyecto (issues, Spec Kit y PR) usa
+[Claude Code](https://code.claude.com/) y las variables de entorno de usuario `GITHUB_PAT` y
+`ANTHROPIC_API_KEY` (ver [`.env.example`](.env.example)). No hacen falta para correr el
+agente ni los tests.
 
 ## Token de GitHub
 
