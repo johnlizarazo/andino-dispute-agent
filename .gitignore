@@ -17,3 +17,6 @@ CLAUDE.local.md
 # Archivos que genera Chainlit al arrancar la interfaz
 .chainlit/
 .files/
+
+# Entrega armada por scripts/armar_entrega.py
+dist/

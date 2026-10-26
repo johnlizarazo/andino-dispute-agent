@@ -28,7 +28,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["src", "tests", "plugins"]
+testpaths = ["src", "tests", "plugins", "scripts"]
 markers = [
     "e2e: escenarios de punta a punta que llaman al modelo (requieren ANTHROPIC_API_KEY)",
 ]

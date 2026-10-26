@@ -3,6 +3,7 @@ paths:
   - "src/**/test_*.py"
   - "tests/**/*.py"
   - "plugins/**/test_*.py"
+  - "scripts/**/test_*.py"
 ---
 
 # Convención de tests
