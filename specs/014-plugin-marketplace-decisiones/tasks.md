@@ -62,7 +62,7 @@ invertidas; usar Write/Edit.
 **Independent Test**: quickstart paso 4.
 
 - [X] T006 [P] [US1] Actualizar `plugins/andino-guardrails/README.md`: instalación con `/plugin marketplace add johnlizarazo/andino-dispute-agent` y `/plugin install andino-guardrails@banco-andino` (antes de la alternativa por `settings.json`, que se conserva); advertencia de que `exigir_spec` bloquea escrituras bajo `src/` sin `specs/<rama>/` y de que el auditor espera una constitución en `.specify/memory/constitution.md`; cómo deshabilitar el plugin (`/plugin disable andino-guardrails@banco-andino` o `enabledPlugins` en `false`); quitar la frase "La prueba de instalación en otro repositorio y su documentación completa son del issue #14". Commit `docs(#14): instalación del plugin desde otro repositorio`
-- [ ] T007 [US1] Verificación manual (la hace el desarrollador; el plugin ya está en `main` desde el #3): en una carpeta nueva fuera del repositorio, `git init`, abrir Claude Code, ejecutar los dos comandos y comprobar que `/plugin` lo muestra habilitado, que `/agents` lista el auditor del plugin, que existe `/andino-guardrails:revisar-cumplimiento` y que el hook bloquea dos casos de prueba: un número de tarjeta con forma real y un número de documento real junto a "cédula" (ajuste L3). Anotar aquí el resultado (SC-001)
+- [X] T007 [US1] Verificación manual (la hace el desarrollador; el plugin ya está en `main` desde el #3): en una carpeta nueva fuera del repositorio, `git init`, abrir Claude Code, ejecutar los dos comandos y comprobar que `/plugin` lo muestra habilitado, que `/agents` lista el auditor del plugin, que existe `/andino-guardrails:revisar-cumplimiento` y que el hook bloquea dos casos de prueba: un número de tarjeta con forma real y un número de documento real junto a "cédula" (ajuste L3). Anotar aquí el resultado (SC-001). Resultado (2026-10-26): el desarrollador confirmó que la prueba en un repositorio vacío fue correcta: el plugin se instaló con los dos comandos desde GitHub y se cumplieron las comprobaciones de la tarea
 
 ---
 
@@ -77,7 +77,7 @@ invertidas; usar Write/Edit.
 ## Phase 6: Cierre
 
 - [X] T009 Actualizar `README.md`: enlace a `DECISIONES.md` en la cabecera y una sección **Entrega** con el comando del script, qué incluye y excluye, y los límites (50 MB, sin credenciales). Commit `docs(#14): README con la entrega y DECISIONES.md`
-- [ ] T010 Verificación final: `uv run pytest` en verde, `uv run ruff check src tests scripts plugins` y `uv run ruff format --check src tests scripts plugins` limpios, el script vuelve a pasar tras los últimos cambios, y T004, T005, T007 y T008 anotados. Luego `/abrir-pr`
+- [X] T010 Verificación final: `uv run pytest` en verde, `uv run ruff check src tests scripts plugins` y `uv run ruff format --check src tests scripts plugins` limpios, el script vuelve a pasar tras los últimos cambios, y T004, T005, T007 y T008 anotados. Luego `/abrir-pr`. Resultado (2026-10-26): 674 passed; ruff limpio; el script vuelve a dar código 0 (33.6 MB, 374 archivos, sin hallazgos); T004, T005, T007 y T008 anotados. Límite: el script solo se corrió en Windows; en Linux lo cubren sus tests, que corren en el CI (Ubuntu)
 
 ---
 
