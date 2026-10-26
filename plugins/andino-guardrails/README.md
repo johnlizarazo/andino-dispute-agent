@@ -52,8 +52,8 @@ plugin en `.claude/settings.json` del repositorio consumidor:
 - **Spec-first:** `exigir_spec` bloquea las escrituras bajo `src/` si la rama no sigue el
   patrón `NNN-slug` o le faltan `spec.md`, `plan.md` o `tasks.md` en `specs/<rama>/`. Si tu
   repositorio no sigue ese flujo, no instales el plugin o deshabilítalo.
-- **Auditor:** `auditor-cumplimiento` audita contra `.specify/memory/constitution.md`; en un
-  repositorio sin constitución lo informa y no tiene contra qué verificar.
+- **Auditor:** `auditor-cumplimiento` audita contra `.specify/memory/constitution.md` y sus
+  reglas de negocio; en un repositorio sin esa constitución no tiene contra qué verificar.
 
 ### Deshabilitarlo
 

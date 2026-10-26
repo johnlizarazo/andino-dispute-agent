@@ -9,6 +9,8 @@ un banco **ficticio**. Está construido con Claude Agent SDK y consume un servid
 
 - **Backlog**: [GitHub Project](https://github.com/users/johnlizarazo/projects/1)
 - **Principios del proyecto**: [constitución](.specify/memory/constitution.md)
+- **Decisiones**: [DECISIONES.md](DECISIONES.md) (mecanismo elegido por necesidad y
+  alternativa descartada)
 - **Video de funcionamiento**: [`docs/muestra-agente-disputa.mp4`](docs/muestra-agente-disputa.mp4)
   (interfaz de chat y casos obligatorios)
 
@@ -160,6 +162,20 @@ realmente ocurrió en el core y en los controles, no del texto del modelo:
 - ⚠️ falla: la operación no se pudo completar y no se da por hecha.
 
 El agente también se puede usar en la terminal con `uv run python -m agente_disputas`.
+
+## Entrega
+
+```bash
+uv run --no-project python scripts/armar_entrega.py
+```
+
+Arma `dist/entrega-andino-dispute-agent.zip` con los archivos versionados y el historial
+(`.git`). Lo que no está en git no entra, y se excluyen además `.venv/`, `.env*` (salvo
+`.env.example`), cachés, dependencias y archivos generados (`.chainlit/`, `.files/`).
+Antes de comprimir busca credenciales (tokens de GitHub, claves de Anthropic y de AWS,
+claves privadas) en los archivos y en todo el historial: si encuentra alguna, dice dónde sin
+mostrarla y no arma el `.zip`. También falla si la entrega llega a 50 MB. Con
+`--salida RUTA` se elige otro destino.
 
 ## Para desarrollar con Claude Code
 

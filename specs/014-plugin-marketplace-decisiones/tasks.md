@@ -70,13 +70,13 @@ invertidas; usar Write/Edit.
 
 **Goal**: FR-012, SC-004 (research R6).
 
-- [ ] T008 [US4] Comprobar sin token `GET https://api.github.com/repos/johnlizarazo/andino-dispute-agent` (`"private": false`) y pedir al desarrollador que abra el Project en una ventana privada del navegador (si es privado, que lo cambie a público). Anotar aquí el resultado
+- [X] T008 [US4] Comprobar sin token `GET https://api.github.com/repos/johnlizarazo/andino-dispute-agent` (`"private": false`) y pedir al desarrollador que abra el Project en una ventana privada del navegador (si es privado, que lo cambie a público). Anotar aquí el resultado. Resultado (2026-10-26): la API sin token responde 200 con `"private": false`; la página del Project sin sesión responde 200 con el título "MVP Agente de disputas · GitHub" (no es la página de inicio de sesión), así que el Project es público. No hizo falta la ventana privada
 
 ---
 
 ## Phase 6: Cierre
 
-- [ ] T009 Actualizar `README.md`: enlace a `DECISIONES.md` en la cabecera y una sección **Entrega** con el comando del script, qué incluye y excluye, y los límites (50 MB, sin credenciales). Commit `docs(#14): README con la entrega y DECISIONES.md`
+- [X] T009 Actualizar `README.md`: enlace a `DECISIONES.md` en la cabecera y una sección **Entrega** con el comando del script, qué incluye y excluye, y los límites (50 MB, sin credenciales). Commit `docs(#14): README con la entrega y DECISIONES.md`
 - [ ] T010 Verificación final: `uv run pytest` en verde, `uv run ruff check src tests scripts plugins` y `uv run ruff format --check src tests scripts plugins` limpios, el script vuelve a pasar tras los últimos cambios, y T004, T005, T007 y T008 anotados. Luego `/abrir-pr`
 
 ---
