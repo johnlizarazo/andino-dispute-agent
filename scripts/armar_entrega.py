@@ -93,6 +93,11 @@ def buscar_credenciales(raiz: Path, rutas: list[str]) -> list[Hallazgo]:
             continue  # binario
         for tipo in _tipos(contenido.decode("utf-8", errors="replace")):
             hallazgos.append(Hallazgo(tipo, ruta))
+    # .git entra completo: su config puede llevar un token en la URL del remoto.
+    configuracion = raiz / ".git" / "config"
+    if configuracion.is_file():
+        texto = configuracion.read_text(encoding="utf-8", errors="replace")
+        hallazgos += [Hallazgo(tipo, ".git/config") for tipo in _tipos(texto)]
     historial = _git(raiz, "log", "-p", "--all", "--format=commit %H")
     commit = None
     for linea in historial.decode("utf-8", errors="replace").splitlines():
@@ -132,6 +137,9 @@ def armar(
         return Resultado(
             False, mensajes=[f"{raiz} no es la raíz de un repositorio git."]
         )
+    salida = Path(salida)
+    # Una entrega de una corrida anterior no puede quedar como válida si esta falla.
+    salida.unlink(missing_ok=True)
     rutas = archivos_versionados(raiz)
     hallazgos = buscar_credenciales(raiz, rutas)
     if hallazgos:
@@ -140,7 +148,6 @@ def armar(
         ]
         return Resultado(False, hallazgos=hallazgos, mensajes=mensajes)
 
-    salida = Path(salida)
     salida.parent.mkdir(parents=True, exist_ok=True)
     temporal = salida.with_name(salida.name + ".tmp")
     try:

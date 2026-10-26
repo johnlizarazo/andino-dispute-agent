@@ -145,6 +145,35 @@ def test_una_credencial_borrada_sigue_en_el_historial(repo, tmp_path):
     assert not salida.exists()
 
 
+def test_un_fallo_borra_la_entrega_anterior(repo, tmp_path):
+    salida = tmp_path / "entrega.zip"
+    assert armar(repo, salida).ok
+    _escribir(repo, "claves.txt", TOKEN_GITHUB)
+    _commit(repo)
+    assert not armar(repo, salida).ok
+    assert not salida.exists()
+
+
+def test_supera_el_limite_borra_la_entrega_anterior(repo, tmp_path):
+    salida = tmp_path / "entrega.zip"
+    assert armar(repo, salida).ok
+    resultado = armar(repo, salida, limite=10)
+    assert not resultado.ok
+    assert not salida.exists()
+    assert "límite" in resultado.mensajes[0]
+
+
+def test_un_token_en_la_url_del_remoto_impide_la_entrega(repo, tmp_path):
+    url = f"https://usuario:{TOKEN_GITHUB}@github.com/equipo/repo.git"
+    _git(repo, "remote", "add", "origin", url)
+    resultado = armar(repo, tmp_path / "entrega.zip")
+    assert not resultado.ok
+    assert any(
+        h.tipo == "github" and h.ubicacion == ".git/config" for h in resultado.hallazgos
+    )
+    _sin_valor(resultado, TOKEN_GITHUB)
+
+
 def test_textos_parecidos_no_son_credenciales(repo, tmp_path):
     _escribir(
         repo,
