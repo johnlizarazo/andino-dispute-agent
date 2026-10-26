@@ -205,7 +205,7 @@ dependen de Claude Code y de la configuración de GitHub.
 ### Measurable Outcomes
 
 - **SC-001**: En un repositorio vacío, el plugin queda instalado con 2 comandos y su hook de
-  datos bloquea un caso de prueba en el 100 % de los intentos.
+  datos bloquea los 2 casos de prueba (una tarjeta y un documento con forma real).
 - **SC-002**: `DECISIONES.md` cubre el 100 % de las piezas del ecosistema del repositorio y
   ocupa como máximo 2 páginas.
 - **SC-003**: El `.zip` pesa menos de 50 MB, contiene el historial de git y 0 archivos
