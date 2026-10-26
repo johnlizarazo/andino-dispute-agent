@@ -22,7 +22,19 @@ Se publica en el marketplace `banco-andino` de este repositorio.
 
 ## Instalación en otro repositorio
 
-En `.claude/settings.json` del repositorio consumidor:
+Desde Claude Code, en el repositorio donde lo quieres usar:
+
+```text
+/plugin marketplace add johnlizarazo/andino-dispute-agent
+/plugin install andino-guardrails@banco-andino
+```
+
+Comprueba con `/plugin` que quedó habilitado y con `/agents` que aparece
+`andino-guardrails:auditor-cumplimiento`. La skill se invoca con
+`/andino-guardrails:revisar-cumplimiento`.
+
+Para que todo el equipo lo tenga al clonar, sin pasos manuales, declara el marketplace y el
+plugin en `.claude/settings.json` del repositorio consumidor:
 
 ```json
 {
@@ -35,7 +47,22 @@ En `.claude/settings.json` del repositorio consumidor:
 }
 ```
 
-La prueba de instalación en otro repositorio y su documentación completa son del issue #14.
+### Antes de instalarlo
+
+- **Spec-first:** `exigir_spec` bloquea las escrituras bajo `src/` si la rama no sigue el
+  patrón `NNN-slug` o le faltan `spec.md`, `plan.md` o `tasks.md` en `specs/<rama>/`. Si tu
+  repositorio no sigue ese flujo, no instales el plugin o deshabilítalo.
+- **Auditor:** `auditor-cumplimiento` audita contra `.specify/memory/constitution.md`; en un
+  repositorio sin constitución lo informa y no tiene contra qué verificar.
+
+### Deshabilitarlo
+
+```text
+/plugin disable andino-guardrails@banco-andino
+```
+
+O, en `.claude/settings.json`, `"enabledPlugins": { "andino-guardrails@banco-andino": false }`.
+Para quitarlo del todo: `/plugin uninstall andino-guardrails@banco-andino`.
 
 ## Refrescar tras modificar el plugin
 
