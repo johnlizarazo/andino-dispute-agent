@@ -9,7 +9,8 @@ un banco **ficticio**. Está construido con Claude Agent SDK y consume un servid
 
 - **Backlog**: [GitHub Project](https://github.com/users/johnlizarazo/projects/1)
 - **Principios del proyecto**: [constitución](.specify/memory/constitution.md)
-- **Video de funcionamiento**: _pendiente_
+- **Video de funcionamiento**: [`docs/muestra-agente-disputa.mp4`](docs/muestra-agente-disputa.mp4)
+  (interfaz de chat y casos obligatorios)
 
 ## Inicio rápido (5 minutos)
 
